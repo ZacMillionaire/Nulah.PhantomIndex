@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Reflection;
+using System.Windows.Controls;
 
 namespace Nulah.PhantomIndex.Core
 {
     public static class PageViewResolver
     {
+        private static Type[] _defaultPageViewParameterConstructorTypes = new Type[] { typeof(string) };
+
         public static (Type PageView, string[] PageViewParameters) ResolvePageViewFromAssembly(this Type parentAssemblyType, string pageViewLocation)
         {
             var callingNamespace = parentAssemblyType.Namespace;
@@ -16,10 +20,51 @@ namespace Nulah.PhantomIndex.Core
                 pathFragments[pathFragments.Length - 1] = ClearFragmentParameters(pathFragments[pathFragments.Length - 1]);
             }
 
-            var typeName = $"{callingNamespace}.Pages.{string.Join(".", pathFragments)}";
+            var typeName = $"{callingNamespace}.{string.Join(".", pathFragments)}";
             var view = parentAssemblyType.Assembly.GetType(typeName);
 
             return (view, pageviewParameters);
+        }
+        public static (Type PageView, string[] PageViewParameters) ResolvePageViewFromAssembly(this Assembly executingAssembly, string pageViewLocation)
+        {
+            var pathFragments = ResolvePageViewLocation(pageViewLocation);
+            string[] pageviewParameters = null;
+
+            if (pathFragments.Length > 0)
+            {
+                pageviewParameters = GetFragmentParamters(pathFragments[^1]);
+                pathFragments[pathFragments.Length - 1] = ClearFragmentParameters(pathFragments[pathFragments.Length - 1]);
+            }
+
+            var typeName = $"{executingAssembly.GetName().Name}.{string.Join(".", pathFragments)}";
+            var view = executingAssembly.GetType(typeName);
+
+            return (view, pageviewParameters);
+        }
+        public static Page GetActivatedPageViewByParameters(Type pageViewType, string[] pageViewParameters)
+        {
+            return GetActivatedPageViewByParameters<Page>(pageViewType, pageViewParameters);
+        }
+
+        public static T GetActivatedPageViewByParameters<T>(Type pageViewType, string[] pageViewParameters) where T : Page
+        {
+            if (pageViewParameters == null || pageViewParameters.Length == 0)
+            {
+                return (T)Activator.CreateInstance(pageViewType);
+            }
+            else if (pageViewParameters.Length == 1)
+            {
+                if (pageViewType.GetConstructor(_defaultPageViewParameterConstructorTypes) != null)
+                {
+                    return (T)Activator.CreateInstance(pageViewType, pageViewParameters);
+                }
+
+                return default(T);
+            }
+            else
+            {
+                throw new ArgumentException("Too many page view parameters supplied - multiple parameter constructor resolution not yet supported");
+            }
         }
 
         private static string[] ResolvePageViewLocation(string pageViewLocation)

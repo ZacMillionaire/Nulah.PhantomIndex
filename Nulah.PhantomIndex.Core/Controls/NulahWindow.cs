@@ -16,7 +16,6 @@ namespace Nulah.PhantomIndex.Core.Controls
 {
     public class NulahWindow : Window
     {
-
         public NulahWindow() : base()
         {
             // Set preview mouse move so the resize grid doesn't persist its cursor
@@ -65,7 +64,7 @@ namespace Nulah.PhantomIndex.Core.Controls
                 minimizeButton.Click += OnMinimizeButtonClick;
             }
 
-            var maximizeButton = GetTemplateChild("MaximiseButton") as Button;
+            var maximizeButton = GetTemplateChild("MaximizeButton") as Button;
             if (maximizeButton != null)
             {
                 maximizeButton.Click += OnMaximizeRestoreButtonClick;

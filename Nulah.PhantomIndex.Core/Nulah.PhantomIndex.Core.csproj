@@ -12,4 +12,8 @@
     </Page>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Snippets\" />
+  </ItemGroup>
+
 </Project>

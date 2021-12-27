@@ -1,4 +1,5 @@
-﻿using Nulah.PhantomIndex.Core.Controls;
+﻿using Nulah.PhantomIndex.Core;
+using Nulah.PhantomIndex.Core.Controls;
 using Nulah.PhantomIndex.WPF.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -32,6 +33,38 @@ namespace Nulah.PhantomIndex.WPF
         {
             InitializeComponent();
             this.DataContext = AppViewModel;
+            /*
+            var a = typeof(MainWindow).ResolvePageViewFromAssembly("Pages/Profiles/Index");
+
+            if (a.PageView != null)
+            {
+                var b = NavigationContent.Navigate(a.PageViewParameters != null
+                    ? Activator.CreateInstance(a.PageView, a.PageViewParameters)
+                    : Activator.CreateInstance(a.PageView)
+                );
+            }
+            */
         }
+
+        //private void Button_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var s = (Button)sender;
+
+        //    var a = typeof(MainWindow).ResolvePageViewFromAssembly(s.Tag as string);
+
+        //    if (a.PageView != null)
+        //    {
+        //        var pageView = Activator.CreateInstance(a.PageView) as Page;
+
+        //        //NavigationContent.Navigate(pageView, "asdf");
+
+        //        /*
+        //        NavigationContent.Navigate(a.PageViewParameters != null
+        //            ? Activator.CreateInstance(a.PageView, a.PageViewParameters)
+        //            : Activator.CreateInstance(a.PageView)
+        //        );
+        //        */
+        //    }
+        //}
     }
 }
