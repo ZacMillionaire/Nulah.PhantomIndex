@@ -14,12 +14,15 @@
     </control:NulahWindow.TitleBarControls>
     <control:NulahNavigation>
         <control:NulahNavigation.MenuItems>
-            <control:NavigationHeader Icon="Accept">Profile Header</control:NavigationHeader>
-            <control:NavigationItem Tag="Pages/Profiles/Index">Profiles</control:NavigationItem>
-            <control:NavigationItem Tag="Pages/Profiles/Index:Geographic">By Location</control:NavigationItem>
-            <control:NavigationItem Tag="Pages/Profiles/Index:Company">By Company</control:NavigationItem>
-            <control:NavigationItemCollapsable>
-                Collapsable Item
+            <control:NavigationItemCollapsable Icon="GuestUser" Content="Profiles">
+                <control:NavigationItemCollapsable.MenuItems>
+                    <control:NavigationItem Icon="People" Tag="Pages/Profiles/Index">Profiles</control:NavigationItem>
+                    <control:NavigationItem Icon="Globe" Tag="Pages/Profiles/Index:Geographic">By Location</control:NavigationItem>
+                    <control:NavigationItem Icon="EMI" Tag="Pages/Profiles/Index:Company">By Company</control:NavigationItem>
+                </control:NavigationItemCollapsable.MenuItems>
+            </control:NavigationItemCollapsable>
+            <control:NavigationItemCollapsable Icon="Accident">
+                Collapsable Item Header
                 <control:NavigationItemCollapsable.MenuItems>
                     <control:NavigationItem Tag="Pages/Profiles/Index:Company">collapsable list items</control:NavigationItem>
                     <control:NavigationItem Tag="Pages/Profiles/Index:Company">Item 1</control:NavigationItem>

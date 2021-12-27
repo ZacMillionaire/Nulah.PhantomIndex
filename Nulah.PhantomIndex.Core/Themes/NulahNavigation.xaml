@@ -10,7 +10,6 @@
 
     <System:Double x:Key="NavigationMinWidth">150</System:Double>
     <System:Double x:Key="NavigationItemHeight">36</System:Double>
-    <GridLength x:Key="NavigationGridRowItemHeight">36</GridLength>
 
 
     <Style TargetType="{x:Type local:NulahNavigation}" BasedOn="{StaticResource {x:Type UserControl}}">
@@ -23,7 +22,7 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Grid Grid.Column="0" x:Name="MenuItemGrid">
-                            <ItemsControl x:Name="List" ItemsSource="{TemplateBinding MenuItems}" />
+                            <ItemsControl x:Name="MenuItems" ItemsSource="{TemplateBinding MenuItems}" />
                         </Grid>
                         <Frame Grid.Column="1" x:Name="NavigationContent" NavigationUIVisibility="Hidden"/>
                     </Grid>
@@ -31,36 +30,11 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style TargetType="{x:Type local:NavigationHeader}" BasedOn="{StaticResource {x:Type UserControl}}">
+
+    <Style TargetType="{x:Type local:NavigationLink}" BasedOn="{StaticResource {x:Type UserControl}}">
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:NavigationHeader}">
-                    <Border Height="{StaticResource NavigationItemHeight}">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.Style>
-                                <Style TargetType="Grid">
-                                    <Style.Setters>
-                                        <Setter Property="Background" Value="#f0f0f0"/>
-                                    </Style.Setters>
-                                </Style>
-                            </Grid.Style>
-                            <local:NavigationItem TextBlock.FontWeight="Bold" Grid.Row="0" Icon="{TemplateBinding Icon}" Content="{TemplateBinding Content}"/>
-                            <!--<local:NavigationIcon Grid.Column="0" Icon="{TemplateBinding Icon}"/>
-                            <ContentPresenter Content="{TemplateBinding Content}" Grid.Column="1" VerticalAlignment="Center" TextBlock.FontWeight="Bold"/>-->
-                        </Grid>
-                    </Border>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-    <Style TargetType="{x:Type local:NavigationItem}" BasedOn="{StaticResource {x:Type UserControl}}">
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type local:NavigationItem}">
+                <ControlTemplate TargetType="{x:Type local:NavigationLink}">
                     <Border Height="{StaticResource NavigationItemHeight}">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -75,36 +49,103 @@
             </Setter.Value>
         </Setter>
     </Style>
+
+    <Style TargetType="{x:Type local:NavigationHeader}" BasedOn="{StaticResource {x:Type UserControl}}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:NavigationHeader}">
+                    <local:NavigationLink TextBlock.FontWeight="Bold" Grid.Row="0" Icon="{TemplateBinding Icon}" Content="{TemplateBinding Content}"/>
+                    <!--<Border Height="{StaticResource NavigationItemHeight}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            -->
+                    <!--<local:NavigationItem TextBlock.FontWeight="Bold" Grid.Row="0" Icon="{TemplateBinding Icon}" Content="{TemplateBinding Content}"/>-->
+                    <!--
+                            <local:NavigationIcon Grid.Column="0" Icon="{TemplateBinding Icon}"/>
+                            <ContentPresenter Content="{TemplateBinding Content}" Grid.Column="1" VerticalAlignment="Center" TextBlock.FontWeight="Bold"/>
+                        </Grid>
+                    </Border>-->
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:NavigationItem}" BasedOn="{StaticResource {x:Type UserControl}}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:NavigationItem}">
+                    <local:NavigationLink x:Name="NavigationContent" Grid.Row="0" Tag="{TemplateBinding Tag}" Icon="{TemplateBinding Icon}" Content="{TemplateBinding Content}">
+                        <local:NavigationLink.Style>
+                            <Style TargetType="local:NavigationLink">
+                                <Style.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="BurlyWood"/>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background"  Value="AliceBlue"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Style.Resources>
+                            </Style>
+                        </local:NavigationLink.Style>
+                    </local:NavigationLink>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="{x:Type local:NavigationItemCollapsable}" BasedOn="{StaticResource {x:Type UserControl}}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:NavigationItemCollapsable}">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="{StaticResource NavigationGridRowItemHeight}" />
+                            <RowDefinition/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
-                        <local:NavigationItem x:Name="CollapseHeader" Grid.Row="0" Icon="{TemplateBinding Icon}" Content="{TemplateBinding Content}"/>
-                        <ListView Grid.Row="1" Margin="5,0,0,0" x:Name="NestedItems" ItemsSource="{TemplateBinding MenuItems}" Visibility="Collapsed" >
-                            <ListView.Style>
-                                <Style TargetType="ListView">
+                        <local:NavigationLink TextBlock.FontWeight="Bold" Grid.Column="0" x:Name="CollapseHeader" Grid.Row="0" Icon="{TemplateBinding Icon}" Content="{TemplateBinding Content}">
+                            <local:NavigationLink.Style>
+                                <Style TargetType="local:NavigationLink">
+                                    <Style.Resources>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="MediumSlateBlue"/>
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background"  Value="PaleVioletRed"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Style.Resources>
+                                </Style>
+                            </local:NavigationLink.Style>
+                        </local:NavigationLink>
+                        <ItemsControl Grid.Row="1" x:Name="NestedItems" ItemsSource="{TemplateBinding MenuItems}">
+                            <ItemsControl.Style>
+                                <Style TargetType="ItemsControl">
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding MenuItems.Count, RelativeSource={RelativeSource Mode=TemplatedParent}}" Value="0">
+                                            <Setter Property="Visibility" Value="Hidden" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Expanded, RelativeSource={RelativeSource Mode=TemplatedParent}}" Value="False">
                                             <Setter Property="Visibility" Value="Collapsed" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
-                            </ListView.Style>
-                        </ListView>
+                            </ItemsControl.Style>
+                        </ItemsControl>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
+
     <Style TargetType="{x:Type local:NavigationIcon}" BasedOn="{StaticResource {x:Type UserControl}}">
         <Style.Resources>
             <local:IsNullConverter x:Key="IsNullConverter"/>
@@ -123,4 +164,5 @@
             </DataTrigger>
         </Style.Triggers>
     </Style>
+
 </ResourceDictionary>

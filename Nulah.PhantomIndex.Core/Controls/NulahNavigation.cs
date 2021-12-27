@@ -15,10 +15,26 @@ namespace Nulah.PhantomIndex.Core.Controls
 {
     public class NulahNavigation : UserControl
     {
+        public static readonly RoutedEvent NavigationItemClicked = EventManager.RegisterRoutedEvent(nameof(NavigationItemClicked), RoutingStrategy.Bubble, typeof(NulahNavigation), typeof(NavigationItem));
+
+        public static void AddNavigationItemClickedHandler(DependencyObject d, RoutedEventHandler handler)
+        {
+            if (d is UIElement uie && uie != null)
+            {
+                uie.AddHandler(NavigationItemClicked, handler);
+            }
+        }
+        public static void RemoveNavigationItemClickedHandler(DependencyObject d, RoutedEventHandler handler)
+        {
+            if (d is UIElement uie && uie != null)
+            {
+                uie.RemoveHandler(NavigationItemClicked, handler);
+            }
+        }
+
         static NulahNavigation()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(NulahNavigation),
-                new FrameworkPropertyMetadata(typeof(NulahNavigation)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(NulahNavigation), new FrameworkPropertyMetadata(typeof(NulahNavigation)));
         }
 
         public NulahNavigation()
@@ -36,18 +52,16 @@ namespace Nulah.PhantomIndex.Core.Controls
         public static readonly DependencyProperty MenuItemsProperty =
             DependencyProperty.Register("MenuItems", typeof(List<NavigationLink>), typeof(NulahNavigation), new PropertyMetadata(null));
 
-        public event EventHandler ItemSelected;
         private Frame _navigationFrame;
-        private Delegate routedItemEvent;
 
         public override void OnApplyTemplate()
         {
-            var menuItems = GetTemplateChild("MenuItems") as ItemsControl;
+            //var menuItems = GetTemplateChild("MenuItems") as ItemsControl;
 
-            if (menuItems != null)
-            {
-                //menuItems.SelectionChanged += SelectedItemChanged;
-            }
+            //if (menuItems != null)
+            //{
+            //    //menuItems.SelectionChanged += SelectedItemChanged;
+            //}
 
             var navigationFrame = GetTemplateChild("NavigationContent") as Frame;
             if (navigationFrame != null)
@@ -55,21 +69,34 @@ namespace Nulah.PhantomIndex.Core.Controls
                 _navigationFrame = navigationFrame;
             }
 
+            var menuItemsControl = GetTemplateChild("MenuItems") as ItemsControl;
+            if (menuItemsControl != null)
+            {
+                menuItemsControl.AddHandler(NavigationItemClicked, new RoutedEventHandler(NeedsCleaningEvent));
+            }
+
             base.OnApplyTemplate();
         }
 
-        private void SelectedItemChanged(object sender, SelectionChangedEventArgs e)
+        private void NeedsCleaningEvent(object sender, RoutedEventArgs e)
         {
-            var selectedItem = ((ListView)sender).SelectedItem;
-            var a = Assembly.GetEntryAssembly().ResolvePageViewFromAssembly(((UserControl)selectedItem).Tag as string);
-
-            if (a.PageView != null)
+            if (e.OriginalSource is NavigationItem source)
             {
-                var pageView = PageViewResolver.GetActivatedPageViewByParameters(a.PageView, a.PageViewParameters);
+                LoadPageFromNavigationItem(source.Tag as string);
+            }
+        }
+
+        private void LoadPageFromNavigationItem(string navigationItemTag)
+        {
+            var pageViewFromAssembly = Assembly.GetEntryAssembly().ResolvePageViewFromAssembly(navigationItemTag);
+
+            if (pageViewFromAssembly.PageView != null)
+            {
+                var pageView = PageViewResolver.GetActivatedPageViewByParameters(pageViewFromAssembly.PageView, pageViewFromAssembly.PageViewParameters);
 
                 if (pageView != null)
                 {
-                    _navigationFrame.Navigate(pageView, "asdf");
+                    _navigationFrame.Navigate(pageView);
                 }
                 else
                 {
@@ -84,7 +111,7 @@ namespace Nulah.PhantomIndex.Core.Controls
         }
     }
 
-    public abstract class NavigationLink : UserControl
+    public class NavigationLink : UserControl
     {
         public FontIcon? Icon
         {
@@ -118,6 +145,23 @@ namespace Nulah.PhantomIndex.Core.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(NavigationItem),
                 new FrameworkPropertyMetadata(typeof(NavigationItem)));
         }
+
+        public override void OnApplyTemplate()
+        {
+            var self = GetTemplateChild("NavigationContent") as NavigationLink;
+
+            if (self != null)
+            {
+                self.MouseDown += Self_MouseDown;
+            }
+
+            base.OnApplyTemplate();
+        }
+
+        private void Self_MouseDown(object sender, RoutedEventArgs e)
+        {
+            RaiseEvent(new RoutedEventArgs(NulahNavigation.NavigationItemClicked, this));
+        }
     }
 
     public class NavigationItemCollapsable : NavigationLink, INotifyPropertyChanged
@@ -132,7 +176,7 @@ namespace Nulah.PhantomIndex.Core.Controls
         public static readonly DependencyProperty MenuItemsProperty =
             DependencyProperty.Register(nameof(MenuItems), typeof(List<NavigationItem>), typeof(NavigationItemCollapsable), new PropertyMetadata(null));
 
-        public bool Collapsed
+        public bool Expanded
         {
             get { return (bool)GetValue(CollapsedProperty); }
             set { SetValue(CollapsedProperty, value); }
@@ -140,21 +184,19 @@ namespace Nulah.PhantomIndex.Core.Controls
 
         // Using a DependencyProperty as the backing store for Collapsed.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty CollapsedProperty =
-            DependencyProperty.Register(nameof(Collapsed), typeof(bool), typeof(NavigationItemCollapsable), new PropertyMetadata(CollapsedCallback));
+            DependencyProperty.Register(nameof(Expanded), typeof(bool), typeof(NavigationItemCollapsable), new PropertyMetadata(CollapsedCallback));
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         private static void CollapsedCallback(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             var s = (NavigationItemCollapsable)sender;
-            s.ChangeExpandCollapse((bool)e.NewValue);
-
+            s.ChangeExpandCollapse();
         }
 
-        public void ChangeExpandCollapse(bool expandCollapseState)
+        public void ChangeExpandCollapse()
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Collapsed)));
-            _menuItems.Visibility = expandCollapseState ? Visibility.Visible : Visibility.Collapsed;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Expanded)));
         }
 
         public NavigationItemCollapsable()
@@ -168,8 +210,6 @@ namespace Nulah.PhantomIndex.Core.Controls
                 new FrameworkPropertyMetadata(typeof(NavigationItemCollapsable)));
         }
 
-        private ListView _menuItems;
-
         public override void OnApplyTemplate()
         {
             var collapseHeader = GetTemplateChild("CollapseHeader") as UserControl;
@@ -180,14 +220,14 @@ namespace Nulah.PhantomIndex.Core.Controls
                 //menuItems.SelectionChanged += SelectedItemChanged;
             }
 
-            _menuItems = GetTemplateChild("NestedItems") as ListView;
-
             base.OnApplyTemplate();
         }
 
         private void CollapseHeader_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Collapsed = !Collapsed;
+            Expanded = !Expanded;
+            // Stop the event from bubbling
+            e.Handled = true;
         }
     }
 
