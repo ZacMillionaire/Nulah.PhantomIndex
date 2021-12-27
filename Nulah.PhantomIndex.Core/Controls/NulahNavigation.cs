@@ -103,6 +103,10 @@ namespace Nulah.PhantomIndex.Core.Controls
                     MessageBox.Show("Unable to find page view with parameter");
                 }
             }
+            else
+            {
+                MessageBox.Show("Unable to find page");
+            }
         }
 
         protected override void OnInitialized(EventArgs e)
@@ -164,17 +168,26 @@ namespace Nulah.PhantomIndex.Core.Controls
         }
     }
 
+    public class NavigationSeparator : NavigationLink
+    {
+        static NavigationSeparator()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(NavigationSeparator),
+                new FrameworkPropertyMetadata(typeof(NavigationSeparator)));
+        }
+    }
+
     public class NavigationItemCollapsable : NavigationLink, INotifyPropertyChanged
     {
-        public List<NavigationItem> MenuItems
+        public List<NavigationLink> MenuItems
         {
-            get { return (List<NavigationItem>)GetValue(MenuItemsProperty); }
+            get { return (List<NavigationLink>)GetValue(MenuItemsProperty); }
             set { SetValue(MenuItemsProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for MenuItems.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty MenuItemsProperty =
-            DependencyProperty.Register(nameof(MenuItems), typeof(List<NavigationItem>), typeof(NavigationItemCollapsable), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(MenuItems), typeof(List<NavigationLink>), typeof(NavigationItemCollapsable), new PropertyMetadata(null));
 
         public bool Expanded
         {
@@ -201,7 +214,7 @@ namespace Nulah.PhantomIndex.Core.Controls
 
         public NavigationItemCollapsable()
         {
-            MenuItems = new List<NavigationItem>();
+            MenuItems = new List<NavigationLink>();
         }
 
         static NavigationItemCollapsable()

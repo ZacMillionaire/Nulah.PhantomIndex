@@ -14,8 +14,10 @@
     </control:NulahWindow.TitleBarControls>
     <control:NulahNavigation>
         <control:NulahNavigation.MenuItems>
-            <control:NavigationItemCollapsable Icon="GuestUser" Content="Profiles">
+            <control:NavigationItemCollapsable Icon="GuestUser" Content="Profiles" Expanded="True">
                 <control:NavigationItemCollapsable.MenuItems>
+                    <control:NavigationItem Icon="AddFriend" Tag="Pages/Profiles/New">New</control:NavigationItem>
+                    <control:NavigationSeparator/>
                     <control:NavigationItem Icon="People" Tag="Pages/Profiles/Index">Profiles</control:NavigationItem>
                     <control:NavigationItem Icon="Globe" Tag="Pages/Profiles/Index:Geographic">By Location</control:NavigationItem>
                     <control:NavigationItem Icon="EMI" Tag="Pages/Profiles/Index:Company">By Company</control:NavigationItem>

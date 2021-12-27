@@ -25,9 +25,9 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
             InitializeComponent();
         }
 
-        //public Index(string viewParameters)
-        //{
+        public Index(string viewParameters)
+        {
 
-        //}
+        }
     }
 }
