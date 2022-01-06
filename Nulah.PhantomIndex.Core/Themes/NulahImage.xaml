@@ -1,0 +1,38 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:local="clr-namespace:Nulah.PhantomIndex.Core.Controls"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Nulah.PhantomIndex.Core;component/Themes/Colours.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style TargetType="{x:Type local:NulahImage}" BasedOn="{StaticResource {x:Type UserControl}}">
+        <Setter Property="BorderBrush" Value="Red" />
+        <Setter Property="Background" >
+            <Setter.Value>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <GradientStop Color="#FFA7A7A7"/>
+                    <GradientStop Color="White" Offset="1"/>
+                    <GradientStop Color="#FFB74A4A" Offset="0.373"/>
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Size" Value="300" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:NulahImage}">
+                    <Border Width="{TemplateBinding Size}" Height="{TemplateBinding Size}" BorderThickness="2" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="{TemplateBinding ClipRadius}">
+                        <Grid>
+                            <Grid.OpacityMask>
+                                <VisualBrush x:Name="ClipMask"/>
+                            </Grid.OpacityMask>
+                            <Border	x:Name="VisualBorderClip" Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding ClipRadius}"/>
+                            <Image x:Name="ImageDropCanvas" Source="{TemplateBinding Source}" Stretch="UniformToFill" />
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

@@ -4,6 +4,7 @@
 
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/Nulah.PhantomIndex.Core;component/Themes/NulahNavigation.xaml"/>
+        <ResourceDictionary Source="/Nulah.PhantomIndex.Core;component/Themes/NulahImage.xaml"/>
         <ResourceDictionary Source="/Nulah.PhantomIndex.Core;component/Themes/Colours.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
