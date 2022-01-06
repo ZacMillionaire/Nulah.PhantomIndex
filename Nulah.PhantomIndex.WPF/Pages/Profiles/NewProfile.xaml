@@ -9,15 +9,65 @@
       x:Name="Page1"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="NewProfile">
+    <Page.Resources>
+        <Style TargetType="{x:Type local:NulahInput}" BasedOn="{StaticResource {x:Type UserControl}}">
+            <Setter Property="Label" Value="Label" />
+            <Setter Property="HintForeground" Value="#FFB5B5B5" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type local:NulahInput}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                                <TextBlock Padding="5,0" FontSize="14" Text="{TemplateBinding Label}" FontWeight="Bold"/>
+                                <TextBlock Padding="5,0" Margin="0" FontSize="14" d:Text="{TemplateBinding Hint}" Text="{TemplateBinding Hint}" Foreground="{TemplateBinding HintForeground}">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Text, ElementName=InputBox}" Value="">
+                                                    <Setter Property="Visibility" Value="Hidden"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </StackPanel>
+                            <!-- side padding offset by 2 to account for mystery 2px padding on textboxes -->
+                            <Border Padding="2,0" Panel.ZIndex="1" Grid.Row="1" BorderThickness="1" IsHitTestVisible="False">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Visibility" Value="Hidden"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Text, ElementName=InputBox}" Value="">
+                                                <Setter Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock Padding="5,5" Margin="0" FontSize="22" d:Text="{TemplateBinding Hint}" Text="{TemplateBinding Hint}" Foreground="{TemplateBinding HintForeground}" />
+                            </Border>
+                            <TextBox Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Text}" Padding="5,5" Margin="0" Panel.ZIndex="0" Grid.Row="1" FontSize="22" x:Name="InputBox" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" FontWeight="Bold">New Profile</TextBlock>
-        <TextBox Grid.Row="1" x:Name="Name"/>
-        <Grid Grid.Row="2">
+        <local:NulahInput Grid.Row="1" Label="Name" Text="{Binding FileName}" Hint="Name" />
+        <local:NulahInput Grid.Row="2" Label="Name2" />
+        <Grid Grid.Row="3">
             <StackPanel x:Name="DragDropControl" AllowDrop="True"
                     PreviewDragEnter="DragDropControl_DragEnter" 
                     PreviewDragOver="DragDropControl_DragOver" 
