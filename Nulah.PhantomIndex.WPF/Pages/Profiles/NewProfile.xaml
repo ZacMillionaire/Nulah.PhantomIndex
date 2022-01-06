@@ -1,0 +1,45 @@
+﻿<Page x:Class="Nulah.PhantomIndex.WPF.Pages.Profiles.NewProfile"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Nulah.PhantomIndex.WPF.Pages.Profiles"
+      mc:Ignorable="d" 
+      x:Name="Page1"
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="NewProfile">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" FontWeight="Bold">New Profile</TextBlock>
+        <TextBox Grid.Row="1" x:Name="Name"/>
+        <Grid Grid.Row="2">
+            <StackPanel x:Name="DragDropControl" AllowDrop="True"
+                    PreviewDragEnter="DragDropControl_DragEnter" 
+                    PreviewDragOver="DragDropControl_DragOver" 
+                    PreviewDragLeave="DragDropControl_DragLeave"
+                    Drop="DragDropControl_Drop">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Style.Setters>
+                            <Setter Property="Background" Value="White"/>
+                        </Style.Setters>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding FileDropValid, RelativeSource={RelativeSource AncestorType=local:NewProfile}}" Value="True">
+                                <Setter Property="Background" Value="Green"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding FileDropValid, RelativeSource={RelativeSource AncestorType=local:NewProfile}}" Value="False">
+                                <Setter Property="Background" Value="Red"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <Canvas x:Name="ImageDropCanvas" Height="300" Width="300"/>
+                <TextBox x:Name="FileSourceInput" IsReadOnly="true"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

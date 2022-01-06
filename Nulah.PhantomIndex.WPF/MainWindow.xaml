@@ -6,9 +6,7 @@
         xmlns:local="clr-namespace:Nulah.PhantomIndex.WPF"
         xmlns:control="clr-namespace:Nulah.PhantomIndex.Core.Controls;assembly=Nulah.PhantomIndex.Core"
         mc:Ignorable="d"
-        Title="TestWindow" Height="450" Width="800"
-        SnapsToDevicePixels="True"
-                     UseLayoutRounding="True">
+        Title="TestWindow" Height="450" Width="800">
     <control:NulahWindow.TitleBarControls>
         <Button>Test Title Button</Button>
     </control:NulahWindow.TitleBarControls>
@@ -16,7 +14,7 @@
         <control:NulahNavigation.MenuItems>
             <control:NavigationItemCollapsable Icon="GuestUser" Content="Profiles" Expanded="True">
                 <control:NavigationItemCollapsable.MenuItems>
-                    <control:NavigationItem Icon="AddFriend" Tag="Pages/Profiles/New">New</control:NavigationItem>
+                    <control:NavigationItem Icon="AddFriend" Tag="Pages/Profiles/NewProfile">New</control:NavigationItem>
                     <control:NavigationSeparator/>
                     <control:NavigationItem Icon="People" Tag="Pages/Profiles/Index">Profiles</control:NavigationItem>
                     <control:NavigationItem Icon="Globe" Tag="Pages/Profiles/Index:Geographic">By Location</control:NavigationItem>

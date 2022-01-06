@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nulah.PhantomIndex.WPF.ViewModels.Profiles;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,14 +21,17 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
     /// </summary>
     public partial class Index : Page
     {
+        public ProfileIndexViewModel _viewModel = new();
+
         public Index()
         {
             InitializeComponent();
+            DataContext = _viewModel;
         }
 
-        public Index(string viewParameters)
+        public Index(string viewParameters) : this()
         {
-
+            _viewModel.PageName = viewParameters;
         }
     }
 }

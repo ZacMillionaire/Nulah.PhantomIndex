@@ -4,11 +4,19 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Nulah.PhantomIndex.WPF.Pages.Profiles"
+      xmlns:vm="clr-namespace:Nulah.PhantomIndex.WPF.ViewModels.Profiles"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Index">
-
+    <Page.DataContext>
+        <vm:ProfileIndexViewModel/>
+    </Page.DataContext>
     <Grid>
-        <TextBlock FontWeight="bold" FontSize="72">Index page</TextBlock>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock FontWeight="bold">Index page</TextBlock>
+        <TextBlock Grid.Row="1" Text="{Binding PageName}" d:Text="Page Name"/>
     </Grid>
 </Page>
