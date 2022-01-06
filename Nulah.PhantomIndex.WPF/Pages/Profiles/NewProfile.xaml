@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Nulah.PhantomIndex.WPF.Pages.Profiles"
+      xmlns:controls="clr-namespace:Nulah.PhantomIndex.Core.Controls;assembly=Nulah.PhantomIndex.Core"
       mc:Ignorable="d" 
       x:Name="Page1"
       d:DesignHeight="450" d:DesignWidth="800"
@@ -12,7 +13,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" FontWeight="Bold">New Profile</TextBlock>
         <TextBox Grid.Row="1" x:Name="Name"/>
@@ -37,8 +38,7 @@
                         </Style.Triggers>
                     </Style>
                 </StackPanel.Style>
-                <Canvas x:Name="ImageDropCanvas" Height="300" Width="300"/>
-                <TextBox x:Name="FileSourceInput" IsReadOnly="true"/>
+                <controls:NulahImage x:Name="ImageDropCanvas" />
             </StackPanel>
         </Grid>
     </Grid>

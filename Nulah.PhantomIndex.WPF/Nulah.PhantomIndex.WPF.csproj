@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Nulah.PhantomIndex.Core\Nulah.PhantomIndex.Core.csproj" />
+    <ProjectReference Include="..\Nulah.PhantomIndex.Lib\Nulah.PhantomIndex.Lib.csproj" />
   </ItemGroup>
 
 </Project>

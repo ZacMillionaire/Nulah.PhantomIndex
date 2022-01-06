@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Nulah.PhantomIndex.Lib.Images;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -90,18 +92,45 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
             FileDropValid = null;
         }
 
-        private void DragDropControl_Drop(object sender, DragEventArgs e)
+        private async void DragDropControl_Drop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 var files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 if (files.Length == 1)
                 {
-                    FileSourceInput.Text = files[0];
+                    ImageDropCanvas.Source = await ImageToBitmap(files[0]);
                 }
             }
 
             FileDropValid = null;
+        }
+
+        private async Task<BitmapImage> ImageToBitmap(string imageSource)
+        {
+            // Return a task here to ensure the UI is not blocked
+            return await Task.Run(async () =>
+            {
+                var imageController = new ImageController();
+
+                var resizedImageData = await imageController.ResizeImageToWidth(imageSource, 300);
+                var image = new BitmapImage();
+
+                using (var mem = new MemoryStream(resizedImageData))
+                {
+                    mem.Position = 0;
+                    image.BeginInit();
+
+                    image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+                    image.CacheOption = BitmapCacheOption.OnLoad;
+                    image.StreamSource = mem;
+
+                    image.EndInit();
+                }
+
+                image.Freeze();
+                return image;
+            });
         }
     }
 }
