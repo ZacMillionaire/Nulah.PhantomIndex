@@ -1,4 +1,5 @@
-﻿using Nulah.PhantomIndex.Lib.Images;
+﻿using Microsoft.Win32;
+using Nulah.PhantomIndex.Lib.Images;
 using Nulah.PhantomIndex.WPF.ViewModels.Profiles;
 using System;
 using System.Collections.Generic;
@@ -74,7 +75,7 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 var files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                if (files.Length == 1)
+                if (files.Length == 1 && ImageController.IsValidImageFormat(files[0]) == true)
                 {
                     e.Effects = DragDropEffects.Copy;
                     FileDropValid = true;
@@ -101,39 +102,68 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
                 var files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 if (files.Length == 1)
                 {
-                    ImageDropCanvas.Source = await ImageToBitmap(files[0]);
-                    _viewModel.FileName = files[0];
+                    await ProcessProfileImage(files[0]);
                 }
             }
 
             FileDropValid = null;
         }
 
-        private async Task<BitmapImage> ImageToBitmap(string imageSource)
+        private async Task ProcessProfileImage(string imageSource)
+        {
+            if (string.IsNullOrWhiteSpace(imageSource) == true
+                || ImageController.IsValidImageFormat(imageSource) == false)
+            {
+                return;
+            }
+
+            var resizedImageBlob = await ResizeImage(imageSource);
+
+            _viewModel.ImageBlob = resizedImageBlob;
+            _viewModel.FileName = imageSource;
+
+            ImageDropCanvas.Source = ImageByteArrayToBitmap(_viewModel.ImageBlob);
+        }
+
+        private BitmapImage ImageByteArrayToBitmap(byte[] imageBlob)
+        {
+            var image = new BitmapImage();
+
+            using (var mem = new MemoryStream(imageBlob))
+            {
+                mem.Position = 0;
+                image.BeginInit();
+
+                image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.StreamSource = mem;
+
+                image.EndInit();
+            }
+
+            image.Freeze();
+            return image;
+        }
+
+        private async Task<byte[]> ResizeImage(string imageSource)
         {
             // Return a task here to ensure the UI is not blocked
             return await Task.Run(async () =>
             {
                 var imageController = new ImageController();
 
-                var resizedImageData = await imageController.ResizeImageToWidth(imageSource, 300);
-                var image = new BitmapImage();
-
-                using (var mem = new MemoryStream(resizedImageData))
-                {
-                    mem.Position = 0;
-                    image.BeginInit();
-
-                    image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
-                    image.CacheOption = BitmapCacheOption.OnLoad;
-                    image.StreamSource = mem;
-
-                    image.EndInit();
-                }
-
-                image.Freeze();
-                return image;
+                return await imageController.ResizeImageToWidth(imageSource, 300);
             });
+        }
+
+        private async void NulahFileSelector_FileSelected(object sender, string selectedFile)
+        {
+            await ProcessProfileImage(selectedFile);
+        }
+
+        private void CreateProfile_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 
@@ -257,6 +287,84 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
         private void Input_KeyUp(object sender, KeyEventArgs e)
         {
             _textboxBindingExpression?.UpdateSource();
+        }
+    }
+
+    public class NulahFileSelector : UserControl
+    {
+        public string FileSource
+        {
+            get { return (string)GetValue(FileSourceProperty); }
+            set { SetValue(FileSourceProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for UploadedImage.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty FileSourceProperty =
+            DependencyProperty.Register(nameof(FileSource), typeof(string), typeof(NulahFileSelector), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, FileSourcePropertyChanged)
+            {
+                DefaultUpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+            });
+
+        private static void FileSourcePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.NewValue == e.OldValue)
+            {
+                return;
+            }
+
+            if (e.NewValue is string newFileSource && string.IsNullOrWhiteSpace(newFileSource) == false)
+            {
+                ((NulahFileSelector)d).RaiseFileSourceChange(newFileSource);
+            }
+        }
+
+        public string Filter
+        {
+            get { return (string)GetValue(FilterProperty); }
+            set { SetValue(FilterProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Filter.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty FilterProperty =
+            DependencyProperty.Register("Filter", typeof(string), typeof(NulahFileSelector), new PropertyMetadata("All Files (*.*)|*.*"));
+
+
+        public event EventHandler<string> FileSelected;
+
+        static NulahFileSelector()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(NulahFileSelector), new FrameworkPropertyMetadata(typeof(NulahFileSelector)));
+        }
+
+        public override void OnApplyTemplate()
+        {
+            if (GetTemplateChild("UploadButton") is Button uploadButton && uploadButton != null)
+            {
+                uploadButton.Click += UploadButton_Click;
+            }
+            base.OnApplyTemplate();
+        }
+
+        private void UploadButton_Click(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog();
+
+            openFileDialog.Filter = Filter;
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                RaiseFileSourceChange(openFileDialog.FileName);
+            }
+        }
+
+        /// <summary>
+        /// Updates the value of <see cref="FileSource"/> updating any bindings to it, and raises the <see cref="FileSelected"/> event with the selected file location
+        /// </summary>
+        /// <param name="newFileSource"></param>
+        public void RaiseFileSourceChange(string newFileSource)
+        {
+            FileSource = newFileSource;
+            FileSelected?.Invoke(this, FileSource);
         }
     }
 }

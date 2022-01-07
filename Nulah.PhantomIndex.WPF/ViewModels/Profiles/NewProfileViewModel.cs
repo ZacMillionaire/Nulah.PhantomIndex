@@ -13,8 +13,26 @@ namespace Nulah.PhantomIndex.WPF.ViewModels.Profiles
 
         public string FileName
         {
-            get { return _fileName; }
-            set { NotifyAndSetPropertyIfChanged(ref _fileName, value); }
+            get => _fileName;
+            set => NotifyAndSetPropertyIfChanged(ref _fileName, value);
         }
+
+        private string _profileName;
+
+        public string ProfileName
+        {
+            get => _profileName;
+            set => NotifyAndSetPropertyIfChanged(ref _profileName, value);
+        }
+
+        private byte[] _imageBlob;
+
+        public byte[] ImageBlob
+        {
+            get => _imageBlob;
+            set => NotifyAndSetPropertyIfChanged(ref _imageBlob, value);
+        }
+
+
     }
 }

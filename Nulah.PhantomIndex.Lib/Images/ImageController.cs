@@ -12,6 +12,54 @@ namespace Nulah.PhantomIndex.Lib.Images
 {
     public class ImageController
     {
+        public readonly static string FileDialogSupportedImageFormats;
+
+        static ImageController()
+        {
+            FileDialogSupportedImageFormats = GetSupportedFileDialogFilterString();
+        }
+
+        /// <summary>
+        /// Returns true if the image file is a supported image format
+        /// </summary>
+        /// <param name="imageSource"></param>
+        /// <returns></returns>
+        public static bool IsValidImageFormat(string imageSource)
+        {
+            return Image.DetectFormat(imageSource) != null;
+        }
+
+        /// <summary>
+        /// Returns true if the image blob is a supported image format
+        /// </summary>
+        /// <param name="imageBlob"></param>
+        /// <returns></returns>
+        public static bool IsValidImageFormat(byte[] imageBlob)
+        {
+            return Image.Identify(imageBlob) != null;
+        }
+
+        /// <summary>
+        /// Returns a filter string for use with FileDialog filters
+        /// </summary>
+        /// <returns></returns>
+        private static string GetSupportedFileDialogFilterString()
+        {
+            // Return the previous filter string if we've already retrieved it once before
+            if (string.IsNullOrWhiteSpace(FileDialogSupportedImageFormats) == false)
+            {
+                return FileDialogSupportedImageFormats;
+            }
+
+            return string.Join("|", Configuration.Default.ImageFormats
+                .Select(x => new
+                {
+                    Name = x.Name,
+                    Extensions = string.Join(";", x.FileExtensions.Select(y => $"*.{y}"))
+                })
+                .Select(x => $"{x.Name} ({x.Extensions})|{x.Extensions}"));
+        }
+
         /// <summary>
         /// Resizes an image on disk and returns a byte[] of the result
         /// <para>
