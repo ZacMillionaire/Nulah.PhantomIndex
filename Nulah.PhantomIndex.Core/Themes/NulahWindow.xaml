@@ -74,6 +74,8 @@
         <Setter Property="WindowStyle" Value="None"/>
         <Setter Property="ResizeMode" Value="NoResize"/>
         <Setter Property="Background" Value="White"/>
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="UseLayoutRounding" Value="true" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:NulahWindow}">
@@ -144,7 +146,7 @@
                             </Border>
                             <AdornerDecorator Grid.Row="1">
                                 <Border Style="{StaticResource WindowBorder}">
-                                    <ContentPresenter/>
+                                    <ContentPresenter />
                                 </Border>
                             </AdornerDecorator>
                         </Grid>

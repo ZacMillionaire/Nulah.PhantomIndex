@@ -99,6 +99,9 @@ namespace Nulah.PhantomIndex.Core.Controls
 
                 if (pageView != null)
                 {
+                    // Ensure the page correctly inherits snapping and layout rounding
+                    pageView.SnapsToDevicePixels = this.SnapsToDevicePixels;
+                    pageView.UseLayoutRounding = this.UseLayoutRounding;
                     _navigationFrame.Navigate(pageView);
                 }
                 else
