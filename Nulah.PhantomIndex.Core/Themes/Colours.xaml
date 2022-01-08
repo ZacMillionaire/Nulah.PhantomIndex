@@ -1,9 +1,22 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:System="clr-namespace:System;assembly=System.Runtime">
+
     <SolidColorBrush x:Key="DefaultBorderBrush" Color="#FF40006F"/>
     <LinearGradientBrush x:Key="DefaultGradientBrush" EndPoint="0.5,1" StartPoint="0.5,0">
         <GradientStop Color="#FFB266C8" Offset="1"/>
         <GradientStop Color="#FFF8E8FD" Offset="0"/>
     </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="WindowTextBrush" Color="{StaticResource {x:Static SystemColors.WindowTextColorKey}}"/>
+    <SolidColorBrush x:Key="MouseOverOverlayBackgroundBrush" Color="#ffffff"/>
+    <SolidColorBrush x:Key="PressedOverlayBackgroundBrush" Color="#ffffff"/>
+    <SolidColorBrush x:Key="MouseOverWindowCloseButtonBackgroundBrush" Color="#ffffff"/>
+    <SolidColorBrush x:Key="MouseOverWindowCloseButtonForegroundBrush" Color="#ffffff"/>
+    <SolidColorBrush x:Key="PressedWindowCloseButtonBackgroundBrush" Color="#ffffff"/>
+    <SolidColorBrush x:Key="WindowTitleBarInactiveText" Color="#ffffff"/>
+    <SolidColorBrush x:Key="WindowTitleBarActiveBackground" Color="#ff00ff"/>
+    <SolidColorBrush x:Key="WindowTitleBarInactiveBackground" Color="#ffffff"/>
+
 
 </ResourceDictionary>

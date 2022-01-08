@@ -4,11 +4,16 @@
              xmlns:local="clr-namespace:Nulah.PhantomIndex.WPF"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-        <Style TargetType="Window">
-            <Style.Setters>
-                <Setter Property="SnapsToDevicePixels" Value="True" />
-                <Setter Property="UseLayoutRounding" Value="True" />
-            </Style.Setters>
-        </Style>
+        <ResourceDictionary>
+            <Style TargetType="Window">
+                <Style.Setters>
+                    <Setter Property="SnapsToDevicePixels" Value="True" />
+                    <Setter Property="UseLayoutRounding" Value="True" />
+                </Style.Setters>
+            </Style>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/Generic.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

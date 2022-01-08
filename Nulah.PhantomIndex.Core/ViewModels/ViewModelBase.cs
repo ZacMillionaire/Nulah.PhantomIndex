@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -59,7 +60,7 @@ namespace Nulah.PhantomIndex.Core.ViewModels
         {
             VerifyPropertyName(____DO_NOT_SET___propertyName);
 
-            if (value.Equals(property) == false)
+            if (value == null || value.Equals(property) == false)
             {
                 property = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(____DO_NOT_SET___propertyName));
@@ -108,6 +109,44 @@ namespace Nulah.PhantomIndex.Core.ViewModels
         {
             get { return _pageEnabled; }
             set { _pageEnabled = value; OnPropertyChanged(nameof(PageEnabled)); }
+        }
+
+        private List<string> _validationErrors;
+
+        public List<string> ValidationErrors
+        {
+            get => _validationErrors;
+            set => NotifyAndSetPropertyIfChanged(ref _validationErrors, value);
+        }
+
+        /// <summary>
+        /// Validates the view models based on <see cref="System.ComponentModel.DataAnnotations"/> attributes
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="AggregateException"></exception>
+        public bool Validate()
+        {
+            var ctx = new ValidationContext(this, null, null);
+            var validationResults = new List<ValidationResult>();
+            var isValid = Validator.TryValidateObject(this, ctx, validationResults, true);
+
+            if (!isValid)
+            {
+                var validationErrors = new List<string>();
+
+                foreach (ValidationResult validationResult in validationResults)
+                {
+                    validationErrors.Add(validationResult.ErrorMessage);
+                }
+
+                ValidationErrors = validationErrors;
+
+                return false;
+            }
+
+            ValidationErrors = null;
+
+            return true;
         }
     }
 }
