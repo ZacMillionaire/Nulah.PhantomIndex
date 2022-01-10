@@ -7,22 +7,37 @@ using System.Text;
 using System.Threading.Tasks;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Formats.Jpeg;
+using Nulah.PhantomIndex.Lib.Images.Models;
 
 namespace Nulah.PhantomIndex.Lib.Images
 {
-    public class ImageController
+    public class ImageController : PhantomIndexControllerBase
     {
         public readonly static string FileDialogSupportedImageFormats;
-        private readonly PhantomIndexDatabase _database;
 
         static ImageController()
         {
             FileDialogSupportedImageFormats = GetSupportedFileDialogFilterString();
         }
 
-        public ImageController(PhantomIndexDatabase phantomIndexDatabase)
+        public ImageController(PhantomIndexManager phantomIndexManager)
+            : base(phantomIndexManager)
+        { }
+
+        internal override void Init()
         {
-            _database = phantomIndexDatabase;
+            base.Init();
+
+            // Create tables required for this controller
+            Task.Run(() =>
+            {
+                PhantomIndexManager.Connection
+                    !.CreateTableAsync<ImageResource>()
+                    .ConfigureAwait(false);
+                PhantomIndexManager.Connection
+                    !.CreateTableAsync<Image_Resource>()
+                    .ConfigureAwait(false);
+            });
         }
 
         /// <summary>
@@ -46,6 +61,97 @@ namespace Nulah.PhantomIndex.Lib.Images
         }
 
         /// <summary>
+        /// Creates an <see cref="ImageResource"/> entry for the given <paramref name="resourceId"/>.
+        /// <para>
+        /// A <paramref name="resourceId"/> is any entity that exists in another table.
+        /// </para>
+        /// </summary>
+        /// <param name="resourceId"></param>
+        /// <param name="imageBlob"></param>
+        /// <returns></returns>
+        public async Task<ImageResource> SaveImageForResource(Guid resourceId, byte[] imageBlob, string imageType)
+        {
+            if (imageBlob == null || imageBlob.Length == 0)
+            {
+                throw new ArgumentNullException($"{nameof(imageBlob)} cannot be null or empty");
+            }
+
+            if (string.IsNullOrWhiteSpace(imageType) == true)
+            {
+                throw new ArgumentNullException($"{nameof(imageType)} cannot be null or empty");
+            }
+
+            var imageDetails = Image.DetectFormat(imageBlob);
+
+            var newImage = new ImageResource
+            {
+                Filesize = imageBlob.Length,
+                ImageBlob = imageBlob,
+                Mimetype = imageDetails.DefaultMimeType,
+                Id = Guid.NewGuid(),
+                Name = imageDetails.Name,
+            };
+
+            try
+            {
+                await PhantomIndexManager.Connection!.RunInTransactionAsync(async a =>
+                    {
+                        var imagesInserted = await PhantomIndexManager.Connection
+                            !.InsertAsync(newImage)
+                            .ConfigureAwait(false);
+
+                        if (imagesInserted == 1)
+                        {
+                            var imageResourceLinked = await LinkImageToResource(newImage.Id, resourceId, imageType)
+                                .ConfigureAwait(false);
+
+                            if (imageResourceLinked == true)
+                            {
+                                a.Commit();
+                            }
+                        }
+                    })
+                    .ConfigureAwait(false);
+
+                return newImage;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Connects a <see cref="ImageResource"/> to any resouce by its <paramref name="resourceId"/>
+        /// </summary>
+        /// <param name="imageId"></param>
+        /// <param name="resourceId"></param>
+        /// <param name="resourceType"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        private async Task<bool> LinkImageToResource(Guid imageId, Guid resourceId, string resourceType)
+        {
+            var imageResourceLink = new Image_Resource
+            {
+                ImageId = imageId,
+                ResourceId = resourceId,
+                Type = resourceType
+            };
+
+            var imagesInserted = await PhantomIndexManager.Connection
+                !.InsertAsync(imageResourceLink)
+                .ConfigureAwait(false);
+
+            if (imagesInserted == 1)
+            {
+                return true;
+            }
+
+            // TODO: flesh this out to something more meaningful instead of a raw exception on failure
+            throw new Exception($"Failed to create {nameof(Image_Resource)}");
+        }
+
+        /// <summary>
         /// Resizes an image on disk and returns a byte[] of the result
         /// <para>
         /// This does not modify the original image
@@ -58,7 +164,7 @@ namespace Nulah.PhantomIndex.Lib.Images
         {
             using (var memStream = new MemoryStream())
             {
-                using (var input = await Image.LoadAsync(imageSource))
+                using (var input = await Image.LoadAsync(imageSource).ConfigureAwait(false))
                 {
                     input.Mutate(x => x.Resize(new ResizeOptions
                     {

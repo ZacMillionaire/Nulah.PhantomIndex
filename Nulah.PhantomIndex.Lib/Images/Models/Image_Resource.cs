@@ -10,9 +10,11 @@ namespace Nulah.PhantomIndex.Lib.Images.Models
     [Table("Image_Resource")]
     public class Image_Resource
     {
-        [PrimaryKey]
+        [Indexed]
         public Guid ImageId { get; set; }
-        [PrimaryKey]
+        [Indexed]
         public Guid ResourceId { get; set; }
+        [NotNull]
+        public string Type { get; set; } = string.Empty;
     }
 }

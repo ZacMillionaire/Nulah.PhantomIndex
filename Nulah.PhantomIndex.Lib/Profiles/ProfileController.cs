@@ -1,4 +1,5 @@
-﻿using Nulah.PhantomIndex.Lib.Profiles.Models;
+﻿using Nulah.PhantomIndex.Lib.Images.Models;
+using Nulah.PhantomIndex.Lib.Profiles.Models;
 using SQLite;
 using System;
 using System.Collections.Generic;
@@ -8,32 +9,25 @@ using System.Threading.Tasks;
 
 namespace Nulah.PhantomIndex.Lib.Profiles
 {
-    public class ProfileController
+    public class ProfileController : PhantomIndexControllerBase
     {
-        private readonly PhantomIndexDatabase _database;
-
-        internal ProfileController(PhantomIndexDatabase database)
+        internal ProfileController(PhantomIndexManager phantomIndexManager)
+            : base(phantomIndexManager)
         {
-            _database = database;
         }
 
-        internal void Init()
+        internal override void Init()
         {
-            if (_database.Connection == null)
-            {
-                throw new Exception("Connection has not been created");
-            }
+            base.Init();
 
-            Task.Run(() => _database.Connection.CreateTableAsync<Profile>().ConfigureAwait(false));
+            // Create tables required for this controller
+            Task.Run(() => PhantomIndexManager.Connection
+                !.CreateTableAsync<Profile>()
+                .ConfigureAwait(false));
         }
 
         public async Task<Profile> Create(string profileName, string displayFirstname, string pronouns, string? displayLastName = null, byte[]? imageBlob = null)
         {
-            if (_database.Connection == null)
-            {
-                throw new Exception("Connection has not been created");
-            }
-
             var newProfile = new Profile
             {
                 DisplayFirstName = displayFirstname,
@@ -43,15 +37,23 @@ namespace Nulah.PhantomIndex.Lib.Profiles
                 Pronouns = pronouns
             };
 
-            var profileCreated = await _database.Connection.InsertAsync(newProfile);
+            var profileCreated = await PhantomIndexManager.Connection
+                !.InsertAsync(newProfile)
+                .ConfigureAwait(false);
 
             if (profileCreated == 1)
             {
-                _database.
+                if (imageBlob != null)
+                {
+                    ImageResource profileImage = await PhantomIndexManager.Images
+                        .SaveImageForResource(newProfile.Id, imageBlob, nameof(Profile))
+                        .ConfigureAwait(false);
+                }
                 return newProfile;
             }
 
-            return new();
+            // TODO: flesh this out to something more meaningful instead of a raw exception on failure
+            throw new Exception($"Failed to create {nameof(Profile)}");
         }
     }
 }

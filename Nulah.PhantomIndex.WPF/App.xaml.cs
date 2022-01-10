@@ -16,7 +16,7 @@ namespace Nulah.PhantomIndex.WPF
     /// </summary>
     public partial class App : Application
     {
-        public readonly static PhantomIndexDatabase Database = new PhantomIndexDatabase();
+        public readonly static PhantomIndexManager Database = new PhantomIndexManager();
 
         public App()
         {

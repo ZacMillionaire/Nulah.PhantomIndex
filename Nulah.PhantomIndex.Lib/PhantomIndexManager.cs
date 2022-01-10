@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 
 namespace Nulah.PhantomIndex.Lib
 {
-    public sealed class PhantomIndexDatabase
+    public sealed class PhantomIndexManager
     {
         internal SQLiteAsyncConnection? Connection;
         public ProfileController Profiles;
         public ImageController Images;
 
-        public PhantomIndexDatabase()
+        public PhantomIndexManager()
         {
             Profiles = new ProfileController(this);
-            Profiles = new ImageController(this);
+            Images = new ImageController(this);
         }
 
         public void SetConnection(string connectionString)
@@ -26,6 +26,7 @@ namespace Nulah.PhantomIndex.Lib
             Connection = new SQLiteAsyncConnection(connectionString);
 
             Profiles.Init();
+            Images.Init();
         }
     }
 }

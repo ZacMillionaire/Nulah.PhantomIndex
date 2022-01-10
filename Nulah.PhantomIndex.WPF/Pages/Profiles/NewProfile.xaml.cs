@@ -167,9 +167,9 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
             // Return a task here to ensure the UI is not blocked
             return await Task.Run(async () =>
             {
-                var imageController = new ImageController();
-
-                return await imageController.ResizeImageToWidth(imageSource, 300);
+                return await App.Database.Images
+                    .ResizeImageToWidth(imageSource, 300)
+                    .ConfigureAwait(false);
             });
         }
 
@@ -188,7 +188,12 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
             else
             {
                 _viewModel.PageEnabled = false;
-                var profileManager = await CreateNewProfile(_viewModel.ProfileName, _viewModel.DisplayFirstName, _viewModel.Pronouns, _viewModel.DisplayLastName, _viewModel.ImageBlob);
+                var profileManager = await CreateNewProfile(_viewModel.ProfileName,
+                        _viewModel.DisplayFirstName,
+                        _viewModel.Pronouns,
+                        _viewModel.DisplayLastName,
+                        _viewModel.ImageBlob);
+
                 _viewModel.PageEnabled = true;
             }
         }
@@ -207,7 +212,13 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
             // Return a task here to ensure the UI is not blocked
             return await Task.Run(async () =>
             {
-                return await App.Database.Profiles.Create(profileName, displayFirstname, pronouns, displayLastName, imageBlob);
+                return await App.Database.Profiles
+                    .Create(profileName,
+                        displayFirstname,
+                        pronouns,
+                        displayLastName,
+                        imageBlob)
+                    .ConfigureAwait(false);
             });
         }
     }
