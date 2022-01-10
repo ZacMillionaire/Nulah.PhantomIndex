@@ -28,11 +28,15 @@ namespace Nulah.PhantomIndex.WPF
     public partial class MainWindow : NulahWindow
     {
         public AppViewModel AppViewModel = new();
+        public static Core.Controls.NulahNavigation Navigation;
+
 
         public MainWindow()
         {
             InitializeComponent();
             this.DataContext = AppViewModel;
+
+            Navigation = MainWindowNavigation;
             /*
             var a = typeof(MainWindow).ResolvePageViewFromAssembly("Pages/Profiles/Index");
 

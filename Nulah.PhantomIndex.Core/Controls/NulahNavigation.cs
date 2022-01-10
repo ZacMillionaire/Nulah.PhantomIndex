@@ -119,6 +119,15 @@ namespace Nulah.PhantomIndex.Core.Controls
         {
             base.OnInitialized(e);
         }
+
+        /// <summary>
+        /// Sets the navigation content to the given location
+        /// </summary>
+        /// <param name="pageNavigationUri"></param>
+        public void NavigateToPage(string pageNavigationUri)
+        {
+            LoadPageFromNavigationItem(pageNavigationUri);
+        }
     }
 
     public class NavigationLink : UserControl

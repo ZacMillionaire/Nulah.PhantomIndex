@@ -10,7 +10,7 @@
     <control:NulahWindow.TitleBarControls>
         <Button>Test Title Button</Button>
     </control:NulahWindow.TitleBarControls>
-    <control:NulahNavigation>
+    <control:NulahNavigation x:Name="MainWindowNavigation">
         <control:NulahNavigation.MenuItems>
             <control:NavigationItemCollapsable Icon="GuestUser" Content="Profiles" Expanded="True">
                 <control:NavigationItemCollapsable.MenuItems>
