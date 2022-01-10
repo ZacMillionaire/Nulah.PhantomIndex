@@ -75,13 +75,13 @@ namespace Nulah.PhantomIndex.Core.Controls
             var menuItemsControl = GetTemplateChild("MenuItems") as ItemsControl;
             if (menuItemsControl != null)
             {
-                menuItemsControl.AddHandler(NavigationItemClicked, new RoutedEventHandler(NeedsCleaningEvent));
+                menuItemsControl.AddHandler(NavigationItemClicked, new RoutedEventHandler(ChildNavigationClickEvent));
             }
 
             base.OnApplyTemplate();
         }
 
-        private void NeedsCleaningEvent(object sender, RoutedEventArgs e)
+        private void ChildNavigationClickEvent(object sender, RoutedEventArgs e)
         {
             if (e.OriginalSource is NavigationItem source)
             {
