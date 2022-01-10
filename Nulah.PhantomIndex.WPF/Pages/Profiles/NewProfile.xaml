@@ -15,7 +15,17 @@
     <Page.DataContext>
         <vm:NewProfileViewModel/>
     </Page.DataContext>
-    <ScrollViewer>
+    <ScrollViewer x:Name="NewProfileScrollViewer">
+        <ScrollViewer.Style>
+            <Style TargetType="ScrollViewer">
+                <Setter Property="IsEnabled" Value="True" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding PageEnabled}" Value="False">
+                        <Setter Property="IsEnabled" Value="False" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ScrollViewer.Style>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
@@ -58,6 +68,7 @@
                         <controls:NulahInput Label="Profile Name" Text="{Binding ProfileName}" Hint="All given names for the profile" />
                         <controls:NulahInput Label="Display First Name" Text="{Binding DisplayFirstName}" Hint="Name(s) to use for their first name" />
                         <controls:NulahInput Label="Display Last Name" Text="{Binding DisplayLastName}" Hint="Name(s) to use for their last name" />
+                        <controls:NulahInput Label="Pronouns" Text="{Binding Pronouns}" Hint="Pronouns" />
                     </StackPanel>
                     <StackPanel Grid.Row="1" x:Name="DragDropControl" 
                                 AllowDrop="True"
@@ -80,6 +91,7 @@
                                 </Style.Triggers>
                             </Style>
                         </StackPanel.Style>
+                        <TextBlock Grid.Row="0" FontWeight="Bold">Profile Image</TextBlock>
                         <controls:NulahFileSelector FileSource="{Binding FileName}" Filter="{x:Static images:ImageController.FileDialogSupportedImageFormats}" FileSelected="NulahFileSelector_FileSelected" />
                         <controls:NulahImage x:Name="ImageDropCanvas" />
                     </StackPanel>

@@ -107,8 +107,8 @@ namespace Nulah.PhantomIndex.Core.ViewModels
         private bool _pageEnabled;
         public bool PageEnabled
         {
-            get { return _pageEnabled; }
-            set { _pageEnabled = value; OnPropertyChanged(nameof(PageEnabled)); }
+            get => _pageEnabled;
+            set => NotifyAndSetPropertyIfChanged(ref _pageEnabled, value);
         }
 
         private List<string> _validationErrors;

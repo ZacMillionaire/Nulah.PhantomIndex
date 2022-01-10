@@ -1,5 +1,7 @@
 ﻿using Microsoft.Win32;
 using Nulah.PhantomIndex.Lib.Images;
+using Nulah.PhantomIndex.Lib.Profiles;
+using Nulah.PhantomIndex.Lib.Profiles.Models;
 using Nulah.PhantomIndex.WPF.ViewModels.Profiles;
 using System;
 using System.Collections.Generic;
@@ -31,6 +33,7 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
         {
             InitializeComponent();
             DataContext = _viewModel;
+            _viewModel.PageEnabled = true;
         }
 
         public bool? FileDropValid
@@ -109,6 +112,11 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
             FileDropValid = null;
         }
 
+        /// <summary>
+        /// Handles processing an image source, disabling the page view, and updating the drop canvas source
+        /// </summary>
+        /// <param name="imageSource"></param>
+        /// <returns></returns>
         private async Task ProcessProfileImage(string imageSource)
         {
             if (string.IsNullOrWhiteSpace(imageSource) == true
@@ -117,12 +125,16 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
                 return;
             }
 
+            _viewModel.PageEnabled = false;
+
             var resizedImageBlob = await ResizeImage(imageSource);
 
             _viewModel.ImageBlob = resizedImageBlob;
             _viewModel.FileName = imageSource;
 
             ImageDropCanvas.Source = ImageByteArrayToBitmap(_viewModel.ImageBlob);
+
+            _viewModel.PageEnabled = true;
         }
 
         private BitmapImage ImageByteArrayToBitmap(byte[] imageBlob)
@@ -145,6 +157,11 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
             return image;
         }
 
+        /// <summary>
+        /// Resizes an image file and returns the result
+        /// </summary>
+        /// <param name="imageSource"></param>
+        /// <returns></returns>
         private async Task<byte[]> ResizeImage(string imageSource)
         {
             // Return a task here to ensure the UI is not blocked
@@ -161,11 +178,37 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
             await ProcessProfileImage(selectedFile);
         }
 
-        private void CreateProfile_Click(object sender, RoutedEventArgs e)
+        private async void CreateProfile_Click(object sender, RoutedEventArgs e)
         {
             var viewModelValid = _viewModel.Validate();
+            if (viewModelValid == false)
+            {
+                NewProfileScrollViewer.ScrollToTop();
+            }
+            else
+            {
+                _viewModel.PageEnabled = false;
+                var profileManager = await CreateNewProfile(_viewModel.ProfileName, _viewModel.DisplayFirstName, _viewModel.Pronouns, _viewModel.DisplayLastName, _viewModel.ImageBlob);
+                _viewModel.PageEnabled = true;
+            }
+        }
+
+        /// <summary>
+        /// Creates a new profile and returns the result
+        /// </summary>
+        /// <param name="profileName"></param>
+        /// <param name="displayFirstname"></param>
+        /// <param name="pronouns"></param>
+        /// <param name="displayLastName"></param>
+        /// <param name="imageBlob"></param>
+        /// <returns></returns>
+        private async Task<Profile> CreateNewProfile(string profileName, string displayFirstname, string pronouns, string? displayLastName = null, byte[]? imageBlob = null)
+        {
+            // Return a task here to ensure the UI is not blocked
+            return await Task.Run(async () =>
+            {
+                return await App.Database.Profiles.Create(profileName, displayFirstname, pronouns, displayLastName, imageBlob);
+            });
         }
     }
-
-
 }

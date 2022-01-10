@@ -3,5 +3,5 @@
     xmlns:System="clr-namespace:System;assembly=System.Runtime">
     <SolidColorBrush x:Key="DefaultFontColour" Color="#FF40006F"/>
     <System:Double x:Key="FontSizeNormal">14</System:Double>
-
+    
 </ResourceDictionary>

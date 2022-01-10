@@ -13,10 +13,16 @@ namespace Nulah.PhantomIndex.Lib.Images
     public class ImageController
     {
         public readonly static string FileDialogSupportedImageFormats;
+        private readonly PhantomIndexDatabase _database;
 
         static ImageController()
         {
             FileDialogSupportedImageFormats = GetSupportedFileDialogFilterString();
+        }
+
+        public ImageController(PhantomIndexDatabase phantomIndexDatabase)
+        {
+            _database = phantomIndexDatabase;
         }
 
         /// <summary>
@@ -37,27 +43,6 @@ namespace Nulah.PhantomIndex.Lib.Images
         public static bool IsValidImageFormat(byte[] imageBlob)
         {
             return Image.Identify(imageBlob) != null;
-        }
-
-        /// <summary>
-        /// Returns a filter string for use with FileDialog filters
-        /// </summary>
-        /// <returns></returns>
-        private static string GetSupportedFileDialogFilterString()
-        {
-            // Return the previous filter string if we've already retrieved it once before
-            if (string.IsNullOrWhiteSpace(FileDialogSupportedImageFormats) == false)
-            {
-                return FileDialogSupportedImageFormats;
-            }
-
-            return string.Join("|", Configuration.Default.ImageFormats
-                .Select(x => new
-                {
-                    Name = x.Name,
-                    Extensions = string.Join(";", x.FileExtensions.Select(y => $"*.{y}"))
-                })
-                .Select(x => $"{x.Name} ({x.Extensions})|{x.Extensions}"));
         }
 
         /// <summary>
@@ -93,6 +78,40 @@ namespace Nulah.PhantomIndex.Lib.Images
             }
         }
 
+        /// <summary>
+        /// Returns a filter string for use with FileDialog filters
+        /// </summary>
+        /// <returns></returns>
+        private static string GetSupportedFileDialogFilterString()
+        {
+            // Return the previous filter string if we've already retrieved it once before
+            if (string.IsNullOrWhiteSpace(FileDialogSupportedImageFormats) == false)
+            {
+                return FileDialogSupportedImageFormats;
+            }
+
+            return string.Join("|", Configuration.Default.ImageFormats
+                .Select(x => new
+                {
+                    Name = x.Name,
+                    Extensions = string.Join(";", x.FileExtensions.Select(y => $"*.{y}"))
+                })
+                .Select(x => $"{x.Name} ({x.Extensions})|{x.Extensions}"));
+        }
+
+        /// <summary>
+        /// Determines the new size of an image to fit the target width.
+        /// <para>
+        /// If the <paramref name="originalWidth"/> is larger than <paramref name="targetWidth"/>, <paramref name="originalHeight"/> will be scaled to the required ratio.
+        /// </para>
+        /// <para>
+        /// Images that are already smaller than the <paramref name="targetWidth"/> will be unchanged
+        /// </para>
+        /// </summary>
+        /// <param name="targetWidth"></param>
+        /// <param name="originalWidth"></param>
+        /// <param name="originalHeight"></param>
+        /// <returns></returns>
         private Size CalculateImageResize(int targetWidth, int originalWidth, int originalHeight)
         {
             if (targetWidth <= originalWidth)

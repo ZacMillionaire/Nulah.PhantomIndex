@@ -11,7 +11,12 @@ namespace Nulah.PhantomIndex.WPF.ViewModels.Profiles
     public class NewProfileViewModel : ViewModelBase
     {
 
-        private string _profileName;
+        private string _profileName = string.Empty;
+        private string _displayFirstName = string.Empty;
+        private string? _displayLastName;
+        private string? _fileName;
+        private byte[]? _imageBlob;
+        private string _pronouns = "They/Them";
 
         /// <summary>
         /// Required for a new profile
@@ -23,8 +28,6 @@ namespace Nulah.PhantomIndex.WPF.ViewModels.Profiles
             set => NotifyAndSetPropertyIfChanged(ref _profileName, value);
         }
 
-        private string _displayFirstName;
-
         [Required(ErrorMessage = "A name to display for first name is required")]
         public string DisplayFirstName
         {
@@ -32,7 +35,6 @@ namespace Nulah.PhantomIndex.WPF.ViewModels.Profiles
             set => NotifyAndSetPropertyIfChanged(ref _displayFirstName, value);
         }
 
-        private string _displayLastName;
 
         public string DisplayLastName
         {
@@ -40,20 +42,22 @@ namespace Nulah.PhantomIndex.WPF.ViewModels.Profiles
             set => NotifyAndSetPropertyIfChanged(ref _displayLastName, value);
         }
 
-        private string _fileName;
-
         public string FileName
         {
             get => _fileName;
             set => NotifyAndSetPropertyIfChanged(ref _fileName, value);
         }
 
-        private byte[] _imageBlob;
-
         public byte[] ImageBlob
         {
             get => _imageBlob;
             set => NotifyAndSetPropertyIfChanged(ref _imageBlob, value);
+        }
+
+        public string Pronouns
+        {
+            get => _pronouns;
+            set => NotifyAndSetPropertyIfChanged(ref _pronouns, value);
         }
     }
 }
