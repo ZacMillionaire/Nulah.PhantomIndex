@@ -7,7 +7,7 @@
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="{x:Type local:NulahImage}" BasedOn="{StaticResource {x:Type UserControl}}">
-        <Setter Property="BorderBrush" Value="{StaticResource DefaultBorderBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource DefaultBackgroundMainBrush}" />
         <Setter Property="Background" Value="{StaticResource DefaultGradientBrush}" />
         <Setter Property="Size" Value="300" />
         <Setter Property="Template">

@@ -11,7 +11,7 @@
     <System:Double x:Key="NavigationMinWidth">150</System:Double>
     <System:Double x:Key="NavigationItemHeight">36</System:Double>
     <System:Double x:Key="NavigationSeparatorHeight">9</System:Double>
-
+    
 
     <Style TargetType="{x:Type local:NulahNavigation}" BasedOn="{StaticResource {x:Type UserControl}}">
         <Setter Property="Template">
@@ -22,10 +22,10 @@
                             <ColumnDefinition MinWidth="{StaticResource NavigationMinWidth}" Width="auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Grid Grid.Column="0" x:Name="MenuItemGrid">
+                        <Grid Grid.Column="0" x:Name="MenuItemGrid" Background="{StaticResource DefaultBackgroundBrush}">
                             <ItemsControl x:Name="MenuItems" ItemsSource="{TemplateBinding MenuItems}" />
                         </Grid>
-                        <Frame Grid.Column="1" x:Name="NavigationContent" NavigationUIVisibility="Hidden"/>
+                        <Frame BorderBrush="{StaticResource DefaultBackgroundMainBrush}" BorderThickness="2,0,0,0" Grid.Column="1" x:Name="NavigationContent" NavigationUIVisibility="Hidden"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -70,7 +70,7 @@
                             <Style TargetType="local:NavigationLink">
                                 <Style.Resources>
                                     <Style TargetType="Border">
-                                        <Setter Property="Background" Value="BurlyWood"/>
+                                        <Setter Property="Background" Value="Transparent"/>
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
                                                 <Setter Property="Background"  Value="AliceBlue"/>

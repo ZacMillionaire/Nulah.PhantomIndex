@@ -11,11 +11,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Icons\check_confirm.png" />
     <None Remove="Icons\logo.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Icons\logo.ico" />
+    <Resource Include="Icons\check_confirm.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Icons\logo.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -35,6 +39,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Icons\check_confirm.aseprite">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
     <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

@@ -188,6 +188,7 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
             else
             {
                 _viewModel.PageEnabled = false;
+
                 var profileManager = await CreateNewProfile(_viewModel.ProfileName,
                         _viewModel.DisplayFirstName,
                         _viewModel.Pronouns,

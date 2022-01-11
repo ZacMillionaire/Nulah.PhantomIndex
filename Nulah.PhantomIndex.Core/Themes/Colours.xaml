@@ -2,7 +2,9 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:System="clr-namespace:System;assembly=System.Runtime">
 
-    <SolidColorBrush x:Key="DefaultBorderBrush" Color="#FF40006F"/>
+    <SolidColorBrush x:Key="DefaultBackgroundMainBrush" Color="#FF40006F"/>
+    <SolidColorBrush x:Key="DefaultBackgroundBrush" Color="#FF825E9C"/>
+    <SolidColorBrush x:Key="DefaultForegroundBrushLight" Color="White"/>
     <LinearGradientBrush x:Key="DefaultGradientBrush" EndPoint="0.5,1" StartPoint="0.5,0">
         <GradientStop Color="#FFB266C8" Offset="1"/>
         <GradientStop Color="#FFF8E8FD" Offset="0"/>
