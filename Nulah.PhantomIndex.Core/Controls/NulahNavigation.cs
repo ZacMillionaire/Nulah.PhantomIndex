@@ -43,6 +43,7 @@ namespace Nulah.PhantomIndex.Core.Controls
         public NulahNavigation()
         {
             MenuItems = new();
+            FooterMenuItems = new();
         }
 
         public List<NavigationLink> MenuItems
@@ -53,30 +54,34 @@ namespace Nulah.PhantomIndex.Core.Controls
 
         // Using a DependencyProperty as the backing store for MenuItems.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty MenuItemsProperty =
-            DependencyProperty.Register("MenuItems", typeof(List<NavigationLink>), typeof(NulahNavigation), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(MenuItems), typeof(List<NavigationLink>), typeof(NulahNavigation), new PropertyMetadata(null));
+
+
+
+        public List<NavigationLink> FooterMenuItems
+        {
+            get { return (List<NavigationLink>)GetValue(FooterMenuItemsProperty); }
+            set { SetValue(FooterMenuItemsProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for FooterMenuItems.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty FooterMenuItemsProperty =
+            DependencyProperty.Register(nameof(FooterMenuItems), typeof(List<NavigationLink>), typeof(NulahNavigation), new PropertyMetadata(null));
+
+
 
         private Frame _navigationFrame;
 
         public override void OnApplyTemplate()
         {
-            //var menuItems = GetTemplateChild("MenuItems") as ItemsControl;
-
-            //if (menuItems != null)
-            //{
-            //    //menuItems.SelectionChanged += SelectedItemChanged;
-            //}
-
             var navigationFrame = GetTemplateChild("NavigationContent") as Frame;
             if (navigationFrame != null)
             {
                 _navigationFrame = navigationFrame;
             }
 
-            var menuItemsControl = GetTemplateChild("MenuItems") as ItemsControl;
-            if (menuItemsControl != null)
-            {
-                menuItemsControl.AddHandler(NavigationItemClicked, new RoutedEventHandler(ChildNavigationClickEvent));
-            }
+            // Register the routed event for NavigationItems to the entire control
+            AddHandler(NavigationItemClicked, new RoutedEventHandler(ChildNavigationClickEvent));
 
             base.OnApplyTemplate();
         }
