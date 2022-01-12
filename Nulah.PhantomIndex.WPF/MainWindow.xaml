@@ -32,5 +32,8 @@
             </control:NavigationItemCollapsable>
             <control:NavigationHeader Icon="Accident">Header 2</control:NavigationHeader>
         </control:NulahNavigation.MenuItems>
+        <control:NulahNavigation.FooterMenuItems>
+            <control:NavigationItem Tag="Pages/Settings/Index" Icon="Setting">Settings</control:NavigationItem>
+        </control:NulahNavigation.FooterMenuItems>
     </control:NulahNavigation>
 </control:NulahWindow>

@@ -131,8 +131,7 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
 
             _viewModel.ImageBlob = resizedImageBlob;
             _viewModel.FileName = imageSource;
-
-            ImageDropCanvas.Source = ImageByteArrayToBitmap(_viewModel.ImageBlob);
+            _viewModel.ProfileImage = ImageByteArrayToBitmap(_viewModel.ImageBlob);
 
             _viewModel.PageEnabled = true;
         }
@@ -187,15 +186,13 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
             }
             else
             {
-                _viewModel.PageEnabled = false;
-
                 var profileManager = await CreateNewProfile(_viewModel.ProfileName,
                         _viewModel.DisplayFirstName,
                         _viewModel.Pronouns,
                         _viewModel.DisplayLastName,
                         _viewModel.ImageBlob);
 
-                _viewModel.PageEnabled = true;
+                ShowHideDialog(true);
             }
         }
 
@@ -221,6 +218,24 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
                         imageBlob)
                     .ConfigureAwait(false);
             });
+        }
+
+        /// <summary>
+        /// Shows or hides the dialog, and sets the <see cref="Core.ViewModels.ViewModelBase.PageEnabled"/> as appropriate
+        /// </summary>
+        /// <param name="showDialog"></param>
+        private void ShowHideDialog(bool showDialog = true)
+        {
+            // Enabling the page is the inverse of showing the dialog.
+            // If the dialog is shown, the page is disabled 
+            _viewModel.PageEnabled = !showDialog;
+            OverlayDialog.Visibility = showDialog ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void CloseDialog_Click(object sender, RoutedEventArgs e)
+        {
+            ShowHideDialog(false);
+            _viewModel.Reset();
         }
     }
 }

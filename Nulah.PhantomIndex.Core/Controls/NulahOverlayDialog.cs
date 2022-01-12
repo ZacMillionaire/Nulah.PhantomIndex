@@ -10,6 +10,20 @@ namespace Nulah.PhantomIndex.Core.Controls
 {
     public class NulahOverlayDialog : UserControl
     {
+
+
+        public bool ClosesOnBackgroundClick
+        {
+            get { return (bool)GetValue(ClosesOnBackgroundClickProperty); }
+            set { SetValue(ClosesOnBackgroundClickProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ClosesOnBackgroundClick.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ClosesOnBackgroundClickProperty =
+            DependencyProperty.Register(nameof(ClosesOnBackgroundClick), typeof(bool), typeof(NulahOverlayDialog), new PropertyMetadata(false));
+
+
+
         public NulahOverlayDialog()
             : base()
         {
@@ -37,6 +51,10 @@ namespace Nulah.PhantomIndex.Core.Controls
         {
             if (e.OriginalSource == _backingDialogPanel)
             {
+                if (ClosesOnBackgroundClick == false)
+                {
+                    return;
+                }
                 Visibility = Visibility.Collapsed;
             }
         }

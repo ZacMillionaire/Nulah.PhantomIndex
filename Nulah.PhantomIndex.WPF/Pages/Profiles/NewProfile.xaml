@@ -10,22 +10,30 @@
       xmlns:sys="clr-namespace:System;assembly=mscorlib"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="NewProfile">
+      Title="NewProfile"
+      d:SnapsToDevicePixels="True"
+      d:UseLayoutRounding="True">
     <Page.DataContext>
         <vm:NewProfileViewModel/>
     </Page.DataContext>
     <Grid>
-        <controls:NulahOverlayDialog x:Name="Dialog">
+        <controls:NulahOverlayDialog x:Name="OverlayDialog" Visibility="Collapsed">
             <Grid Margin="15" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Image Grid.Column="0" Width="44" Height="44" Source="/Icons/check_confirm.png" Stretch="None" />
-                <TextBlock VerticalAlignment="Center" Grid.Column="1" Padding="5,0" FontSize="{StaticResource FontSizeLarge}" FontWeight="Bold">Profile created</TextBlock>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Image Grid.Row="0" Grid.Column="0" Width="44" Height="44" Source="/Icons/check_confirm.png" Stretch="None" />
+                <TextBlock Grid.Row="0" VerticalAlignment="Center" Grid.Column="1" Padding="5,0" FontSize="{StaticResource FontSizeLarge}" FontWeight="Bold">Profile created</TextBlock>
+                <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource NulahButtonGeneric}" x:Name="CloseDialog" Click="CloseDialog_Click">Ok</Button>
             </Grid>
         </controls:NulahOverlayDialog>
-        <ScrollViewer x:Name="NewProfileScrollViewer">
+        <ScrollViewer x:Name="NewProfileScrollViewer"
+      IsEnabled="{Binding PageEnabled}">
             <ScrollViewer.Style>
                 <Style TargetType="ScrollViewer">
                     <Setter Property="IsEnabled" Value="True" />
@@ -103,7 +111,7 @@
                             </StackPanel.Style>
                             <TextBlock Grid.Row="0" FontWeight="Bold">Profile Image</TextBlock>
                             <controls:NulahFileSelector FileSource="{Binding FileName}" Filter="{x:Static images:ImageController.FileDialogSupportedImageFormats}" FileSelected="NulahFileSelector_FileSelected" />
-                            <controls:NulahImage x:Name="ImageDropCanvas" />
+                            <controls:NulahImage x:Name="ImageDropCanvas" Source="{Binding ProfileImage}" />
                         </StackPanel>
                         <Button Click="CreateProfile_Click" x:Name="CreateProfile" Grid.Row="2">Create Profile</Button>
                     </Grid>
