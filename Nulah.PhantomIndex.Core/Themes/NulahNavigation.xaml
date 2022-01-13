@@ -32,7 +32,7 @@
                             </ScrollViewer>
                             <ItemsControl Grid.Row="1"  x:Name="FooterMenuItems" ItemsSource="{TemplateBinding FooterMenuItems}" />
                         </Grid>
-                        <Frame BorderBrush="{StaticResource DefaultBackgroundMainBrush}" BorderThickness="2,0,0,0" Grid.Column="1" x:Name="NavigationContent" NavigationUIVisibility="Hidden"/>
+                        <Border BorderBrush="{StaticResource DefaultBackgroundMainBrush}" BorderThickness="2,0,0,0" Grid.Column="1" x:Name="NavigationContent"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

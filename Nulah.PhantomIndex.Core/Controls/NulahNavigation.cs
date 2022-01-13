@@ -70,12 +70,11 @@ namespace Nulah.PhantomIndex.Core.Controls
 
 
 
-        private Frame _navigationFrame;
+        private Border _navigationFrame;
 
         public override void OnApplyTemplate()
         {
-            var navigationFrame = GetTemplateChild("NavigationContent") as Frame;
-            if (navigationFrame != null)
+            if (GetTemplateChild("NavigationContent") is Border navigationFrame)
             {
                 _navigationFrame = navigationFrame;
             }
@@ -94,20 +93,34 @@ namespace Nulah.PhantomIndex.Core.Controls
             }
         }
 
+        // future potential usercontrol caching
+        //private Dictionary<string, UserControl> _navigationCache = new();
+
         private void LoadPageFromNavigationItem(string navigationItemTag)
         {
             var pageViewFromAssembly = Assembly.GetEntryAssembly().ResolvePageViewFromAssembly(navigationItemTag);
 
+            /*
+            // future potential usercontrol caching
+            if (_navigationCache.ContainsKey(navigationItemTag))
+            {
+                _navigationFrame.Child = _navigationCache[navigationItemTag];
+                return;
+            }
+            */
             if (pageViewFromAssembly.PageView != null)
             {
-                var pageView = PageViewResolver.GetActivatedPageViewByParameters(pageViewFromAssembly.PageView, pageViewFromAssembly.PageViewParameters);
+                var pageView = PageViewResolver.GetActivatedPageViewByParameters<UserControl>(pageViewFromAssembly.PageView, pageViewFromAssembly.PageViewParameters);
 
                 if (pageView != null)
                 {
                     // Ensure the page correctly inherits snapping and layout rounding
                     pageView.SnapsToDevicePixels = this.SnapsToDevicePixels;
                     pageView.UseLayoutRounding = this.UseLayoutRounding;
-                    _navigationFrame.Navigate(pageView);
+
+                    _navigationFrame.Child = pageView;
+                    // future potential usercontrol caching
+                    //_navigationCache.Add(navigationItemTag, pageView);
                 }
                 else
                 {

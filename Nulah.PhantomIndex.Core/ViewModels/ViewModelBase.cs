@@ -127,6 +127,7 @@ namespace Nulah.PhantomIndex.Core.ViewModels
         /// </summary>
         protected virtual void OnDispose()
         {
+            PropertyChanged = null;
         }
 
         private bool _pageEnabled;

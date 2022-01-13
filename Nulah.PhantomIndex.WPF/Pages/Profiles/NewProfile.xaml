@@ -1,4 +1,4 @@
-﻿<Page x:Class="Nulah.PhantomIndex.WPF.Pages.Profiles.NewProfile"
+﻿<UserControl x:Class="Nulah.PhantomIndex.WPF.Pages.Profiles.NewProfile"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -10,12 +10,11 @@
       xmlns:sys="clr-namespace:System;assembly=mscorlib"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="NewProfile"
       d:SnapsToDevicePixels="True"
       d:UseLayoutRounding="True">
-    <Page.DataContext>
+    <UserControl.DataContext>
         <vm:NewProfileViewModel/>
-    </Page.DataContext>
+    </UserControl.DataContext>
     <Grid>
         <controls:NulahOverlayDialog x:Name="OverlayDialog" Visibility="Collapsed">
             <Grid Margin="15" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -119,4 +118,4 @@
             </Grid>
         </ScrollViewer>
     </Grid>
-</Page>
+</UserControl>

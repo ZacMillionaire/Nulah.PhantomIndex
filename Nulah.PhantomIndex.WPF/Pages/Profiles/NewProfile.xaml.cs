@@ -25,7 +25,7 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
     /// <summary>
     /// Interaction logic for NewProfile.xaml
     /// </summary>
-    public partial class NewProfile : Page, INotifyPropertyChanged
+    public partial class NewProfile : UserControl, INotifyPropertyChanged
     {
         public NewProfileViewModel _viewModel = new();
 

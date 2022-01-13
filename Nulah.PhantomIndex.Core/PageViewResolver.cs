@@ -41,12 +41,8 @@ namespace Nulah.PhantomIndex.Core
 
             return (view, pageviewParameters);
         }
-        public static Page GetActivatedPageViewByParameters(Type pageViewType, string[] pageViewParameters)
-        {
-            return GetActivatedPageViewByParameters<Page>(pageViewType, pageViewParameters);
-        }
 
-        public static T GetActivatedPageViewByParameters<T>(Type pageViewType, string[] pageViewParameters) where T : Page
+        public static T GetActivatedPageViewByParameters<T>(Type pageViewType, string[] pageViewParameters)
         {
             if (pageViewParameters == null || pageViewParameters.Length == 0)
             {
