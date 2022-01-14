@@ -29,27 +29,6 @@ namespace Nulah.PhantomIndex.WPF.ViewModels.Profiles
             get => _profiles;
             set => NotifyAndSetPropertyIfChanged(ref _profiles, value);
         }
-
-        public ProfileIndexViewModel()
-        {
-            _profiles = new List<ProfileInfoShort>()
-            {
-                new ProfileInfoShort
-                {
-                    DisplayName = "Default",
-                    ProfileName = "Default",
-                    Id = Guid.NewGuid(),
-                    Pronouns = "They/Them"
-                },
-                new ProfileInfoShort
-                {
-                    DisplayName = "Default",
-                    ProfileName = "Default",
-                    Id = Guid.NewGuid(),
-                    Pronouns = "They/Them"
-                }
-            };
-        }
     }
 
     public class ProfileInfoShort

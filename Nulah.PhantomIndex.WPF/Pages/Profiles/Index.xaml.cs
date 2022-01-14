@@ -30,6 +30,7 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
 
             Task.Run(async () =>
             {
+                //System.Threading.Thread.Sleep(50);
                 _viewModel.Profiles = (await App.Database.Profiles.GetProfiles())
                 .Select(x => new ProfileInfoShort
                 {
@@ -42,6 +43,8 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
                     ImageBlob = x.ImageBlob
                 })
                 .ToList();
+
+                _viewModel.PageEnabled = true;
             });
         }
 

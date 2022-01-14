@@ -5,5 +5,8 @@
     <System:Double x:Key="FontSizeNormal">14</System:Double>
     <System:Double x:Key="FontSizeLarge">28</System:Double>
     <System:Double x:Key="FontSizeExtraLarge">52</System:Double>
-    
+    <Color x:Key="LoadingComplete">#FFA7FFBD</Color>
+    <Color x:Key="LoadingDark">#FF7458FF</Color>
+    <Color x:Key="LoadingLight">#FF9389C7</Color>
+
 </ResourceDictionary>

@@ -13,13 +13,42 @@
     </UserControl.DataContext>
     <UserControl.Resources>
         <DataTemplate x:Key="NameDataStyle" DataType="{x:Type vm:ProfileInfoShort}">
-            <Grid>
+            <Grid Margin="5" VerticalAlignment="Center" Background="Transparent">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <controls:NulahImage Grid.Column="0" BackgroundColour="{Binding ProfileColour}" BorderColour="{Binding ProfileColour}" x:Name="ProfileImage" Size="50" />
-                <TextBlock x:Name="Name" d:Text="Display Name" Grid.Column="1" Text="{Binding DisplayName}" FontSize="{StaticResource FontSizeNormal}" Foreground="Black"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <controls:NulahImage BackgroundColour="{Binding ProfileColour}" VerticalAlignment="Center" BorderColour="{Binding ProfileColour}" x:Name="ProfileImage" Size="60"  Grid.Column="0" Grid.RowSpan="2"/>
+                <TextBlock x:Name="DisplayName" Padding="5,0" Grid.Column="1" Grid.Row="0" d:Text="Display Name" VerticalAlignment="Bottom" Text="{Binding DisplayName}" FontSize="{StaticResource FontSizeLarge}" Foreground="Black"/>
+                <TextBlock x:Name="Pronouns" Padding="15,0" Grid.Column="1" Grid.Row="1" d:Text="They/Them" VerticalAlignment="Top" Text="{Binding Pronouns}" FontSize="{StaticResource FontSizeNormal}" Foreground="Gray"/>
+                <Grid.Style>
+                    <Style TargetType="Grid">
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard x:Name="MouseOverEnter" HandoffBehavior="Compose">
+                                        <Storyboard>
+                                            <ThicknessAnimation To="15,5,5,5" Duration="00:00:00.1" Storyboard.TargetProperty="Margin"/>
+                                            <ColorAnimation To="#FFE8E8E8" Duration="00:00:00.1" Storyboard.TargetProperty="(Panel.Background).Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard HandoffBehavior="Compose">
+                                        <Storyboard>
+                                            <ThicknessAnimation To="5" Duration="00:00:00.1" Storyboard.TargetProperty="Margin"/>
+                                            <ColorAnimation To="Transparent" Duration="00:00:00.1" Storyboard.TargetProperty="(Panel.Background).Color"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Grid.Style>
             </Grid>
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=(local:LazyScrollViewer.IsInViewport)}" Value="True">
@@ -37,11 +66,45 @@
         <TextBlock Grid.Row="0" FontWeight="bold">Index page</TextBlock>
         <TextBlock Grid.Row="1" Text="{Binding PageName}" d:Text="Page Name"/>
         <Border Grid.Row="2">
-            <ItemsControl ItemsSource="{Binding Profiles}" ItemTemplate="{StaticResource NameDataStyle}">
+            <ItemsControl x:Name="lll" ItemsSource="{Binding Profiles}" ItemTemplate="{StaticResource NameDataStyle}" IsEnabled="{Binding PageEnabled}">
                 <ItemsControl.Template>
                     <ControlTemplate>
                         <local:LazyScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                            <StackPanel IsItemsHost="True"/>
+                            <StackPanel x:Name="LazyViewItemHost" IsItemsHost="True" Background="Transparent">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Trigger.EnterActions>
+                                                    <BeginStoryboard x:Name="LoadingAnimation" HandoffBehavior="Compose">
+                                                        <Storyboard Storyboard.TargetProperty="(StackPanel.Background).Color">
+                                                            <ColorAnimationUsingKeyFrames Duration="00:00:00.5">
+                                                                <EasingColorKeyFrame KeyTime="00:00:00" Value="Transparent"/>
+                                                                <EasingColorKeyFrame KeyTime="00:00:00.5" Value="{StaticResource LoadingLight}"/>
+                                                            </ColorAnimationUsingKeyFrames>
+                                                            <ColorAnimationUsingKeyFrames BeginTime="00:00:00.5" Duration="00:00:02" RepeatBehavior="Forever" AutoReverse="True">
+                                                                <EasingColorKeyFrame KeyTime="00:00:00" Value="{StaticResource LoadingLight}"/>
+                                                                <EasingColorKeyFrame KeyTime="00:00:02" Value="{StaticResource LoadingDark}"/>
+                                                            </ColorAnimationUsingKeyFrames>
+                                                        </Storyboard>
+                                                    </BeginStoryboard>
+                                                </Trigger.EnterActions>
+                                                <Trigger.ExitActions>
+                                                    <StopStoryboard BeginStoryboardName="LoadingAnimation"/>
+                                                    <BeginStoryboard HandoffBehavior="Compose">
+                                                        <Storyboard Storyboard.TargetProperty="Opacity">
+                                                            <DoubleAnimation From="0" To="1" Duration="00:00:00.25"/>
+                                                        </Storyboard>
+                                                        <!--<Storyboard Storyboard.TargetProperty="(StackPanel.Background).Color">
+                                                            <ColorAnimation From="{StaticResource LoadingComplete}" To="Transparent" Duration="00:00:00.5"/>
+                                                        </Storyboard>-->
+                                                    </BeginStoryboard>
+                                                </Trigger.ExitActions>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                            </StackPanel>
                         </local:LazyScrollViewer>
                     </ControlTemplate>
                 </ItemsControl.Template>
