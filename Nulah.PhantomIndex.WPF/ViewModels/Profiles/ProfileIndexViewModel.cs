@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace Nulah.PhantomIndex.WPF.ViewModels.Profiles
@@ -28,19 +29,65 @@ namespace Nulah.PhantomIndex.WPF.ViewModels.Profiles
             get => _profiles;
             set => NotifyAndSetPropertyIfChanged(ref _profiles, value);
         }
+
+        public ProfileIndexViewModel()
+        {
+            _profiles = new List<ProfileInfoShort>()
+            {
+                new ProfileInfoShort
+                {
+                    DisplayName = "Default",
+                    ProfileName = "Default",
+                    Id = Guid.NewGuid(),
+                    Pronouns = "They/Them"
+                },
+                new ProfileInfoShort
+                {
+                    DisplayName = "Default",
+                    ProfileName = "Default",
+                    Id = Guid.NewGuid(),
+                    Pronouns = "They/Them"
+                }
+            };
+        }
     }
+
     public class ProfileInfoShort
     {
         public Guid Id { get; set; }
-        public string DisplayName { get; set; }
-        public string Pronouns { get; set; }
-        public BitmapImage ProfileImage { get; set; }
-        public string DisplayName1
+        public string ProfileName { get; set; } = string.Empty;
+        public string DisplayName { get; set; } = string.Empty;
+        public string Pronouns { get; set; } = string.Empty;
+        public byte[]? ImageBlob { get; set; }
+
+        private Color? _profileColour;
+        public Color? ProfileColour
         {
             get
             {
-                return "asdf";
+                if (_profileColour == null)
+                {
+                    var guidId = Id.ToByteArray();
+                    _profileColour = Color.FromRgb(guidId[3], guidId[5], guidId[7]);
+                }
+
+                return _profileColour;
             }
         }
+
+        private BitmapImage? _profileImage;
+
+        public BitmapImage? ProfileImage
+        {
+            get
+            {
+                if (_profileImage == null && ImageBlob != null)
+                {
+                    _profileImage = Helpers.ImageByteArrayToBitmap(ImageBlob);
+                }
+                return _profileImage;
+            }
+        }
+
     }
 }

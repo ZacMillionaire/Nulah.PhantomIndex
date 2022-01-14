@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Nulah.PhantomIndex.Lib.Images.Models
 {
     [Table("Image_Resource")]
-    public class Image_Resource
+    public class Image_ResourceTable
     {
         [Indexed]
         public Guid ImageId { get; set; }

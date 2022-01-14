@@ -131,29 +131,9 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
 
             _viewModel.ImageBlob = resizedImageBlob;
             _viewModel.FileName = imageSource;
-            _viewModel.ProfileImage = ImageByteArrayToBitmap(_viewModel.ImageBlob);
+            _viewModel.ProfileImage = Helpers.ImageByteArrayToBitmap(_viewModel.ImageBlob);
 
             _viewModel.PageEnabled = true;
-        }
-
-        private BitmapImage ImageByteArrayToBitmap(byte[] imageBlob)
-        {
-            var image = new BitmapImage();
-
-            using (var mem = new MemoryStream(imageBlob))
-            {
-                mem.Position = 0;
-                image.BeginInit();
-
-                image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
-                image.CacheOption = BitmapCacheOption.OnLoad;
-                image.StreamSource = mem;
-
-                image.EndInit();
-            }
-
-            image.Freeze();
-            return image;
         }
 
         /// <summary>
@@ -205,7 +185,7 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
         /// <param name="displayLastName"></param>
         /// <param name="imageBlob"></param>
         /// <returns></returns>
-        private async Task<Profile> CreateNewProfile(string profileName, string displayFirstname, string pronouns, string? displayLastName = null, byte[]? imageBlob = null)
+        private async Task<ProfileTable> CreateNewProfile(string profileName, string displayFirstname, string pronouns, string? displayLastName = null, byte[]? imageBlob = null)
         {
             // Return a task here to ensure the UI is not blocked
             return await Task.Run(async () =>

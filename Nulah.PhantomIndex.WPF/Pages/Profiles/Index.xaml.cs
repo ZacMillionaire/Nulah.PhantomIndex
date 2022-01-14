@@ -21,33 +21,28 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
     /// </summary>
     public partial class Index : UserControl
     {
-        public ProfileIndexViewModel _viewModel;
+        public ProfileIndexViewModel _viewModel = new();
 
         public Index()
         {
             InitializeComponent();
-            using (_viewModel = new())
+            DataContext = _viewModel;
+
+            Task.Run(async () =>
             {
-                var Profiles = new List<ProfileInfoShort>();
-                for (var i = 0; i < 100; i++)
+                _viewModel.Profiles = (await App.Database.Profiles.GetProfiles())
+                .Select(x => new ProfileInfoShort
                 {
-                    Profiles.Add(new ProfileInfoShort()
-                    {
-                        Id = Guid.NewGuid(),
-                        DisplayName = $"Display Name {i}",
-                        Pronouns = "They/Them"
-                    });
-                }
-
-                _viewModel.Profiles = Profiles;
-                DataContext = _viewModel;
-            }
-            Unloaded += Index_Unloaded;
-        }
-
-        private void Index_Unloaded(object sender, RoutedEventArgs e)
-        {
-            _viewModel.Dispose();
+                    Id = x.Id,
+                    ProfileName = x.Name,
+                    DisplayName = string.IsNullOrWhiteSpace(x.DisplayLastName)
+                        ? $"{x.DisplayFirstName}"
+                        : $"{x.DisplayFirstName} {x.DisplayLastName}",
+                    Pronouns = x.Pronouns,
+                    ImageBlob = x.ImageBlob
+                })
+                .ToList();
+            });
         }
 
         public Index(string viewParameters) : this()

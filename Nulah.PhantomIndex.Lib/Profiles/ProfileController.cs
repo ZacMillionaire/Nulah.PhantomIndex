@@ -16,19 +16,23 @@ namespace Nulah.PhantomIndex.Lib.Profiles
         {
         }
 
+        internal string ProfileTableName;
+
         internal override void Init()
         {
             base.Init();
 
             // Create tables required for this controller
             Task.Run(() => PhantomIndexManager.Connection
-                !.CreateTableAsync<Profile>()
+                !.CreateTableAsync<ProfileTable>()
                 .ConfigureAwait(false));
+
+            ProfileTableName = ((TableAttribute)typeof(ProfileTable).GetCustomAttributes(typeof(TableAttribute), false).FirstOrDefault(new TableAttribute("Profile"))).Name;
         }
 
-        public async Task<Profile> Create(string profileName, string displayFirstname, string pronouns, string? displayLastName = null, byte[]? imageBlob = null)
+        public async Task<ProfileTable> Create(string profileName, string displayFirstname, string pronouns, string? displayLastName = null, byte[]? imageBlob = null)
         {
-            var newProfile = new Profile
+            var newProfile = new ProfileTable
             {
                 DisplayFirstName = displayFirstname,
                 DisplayLastName = displayLastName,
@@ -45,15 +49,45 @@ namespace Nulah.PhantomIndex.Lib.Profiles
             {
                 if (imageBlob != null)
                 {
-                    ImageResource profileImage = await PhantomIndexManager.Images
-                        .SaveImageForResource(newProfile.Id, imageBlob, nameof(Profile))
+                    ImageResourceTable profileImage = await PhantomIndexManager.Images
+                        .SaveImageForResource(newProfile.Id, imageBlob, nameof(ProfileTable))
                         .ConfigureAwait(false);
                 }
                 return newProfile;
             }
 
             // TODO: flesh this out to something more meaningful instead of a raw exception on failure
-            throw new Exception($"Failed to create {nameof(Profile)}");
+            throw new Exception($"Failed to create {nameof(ProfileTable)}");
+        }
+
+        public async Task<List<Profile>> GetProfiles(int pageSize = 25, int pageStart = 0)
+        {
+            return await GetProfilesAsync(pageSize, pageStart);
+            //.ConfigureAwait(false);
+        }
+
+        private async Task<List<Profile>> GetProfilesAsync(int pageSize = 25, int pageStart = 0)
+        {
+            var selectQuery = $@"SELECT
+	                Profile.[{nameof(ProfileTable.Id)}] AS {nameof(Profile.Id)},
+	                Profile.[{nameof(ProfileTable.Name)}]AS {nameof(Profile.Name)},
+	                Profile.[{nameof(ProfileTable.DisplayFirstName)}]AS {nameof(Profile.DisplayFirstName)},
+	                Profile.[{nameof(ProfileTable.DisplayLastName)}]AS {nameof(Profile.DisplayLastName)},
+	                Profile.[{nameof(ProfileTable.Pronouns)}]AS {nameof(Profile.Pronouns)},
+	                Image.[{nameof(ImageResourceTable.ImageBlob)}] AS {nameof(Profile.ImageBlob)}
+                FROM 
+                    [{ProfileTableName}] AS Profile
+                LEFT JOIN [{PhantomIndexManager.Images.ImageResourceLinkTableName}] AS IR
+	                ON IR.[ResourceId] = Profile.[Id]
+                LEFT JOIN [{PhantomIndexManager.Images.ImageTableName}] AS Image
+	                ON IR.[ImageId] = Image.[Id]
+                LIMIT 
+                    {pageStart},{pageSize + pageStart};
+                ";
+
+            var profiles = await PhantomIndexManager.Connection!.QueryAsync<Profile>(selectQuery);
+
+            return profiles;
         }
     }
 }

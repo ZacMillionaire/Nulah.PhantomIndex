@@ -96,6 +96,8 @@ namespace Nulah.PhantomIndex.Core.Controls
         // future potential usercontrol caching
         //private Dictionary<string, UserControl> _navigationCache = new();
 
+        private UserControl _currentUserControl = null;
+
         private void LoadPageFromNavigationItem(string navigationItemTag)
         {
             var pageViewFromAssembly = Assembly.GetEntryAssembly().ResolvePageViewFromAssembly(navigationItemTag);
@@ -114,11 +116,20 @@ namespace Nulah.PhantomIndex.Core.Controls
 
                 if (pageView != null)
                 {
+                    // Dispose the DataContext on a UserControl if it supports it
+                    if (_currentUserControl != null && _currentUserControl.DataContext is IDisposable disposableDataContext)
+                    {
+                        disposableDataContext.Dispose();
+                    }
+
                     // Ensure the page correctly inherits snapping and layout rounding
                     pageView.SnapsToDevicePixels = this.SnapsToDevicePixels;
                     pageView.UseLayoutRounding = this.UseLayoutRounding;
 
-                    _navigationFrame.Child = pageView;
+                    _currentUserControl = pageView;
+
+                    _navigationFrame.Child = _currentUserControl;
+
                     // future potential usercontrol caching
                     //_navigationCache.Add(navigationItemTag, pageView);
                 }

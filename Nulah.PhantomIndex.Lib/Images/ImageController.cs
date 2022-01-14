@@ -8,12 +8,16 @@ using System.Threading.Tasks;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using Nulah.PhantomIndex.Lib.Images.Models;
+using SQLite;
 
 namespace Nulah.PhantomIndex.Lib.Images
 {
     public class ImageController : PhantomIndexControllerBase
     {
         public readonly static string FileDialogSupportedImageFormats;
+
+        internal string ImageTableName;
+        internal string ImageResourceLinkTableName;
 
         static ImageController()
         {
@@ -32,12 +36,15 @@ namespace Nulah.PhantomIndex.Lib.Images
             Task.Run(() =>
             {
                 PhantomIndexManager.Connection
-                    !.CreateTableAsync<ImageResource>()
+                    !.CreateTableAsync<ImageResourceTable>()
                     .ConfigureAwait(false);
                 PhantomIndexManager.Connection
-                    !.CreateTableAsync<Image_Resource>()
+                    !.CreateTableAsync<Image_ResourceTable>()
                     .ConfigureAwait(false);
             });
+
+            ImageTableName = ((TableAttribute)typeof(ImageResourceTable).GetCustomAttributes(typeof(TableAttribute), false).FirstOrDefault(new TableAttribute("ImageResource"))).Name;
+            ImageResourceLinkTableName = ((TableAttribute)typeof(Image_ResourceTable).GetCustomAttributes(typeof(TableAttribute), false).FirstOrDefault(new TableAttribute("Image_Resource"))).Name;
         }
 
         /// <summary>
@@ -61,7 +68,7 @@ namespace Nulah.PhantomIndex.Lib.Images
         }
 
         /// <summary>
-        /// Creates an <see cref="ImageResource"/> entry for the given <paramref name="resourceId"/>.
+        /// Creates an <see cref="ImageResourceTable"/> entry for the given <paramref name="resourceId"/>.
         /// <para>
         /// A <paramref name="resourceId"/> is any entity that exists in another table.
         /// </para>
@@ -69,7 +76,7 @@ namespace Nulah.PhantomIndex.Lib.Images
         /// <param name="resourceId"></param>
         /// <param name="imageBlob"></param>
         /// <returns></returns>
-        public async Task<ImageResource> SaveImageForResource(Guid resourceId, byte[] imageBlob, string imageType)
+        public async Task<ImageResourceTable> SaveImageForResource(Guid resourceId, byte[] imageBlob, string imageType)
         {
             if (imageBlob == null || imageBlob.Length == 0)
             {
@@ -83,7 +90,7 @@ namespace Nulah.PhantomIndex.Lib.Images
 
             var imageDetails = Image.DetectFormat(imageBlob);
 
-            var newImage = new ImageResource
+            var newImage = new ImageResourceTable
             {
                 Filesize = imageBlob.Length,
                 ImageBlob = imageBlob,
@@ -122,7 +129,7 @@ namespace Nulah.PhantomIndex.Lib.Images
         }
 
         /// <summary>
-        /// Connects a <see cref="ImageResource"/> to any resouce by its <paramref name="resourceId"/>
+        /// Connects a <see cref="ImageResourceTable"/> to any resouce by its <paramref name="resourceId"/>
         /// </summary>
         /// <param name="imageId"></param>
         /// <param name="resourceId"></param>
@@ -131,7 +138,7 @@ namespace Nulah.PhantomIndex.Lib.Images
         /// <exception cref="Exception"></exception>
         private async Task<bool> LinkImageToResource(Guid imageId, Guid resourceId, string resourceType)
         {
-            var imageResourceLink = new Image_Resource
+            var imageResourceLink = new Image_ResourceTable
             {
                 ImageId = imageId,
                 ResourceId = resourceId,
@@ -148,7 +155,7 @@ namespace Nulah.PhantomIndex.Lib.Images
             }
 
             // TODO: flesh this out to something more meaningful instead of a raw exception on failure
-            throw new Exception($"Failed to create {nameof(Image_Resource)}");
+            throw new Exception($"Failed to create {nameof(Image_ResourceTable)}");
         }
 
         /// <summary>
