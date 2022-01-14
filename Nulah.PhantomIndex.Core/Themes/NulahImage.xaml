@@ -6,7 +6,7 @@
         <ResourceDictionary Source="/Nulah.PhantomIndex.Core;component/Themes/Colours.xaml"/>
     </ResourceDictionary.MergedDictionaries>
     <Style TargetType="{x:Type local:NulahImage}" BasedOn="{StaticResource {x:Type UserControl}}">
-        <Setter Property="BorderBrush" Value="{StaticResource DefaultBackgroundMainBrush}" />
+        <Setter Property="BorderColour" Value="{StaticResource DefaultBackground}" />
         <Setter Property="Size" Value="300" />
         <Setter Property="BackgroundColour" Value="{StaticResource DefaultGradientDark}" />
         <Setter Property="Template">

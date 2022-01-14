@@ -127,10 +127,7 @@ namespace Nulah.PhantomIndex.Core.Controls
             // We do this here as template binding a colour to a BorderBrush will fail to convert if the colour is not passed in as a colour string,
             // or a SolidColorBrush resource. A custom converter could be used but that is open to issues getting bindings correct in a ControlTemplate
             // and this essentially does the same thing
-            if (BorderColour != null)
-            {
-                BorderBrush = new SolidColorBrush(BorderColour);
-            }
+            BorderBrush = new SolidColorBrush(BorderColour);
         }
 
         /// <summary>

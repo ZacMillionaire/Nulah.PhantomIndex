@@ -2,11 +2,13 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:System="clr-namespace:System;assembly=System.Runtime">
 
-    <SolidColorBrush x:Key="DefaultBackgroundMainBrush" Color="#FF40006F"/>
-    <SolidColorBrush x:Key="DefaultBackgroundBrush" Color="#FF825E9C"/>
-    <SolidColorBrush x:Key="DefaultForegroundBrushLight" Color="White"/>
     <Color x:Key="DefaultGradientLight">#FFF8E8FD</Color>
     <Color x:Key="DefaultGradientDark">#FFB266C8</Color>
+    <Color x:Key="DefaultBackground">#FF40006F</Color>
+
+    <SolidColorBrush x:Key="DefaultBackgroundMainBrush" Color="{StaticResource DefaultBackground}"/>
+    <SolidColorBrush x:Key="DefaultBackgroundBrush" Color="#FF825E9C"/>
+    <SolidColorBrush x:Key="DefaultForegroundBrushLight" Color="White"/>
 
     <SolidColorBrush x:Key="WindowTextBrush" Color="{StaticResource {x:Static SystemColors.WindowTextColorKey}}"/>
     <SolidColorBrush x:Key="MouseOverOverlayBackgroundBrush" Color="#ffffff"/>
