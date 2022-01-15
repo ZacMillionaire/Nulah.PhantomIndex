@@ -30,7 +30,8 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
 
             Task.Run(async () =>
             {
-                //System.Threading.Thread.Sleep(50);
+                _viewModel.PageEnabled = false;
+
                 _viewModel.Profiles = (await App.Database.Profiles.GetProfiles())
                 .Select(x => new ProfileInfoShort
                 {

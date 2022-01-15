@@ -13,44 +13,40 @@
     </UserControl.DataContext>
     <UserControl.Resources>
         <DataTemplate x:Key="NameDataStyle" DataType="{x:Type vm:ProfileInfoShort}">
-            <Grid Margin="5" VerticalAlignment="Center" Background="Transparent">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <controls:NulahImage BackgroundColour="{Binding ProfileColour}" VerticalAlignment="Center" BorderColour="{Binding ProfileColour}" x:Name="ProfileImage" Size="60"  Grid.Column="0" Grid.RowSpan="2"/>
-                <TextBlock x:Name="DisplayName" Padding="5,0" Grid.Column="1" Grid.Row="0" d:Text="Display Name" VerticalAlignment="Bottom" Text="{Binding DisplayName}" FontSize="{StaticResource FontSizeLarge}" Foreground="Black"/>
-                <TextBlock x:Name="Pronouns" Padding="15,0" Grid.Column="1" Grid.Row="1" d:Text="They/Them" VerticalAlignment="Top" Text="{Binding Pronouns}" FontSize="{StaticResource FontSizeNormal}" Foreground="Gray"/>
-                <Grid.Style>
-                    <Style TargetType="Grid">
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Trigger.EnterActions>
-                                    <BeginStoryboard x:Name="MouseOverEnter" HandoffBehavior="Compose">
-                                        <Storyboard>
-                                            <ThicknessAnimation To="15,5,5,5" Duration="00:00:00.1" Storyboard.TargetProperty="Margin"/>
-                                            <ColorAnimation To="#FFE8E8E8" Duration="00:00:00.1" Storyboard.TargetProperty="(Panel.Background).Color"/>
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </Trigger.EnterActions>
-                                <Trigger.ExitActions>
-                                    <BeginStoryboard HandoffBehavior="Compose">
-                                        <Storyboard>
-                                            <ThicknessAnimation To="5" Duration="00:00:00.1" Storyboard.TargetProperty="Margin"/>
-                                            <ColorAnimation To="Transparent" Duration="00:00:00.1" Storyboard.TargetProperty="(Panel.Background).Color"/>
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </Trigger.ExitActions>
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Grid.Style>
-            </Grid>
+            <Border Padding="5" x:Name="ProfileShortBorder" Background="Transparent">
+                <Grid Margin="5" x:Name="ProfileShortContentGrid" VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <controls:NulahImage BackgroundColour="{Binding ProfileColour}" VerticalAlignment="Center" BorderColour="{Binding ProfileColour}" x:Name="ProfileImage" Size="60"  Grid.Column="0" Grid.RowSpan="2"/>
+                    <TextBlock x:Name="DisplayName" Padding="5,0" Grid.Column="1" Grid.Row="0" d:Text="Display Name" VerticalAlignment="Bottom" Text="{Binding DisplayName}" FontSize="{StaticResource FontSizeLarge}" Foreground="Black"/>
+                    <TextBlock x:Name="Pronouns" Padding="15,0" Grid.Column="1" Grid.Row="1" d:Text="They/Them" VerticalAlignment="Top" Text="{Binding Pronouns}" FontSize="{StaticResource FontSizeNormal}" Foreground="Gray"/>
+                </Grid>
+            </Border>
             <DataTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard HandoffBehavior="Compose">
+                            <Storyboard>
+                                <ThicknessAnimation To="15,5,5,5" Duration="00:00:00.1" Storyboard.TargetName="ProfileShortContentGrid" Storyboard.TargetProperty="Margin"/>
+                                <ColorAnimation To="#FFE8E8E8" Duration="00:00:00.1" Storyboard.TargetName="ProfileShortBorder" Storyboard.TargetProperty="(Border.Background).Color"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                    <Trigger.ExitActions>
+                        <BeginStoryboard HandoffBehavior="Compose">
+                            <Storyboard>
+                                <ThicknessAnimation To="5" Duration="00:00:00.1" Storyboard.TargetName="ProfileShortContentGrid" Storyboard.TargetProperty="Margin"/>
+                                <ColorAnimation To="Transparent" Duration="00:00:00.1" Storyboard.TargetName="ProfileShortBorder" Storyboard.TargetProperty="(Border.Background).Color"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=(local:LazyScrollViewer.IsInViewport)}" Value="True">
                     <Setter TargetName="ProfileImage" Property="Source" Value="{Binding ProfileImage}" />
                 </DataTrigger>
@@ -65,7 +61,7 @@
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" FontWeight="bold">Index page</TextBlock>
         <TextBlock Grid.Row="1" Text="{Binding PageName}" d:Text="Page Name"/>
-        <Border Grid.Row="2">
+        <Border x:Name="whatever" Grid.Row="2">
             <ItemsControl x:Name="lll" ItemsSource="{Binding Profiles}" ItemTemplate="{StaticResource NameDataStyle}" IsEnabled="{Binding PageEnabled}">
                 <ItemsControl.Template>
                     <ControlTemplate>
