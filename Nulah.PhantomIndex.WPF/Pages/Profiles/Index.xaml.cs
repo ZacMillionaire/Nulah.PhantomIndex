@@ -32,6 +32,8 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
             {
                 _viewModel.PageEnabled = false;
 
+                _viewModel.TotalProfiles = await App.Database.Profiles.GetProfileCount();
+
                 _viewModel.Profiles = (await App.Database.Profiles.GetProfiles())
                 .Select(x => new ProfileInfoShort
                 {
@@ -52,6 +54,14 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
         public Index(string viewParameters) : this()
         {
             _viewModel.PageName = viewParameters;
+        }
+
+        private void ProfileShort_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is Border profileShort && profileShort.DataContext is ProfileInfoShort profileInfo)
+            {
+                MainWindow.Navigation.NavigateToPage($"Pages/Profiles/ViewProfile:{profileInfo.Id}");
+            }
         }
     }
 

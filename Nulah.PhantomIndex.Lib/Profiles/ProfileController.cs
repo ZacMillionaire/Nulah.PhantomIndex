@@ -60,6 +60,51 @@ namespace Nulah.PhantomIndex.Lib.Profiles
             throw new Exception($"Failed to create {nameof(ProfileTable)}");
         }
 
+        /// <summary>
+        /// Returns a <see cref="Profile"/> by <paramref name="profileId"/>. If no <see cref="Profile"/> is found, null is returned.
+        /// </summary>
+        /// <param name="profileId"></param>
+        /// <returns></returns>
+        public async Task<Profile?> GetProfile(Guid profileId)
+        {
+            var selectQuery = $@"SELECT
+	                Profile.[{nameof(ProfileTable.Id)}] AS {nameof(Profile.Id)},
+	                Profile.[{nameof(ProfileTable.Name)}]AS {nameof(Profile.Name)},
+	                Profile.[{nameof(ProfileTable.DisplayFirstName)}]AS {nameof(Profile.DisplayFirstName)},
+	                Profile.[{nameof(ProfileTable.DisplayLastName)}]AS {nameof(Profile.DisplayLastName)},
+	                Profile.[{nameof(ProfileTable.Pronouns)}]AS {nameof(Profile.Pronouns)},
+	                Image.[{nameof(ImageResourceTable.ImageBlob)}] AS {nameof(Profile.ImageBlob)}
+                FROM 
+                    [{ProfileTableName}] AS Profile
+                LEFT JOIN [{PhantomIndexManager.Images.ImageResourceLinkTableName}] AS IR
+	                ON IR.[ResourceId] = Profile.[Id]
+                LEFT JOIN [{PhantomIndexManager.Images.ImageTableName}] AS Image
+	                ON IR.[ImageId] = Image.[Id]
+                WHERE
+                    Profile.[Id] = ?;
+                ";
+
+            var profile = await PhantomIndexManager.Connection!.QueryAsync<Profile>(selectQuery, new[] { profileId.ToString() });
+
+            return profile.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Returns the total number of <see cref="Profile"/>s that exist
+        /// </summary>
+        /// <returns></returns>
+        public async Task<int> GetProfileCount()
+        {
+            return await PhantomIndexManager.Connection!.Table<ProfileTable>()
+                .CountAsync();
+        }
+
+        /// <summary>
+        /// Returns a list of <see cref="Profile"/> by the given <paramref name="pageSize"/> and <paramref name="pageStart"/>
+        /// </summary>
+        /// <param name="pageSize"></param>
+        /// <param name="pageStart"></param>
+        /// <returns></returns>
         public async Task<List<Profile>> GetProfiles(int pageSize = 25, int pageStart = 0)
         {
             return await GetProfilesAsync(pageSize, pageStart);

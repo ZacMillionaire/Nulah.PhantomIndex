@@ -13,7 +13,7 @@
     </UserControl.DataContext>
     <UserControl.Resources>
         <DataTemplate x:Key="NameDataStyle" DataType="{x:Type vm:ProfileInfoShort}">
-            <Border Padding="5" x:Name="ProfileShortBorder" Background="Transparent">
+            <Border Padding="5" x:Name="ProfileShortBorder" DataContext="{Binding}" Background="Transparent" MouseDown="ProfileShort_MouseDown">
                 <Grid Margin="5" x:Name="ProfileShortContentGrid" VerticalAlignment="Center">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="auto"/>
@@ -57,12 +57,14 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" FontWeight="bold">Index page</TextBlock>
         <TextBlock Grid.Row="1" Text="{Binding PageName}" d:Text="Page Name"/>
-        <Border x:Name="whatever" Grid.Row="2">
-            <ItemsControl x:Name="lll" ItemsSource="{Binding Profiles}" ItemTemplate="{StaticResource NameDataStyle}" IsEnabled="{Binding PageEnabled}">
+        <TextBlock Grid.Row="2" Text="{Binding TotalProfiles}" FontWeight="bold"/>
+        <Border Grid.Row="3">
+            <ItemsControl ItemsSource="{Binding Profiles}" ItemTemplate="{StaticResource NameDataStyle}" IsEnabled="{Binding PageEnabled}">
                 <ItemsControl.Template>
                     <ControlTemplate>
                         <local:LazyScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">

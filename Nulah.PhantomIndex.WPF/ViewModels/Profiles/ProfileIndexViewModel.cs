@@ -29,6 +29,13 @@ namespace Nulah.PhantomIndex.WPF.ViewModels.Profiles
             get => _profiles;
             set => NotifyAndSetPropertyIfChanged(ref _profiles, value);
         }
+
+        private int _totalProfiles;
+        public int TotalProfiles
+        {
+            get => _totalProfiles;
+            set => NotifyAndSetPropertyIfChanged(ref _totalProfiles, value);
+        }
     }
 
     public class ProfileInfoShort
