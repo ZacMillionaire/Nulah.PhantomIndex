@@ -58,13 +58,27 @@ namespace Nulah.PhantomIndex.Core.Controls
         public Color BackgroundColour
         {
             get { return (Color)GetValue(BackgroundColourProperty); }
-            set { SetValue(BackgroundColourProperty, value); }
+            set
+            {
+                SetValue(BackgroundColourProperty, value);
+                if (value != default(Color))
+                {
+                    SetGradientBackground();
+                }
+            }
         }
 
         // Using a DependencyProperty as the backing store for StartColour.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty BackgroundColourProperty =
-            DependencyProperty.Register(nameof(BackgroundColour), typeof(Color), typeof(NulahImage), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(BackgroundColour), typeof(Color), typeof(NulahImage), new PropertyMetadata(default(Color), BackgroundColourChanged));
 
+        private static void BackgroundColourChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if ((Color)e.NewValue != default(Color))
+            {
+                ((NulahImage)d).SetGradientBackground();
+            }
+        }
 
         public Color BorderColour
         {
@@ -74,8 +88,15 @@ namespace Nulah.PhantomIndex.Core.Controls
 
         // Using a DependencyProperty as the backing store for BorderColour.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty BorderColourProperty =
-            DependencyProperty.Register(nameof(BorderColour), typeof(Color), typeof(NulahImage), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(BorderColour), typeof(Color), typeof(NulahImage), new PropertyMetadata(default(Color), BorderColourChanged));
 
+        private static void BorderColourChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if ((Color)e.NewValue != default(Color))
+            {
+                ((NulahImage)d).SetBorderBrush();
+            }
+        }
 
         static NulahImage()
         {
@@ -91,8 +112,8 @@ namespace Nulah.PhantomIndex.Core.Controls
                 gridClipMask.Visual = GetTemplateChild("VisualBorderClip") as Border;
             }
 
-            SetGradientBackground();
-            SetBorderBrush();
+            //SetGradientBackground();
+            //SetBorderBrush();
 
             base.OnApplyTemplate();
         }
@@ -110,9 +131,9 @@ namespace Nulah.PhantomIndex.Core.Controls
                 StartPoint = new Point(0.5, 0),
                 EndPoint = new Point(0.5, 1)
             };
-            gradientBrush.GradientStops.Add(new GradientStop { Color = ChangeColorBrightness(BackgroundColour, 0.25f) });
+            gradientBrush.GradientStops.Add(new GradientStop { Color = ControlHelpers.ChangeColorBrightness(BackgroundColour, 0.25f) });
             gradientBrush.GradientStops.Add(new GradientStop { Color = BackgroundColour, Offset = 0.5 });
-            gradientBrush.GradientStops.Add(new GradientStop { Color = ChangeColorBrightness(BackgroundColour, -0.25f), Offset = 1 });
+            gradientBrush.GradientStops.Add(new GradientStop { Color = ControlHelpers.ChangeColorBrightness(BackgroundColour, -0.25f), Offset = 1 });
 
             gradientBrush.Freeze();
 
@@ -128,49 +149,6 @@ namespace Nulah.PhantomIndex.Core.Controls
             // or a SolidColorBrush resource. A custom converter could be used but that is open to issues getting bindings correct in a ControlTemplate
             // and this essentially does the same thing
             BorderBrush = new SolidColorBrush(BorderColour);
-        }
-
-        /// <summary>
-        /// Brightens or darkens a given colour. Negative values darken, and <paramref name="brightnessAdjustment"/> must be between -1 and 1
-        /// </summary>
-        /// <param name="color"></param>
-        /// <param name="brightnessAdjustment">Darken or lighten amount, from -1 to 1</param>
-        /// <returns></returns>
-        /// <exception cref="NotSupportedException"></exception>
-        private Color ChangeColorBrightness(Color color, float brightnessAdjustment)
-        {
-            if (brightnessAdjustment < -1 || brightnessAdjustment > 1)
-            {
-                throw new NotSupportedException($"{nameof(brightnessAdjustment)} must be between -1 and 1 inclusive");
-            }
-
-            // do nothing if the brightness adjustment is 0
-            if (brightnessAdjustment == 0)
-            {
-                return color;
-            }
-
-            if (brightnessAdjustment < 0)
-            {
-                // Darken the colours, add 1 to the brightness to bring it back to a positive final value after adjustment
-                brightnessAdjustment = 1 + brightnessAdjustment;
-
-                return Color.FromArgb(color.A,
-                    (byte)(color.R * brightnessAdjustment),
-                    (byte)(color.G * brightnessAdjustment),
-                    (byte)(color.B * brightnessAdjustment)
-                );
-            }
-            else
-            {
-                // Lighten the colour by getting the distance from full bright (255) the original colour was,
-                // multiplying it by the adjustment then adding the original value back
-                return Color.FromArgb(color.A,
-                    (byte)((255 - color.R) * brightnessAdjustment + color.R),
-                    (byte)((255 - color.G) * brightnessAdjustment + color.G),
-                    (byte)((255 - color.B) * brightnessAdjustment + color.B)
-                );
-            }
         }
     }
 }

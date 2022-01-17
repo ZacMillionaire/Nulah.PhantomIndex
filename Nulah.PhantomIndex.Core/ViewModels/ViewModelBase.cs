@@ -92,12 +92,26 @@ namespace Nulah.PhantomIndex.Core.ViewModels
         }
 
         /// <summary>
+        /// Raises a <see cref="PropertyChanged"/> for a property
+        /// </summary>
+        /// <param name="propertyName"></param>
+        protected void NotifyPropertyChanged(string propertyName)
+        {
+            VerifyPropertyName(propertyName);
+
+            if (IsNotifyingChange == true)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        /// <summary>
         /// Raises this object's PropertyChanged event.
         /// </summary>
         /// <param name="propertyName">The property that has a new value.</param>
         protected virtual void OnPropertyChanged(string propertyName)
         {
-            throw new NotSupportedException("No longer used, use NotifyAndSetPropertyIfChanged<T>");
+            throw new NotSupportedException("No longer used, use NotifyPropertyChanged(string propertyName) or NotifyAndSetPropertyIfChanged<T>(ref T property, T value)");
             VerifyPropertyName(propertyName);
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -183,6 +197,12 @@ namespace Nulah.PhantomIndex.Core.ViewModels
             var props = viewType.GetProperties(_derivedPropertyFlags);
             foreach (PropertyInfo prop in props)
             {
+                // Ignore properties with no setter (certain struct properties like System.Windows.Media.Colour)
+                if (prop.SetMethod == null)
+                {
+                    continue;
+                }
+
                 if (prop.GetCustomAttribute(typeof(DefaultValueAttribute)) is DefaultValueAttribute defaultValue)
                 {
                     prop.SetValue(this, defaultValue.Value);
