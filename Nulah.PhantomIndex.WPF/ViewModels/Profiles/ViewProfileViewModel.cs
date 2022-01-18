@@ -59,7 +59,11 @@ namespace Nulah.PhantomIndex.WPF.ViewModels.Profiles
         public byte[]? ImageBlob
         {
             get => _imageBlob;
-            set => NotifyAndSetPropertyIfChanged(ref _imageBlob, value);
+            set
+            {
+                NotifyAndSetPropertyIfChanged(ref _imageBlob, value);
+                NotifyPropertyChanged(nameof(ProfileImage));
+            }
         }
 
         private Color _profileColour;
