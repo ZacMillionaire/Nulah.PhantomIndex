@@ -66,6 +66,13 @@ namespace Nulah.PhantomIndex.WPF.ViewModels.Profiles
             }
         }
 
+        private DateTime _created;
+        public DateTime Created
+        {
+            get => _created;
+            set => NotifyAndSetPropertyIfChanged(ref _created, value);
+        }
+
         private Color _profileColour;
         public Color ProfileColour
         {

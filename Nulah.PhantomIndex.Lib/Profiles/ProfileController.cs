@@ -38,7 +38,8 @@ namespace Nulah.PhantomIndex.Lib.Profiles
                 DisplayLastName = displayLastName,
                 Id = Guid.NewGuid(),
                 Name = profileName,
-                Pronouns = pronouns
+                Pronouns = pronouns,
+                CreatedUtc = DateTime.UtcNow
             };
 
             var profileCreated = await PhantomIndexManager.Connection
@@ -69,10 +70,11 @@ namespace Nulah.PhantomIndex.Lib.Profiles
         {
             var selectQuery = $@"SELECT
 	                Profile.[{nameof(ProfileTable.Id)}] AS {nameof(Profile.Id)},
-	                Profile.[{nameof(ProfileTable.Name)}]AS {nameof(Profile.Name)},
-	                Profile.[{nameof(ProfileTable.DisplayFirstName)}]AS {nameof(Profile.DisplayFirstName)},
-	                Profile.[{nameof(ProfileTable.DisplayLastName)}]AS {nameof(Profile.DisplayLastName)},
-	                Profile.[{nameof(ProfileTable.Pronouns)}]AS {nameof(Profile.Pronouns)},
+	                Profile.[{nameof(ProfileTable.Name)}] AS {nameof(Profile.Name)},
+	                Profile.[{nameof(ProfileTable.DisplayFirstName)}] AS {nameof(Profile.DisplayFirstName)},
+	                Profile.[{nameof(ProfileTable.DisplayLastName)}] AS {nameof(Profile.DisplayLastName)},
+	                Profile.[{nameof(ProfileTable.Pronouns)}] AS {nameof(Profile.Pronouns)},
+                    Profile.[{nameof(ProfileTable.CreatedUtc)}] AS {nameof(Profile.CreatedUtc)},
 	                Image.[{nameof(ImageResourceTable.ImageBlob)}] AS {nameof(Profile.ImageBlob)}
                 FROM 
                     [{ProfileTableName}] AS Profile
@@ -119,6 +121,7 @@ namespace Nulah.PhantomIndex.Lib.Profiles
 	                Profile.[{nameof(ProfileTable.DisplayFirstName)}]AS {nameof(Profile.DisplayFirstName)},
 	                Profile.[{nameof(ProfileTable.DisplayLastName)}]AS {nameof(Profile.DisplayLastName)},
 	                Profile.[{nameof(ProfileTable.Pronouns)}]AS {nameof(Profile.Pronouns)},
+                    Profile.[{nameof(ProfileTable.CreatedUtc)}] AS {nameof(Profile.CreatedUtc)},
 	                Image.[{nameof(ImageResourceTable.ImageBlob)}] AS {nameof(Profile.ImageBlob)}
                 FROM 
                     [{ProfileTableName}] AS Profile

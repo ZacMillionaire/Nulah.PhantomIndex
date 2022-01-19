@@ -45,6 +45,7 @@ namespace Nulah.PhantomIndex.WPF.ViewModels.Profiles
         public string DisplayName { get; set; } = string.Empty;
         public string Pronouns { get; set; } = string.Empty;
         public byte[]? ImageBlob { get; set; }
+        public DateTime Created { get; set; }
 
         private Color? _profileColour;
         public Color? ProfileColour

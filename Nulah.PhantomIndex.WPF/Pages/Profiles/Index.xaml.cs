@@ -43,7 +43,8 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
                         ? $"{x.DisplayFirstName}"
                         : $"{x.DisplayFirstName} {x.DisplayLastName}",
                     Pronouns = x.Pronouns,
-                    ImageBlob = x.ImageBlob
+                    ImageBlob = x.ImageBlob,
+                    Created = x.CreatedUtc.ToLocalTime()
                 })
                 .ToList();
 

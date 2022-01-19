@@ -55,6 +55,7 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
                     _viewModel.Name = profile.Name;
                     _viewModel.Pronouns = profile.Pronouns;
                     _viewModel.ImageBlob = profile.ImageBlob;
+                    _viewModel.Created = profile.CreatedUtc.ToLocalTime();
                 }
             });
         }

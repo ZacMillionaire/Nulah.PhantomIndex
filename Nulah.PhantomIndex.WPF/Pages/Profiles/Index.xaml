@@ -22,10 +22,12 @@
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>
+                        <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <controls:NulahImage BackgroundColour="{Binding ProfileColour}" VerticalAlignment="Center" BorderColour="{Binding ProfileColour}" x:Name="ProfileImage" Size="60"  Grid.Column="0" Grid.RowSpan="2"/>
+                    <controls:NulahImage BackgroundColour="{Binding ProfileColour}" VerticalAlignment="Center" BorderColour="{Binding ProfileColour}" x:Name="ProfileImage" Size="60"  Grid.Column="0" Grid.RowSpan="3"/>
                     <TextBlock x:Name="DisplayName" Padding="5,0" Grid.Column="1" Grid.Row="0" d:Text="Display Name" VerticalAlignment="Bottom" Text="{Binding DisplayName}" FontSize="{StaticResource FontSizeLarge}" Foreground="Black"/>
                     <TextBlock x:Name="Pronouns" Padding="15,0" Grid.Column="1" Grid.Row="1" d:Text="They/Them" VerticalAlignment="Top" Text="{Binding Pronouns}" FontSize="{StaticResource FontSizeNormal}" Foreground="Gray"/>
+                    <TextBlock x:Name="Created" Padding="15,0" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Right" d:Text="01/01/1901" VerticalAlignment="Top" Text="{Binding Created}" FontSize="{StaticResource FontSizeNormal}" Foreground="Gray"/>
                 </Grid>
             </Border>
             <DataTemplate.Triggers>

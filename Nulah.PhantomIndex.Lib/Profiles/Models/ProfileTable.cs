@@ -19,5 +19,6 @@ namespace Nulah.PhantomIndex.Lib.Profiles.Models
         public string? DisplayLastName { get; set; }
         [NotNull]
         public string Pronouns { get; set; } = string.Empty;
+        public DateTime CreatedUtc { get; set; }
     }
 }

@@ -14,6 +14,7 @@ namespace Nulah.PhantomIndex.Lib.Profiles.Models
         public string? DisplayLastName { get; set; }
         public string Pronouns { get; set; } = string.Empty;
         public byte[]? ImageBlob { get; set; }
+        public DateTime CreatedUtc { get; set; }
 
     }
 }
