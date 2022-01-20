@@ -1,4 +1,5 @@
-﻿using Nulah.PhantomIndex.Lib.Images;
+﻿using Nulah.PhantomIndex.Lib.Events;
+using Nulah.PhantomIndex.Lib.Images;
 using Nulah.PhantomIndex.Lib.Profiles;
 using SQLite;
 using System;
@@ -14,11 +15,13 @@ namespace Nulah.PhantomIndex.Lib
         internal SQLiteAsyncConnection? Connection;
         public ProfileController Profiles;
         public ImageController Images;
+        public EventController Events;
 
         public PhantomIndexManager()
         {
             Profiles = new ProfileController(this);
             Images = new ImageController(this);
+            Events = new EventController(this);
         }
 
         public void SetConnection(string connectionString)
@@ -27,6 +30,7 @@ namespace Nulah.PhantomIndex.Lib
 
             Profiles.Init();
             Images.Init();
+            Events.Init();
         }
     }
 }
