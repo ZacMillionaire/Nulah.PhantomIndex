@@ -19,6 +19,6 @@ namespace Nulah.PhantomIndex.Lib.Events.Models
         /// C# DataType
         /// </summary>
         [NotNull]
-        public string Type { get; set; }
+        public string Type { get; set; } = string.Empty;
     }
 }
