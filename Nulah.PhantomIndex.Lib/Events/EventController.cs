@@ -23,19 +23,91 @@ namespace Nulah.PhantomIndex.Lib.Events
             base.Init();
 
             // Create tables required for this controller
-            Task.Run(() =>
+            Task.Run(async () =>
             {
-                PhantomIndexManager.Connection!.CreateTableAsync<EventTable>().ConfigureAwait(false);
-                PhantomIndexManager.Connection!.CreateTableAsync<EventTypeTable>().ConfigureAwait(false);
-            });
+                await PhantomIndexManager.Connection!.CreateTableAsync<EventTable>().ConfigureAwait(false);
+                await PhantomIndexManager.Connection!.CreateTableAsync<EventTypeTable>().ConfigureAwait(false);
 
-            EventTableName = ((TableAttribute)typeof(EventTable).GetCustomAttributes(typeof(TableAttribute), false).FirstOrDefault(new TableAttribute("Event"))).Name;
-            EventTypeTableName = ((TableAttribute)typeof(EventTypeTable).GetCustomAttributes(typeof(TableAttribute), false).FirstOrDefault(new TableAttribute("EventType"))).Name;
+                EventTableName = ((TableAttribute)typeof(EventTable).GetCustomAttributes(typeof(TableAttribute), false).FirstOrDefault(new TableAttribute("Event"))).Name;
+                EventTypeTableName = ((TableAttribute)typeof(EventTypeTable).GetCustomAttributes(typeof(TableAttribute), false).FirstOrDefault(new TableAttribute("EventType"))).Name;
+
+
+                await CreateEventType<DateTime>(DefaultEventType.Created.ToString()).ConfigureAwait(false);
+
+                // Validate all required default event types exist
+                foreach (var defaultEventType in Enum.GetValues<DefaultEventType>())
+                {
+                    var defaultEventExists = await GetEventTypeExistByName(defaultEventType.ToString()).ConfigureAwait(false);
+                    if (defaultEventExists == false)
+                    {
+                        throw new Exception($"Failed to create default event type {defaultEventType}");
+                    }
+                }
+            });
         }
 
-        public Event CreateEvent()
+        /// <summary>
+        /// Creates and returns a <see cref="DateTimeEvent"/>, attached to the given profile and event type
+        /// </summary>
+        /// <param name="dateTimeUTC"></param>
+        /// <param name="profileId"></param>
+        /// <param name="eventTypeId"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<DateTimeEvent> CreateEvent(DateTime dateTimeUTC, Guid profileId, Guid eventTypeId)
         {
+            var newEvent = new EventTable
+            {
+                Id = Guid.NewGuid(),
+                EventTypeId = eventTypeId,
+                ProfileId = profileId,
+                DateTimeContent = dateTimeUTC
+            };
+
+            var eventCreated = await PhantomIndexManager.Connection
+                !.InsertAsync(newEvent)
+                .ConfigureAwait(false);
+
+            if (eventCreated == 1)
+            {
+                // Should probably null check here at some point
+                return await GetDateTimeEvent(newEvent.Id);
+            }
+
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Returns a <see cref="DateTimeEvent"/> by <paramref name="eventId"/> if it exists
+        /// </summary>
+        /// <param name="eventId"></param>
+        /// <returns></returns>
+        public async Task<DateTimeEvent?> GetDateTimeEvent(Guid eventId)
+        {
+            var getEventQuery = $@"SELECT
+	                [Id],
+	                [ProfileId],
+	                [EventTypeId],
+	                [DateTimeContent]
+                FROM
+	                [Events] AS Events
+                WHERE
+	                Events.[Id] = ?";
+
+            var dateTimeEvent = await PhantomIndexManager.Connection!.QueryAsync<EventTable>(getEventQuery, eventId);
+
+            if (dateTimeEvent.Count == 1)
+            {
+                return new DateTimeEvent
+                {
+                    Id = dateTimeEvent[0].Id,
+                    ProfileId = dateTimeEvent[0].ProfileId,
+                    EventTypeId = dateTimeEvent[0].EventTypeId,
+                    Content = dateTimeEvent[0].DateTimeContent
+                };
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -51,9 +123,10 @@ namespace Nulah.PhantomIndex.Lib.Events
         /// <exception cref="Exception"></exception>
         public async Task<EventType> CreateEventType<T>(string name)
         {
+            var typeName = typeof(T).FullName;
             // Certain types will not have a .FullName, which is required for when we convert the event types...type back
             // to its original Type using Type.GetType(string typeName)
-            if (typeof(T).FullName == null)
+            if (string.IsNullOrWhiteSpace(typeName) == true)
             {
                 throw new NotSupportedException($"{typeof(T).Name} is not supported - no FullName value found");
             }
@@ -68,8 +141,9 @@ namespace Nulah.PhantomIndex.Lib.Events
 
             var newEventType = new EventTypeTable
             {
+                Id = Guid.NewGuid(),
                 Name = name,
-                Type = typeof(T)!.FullName
+                Type = typeName
             };
 
             var insert = await PhantomIndexManager.Connection!.InsertAsync(newEventType).ConfigureAwait(false);
@@ -82,6 +156,26 @@ namespace Nulah.PhantomIndex.Lib.Events
 
             throw new Exception($"Failed to create event type {name} of type {typeof(T).FullName}");
         }
+
+        /// <summary>
+        /// Returns a default event type that must exist
+        /// </summary>
+        /// <param name="defaultEventType"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<EventType> GetDefaultEventType(DefaultEventType defaultEventType)
+        {
+            var eventType = await GetEventTypeByName(defaultEventType.ToString());
+
+            if (eventType == null)
+            {
+                throw new Exception($"No default type exists for {defaultEventType}");
+            }
+
+            return eventType;
+        }
+
+
 
         /// <summary>
         /// Returns true if an event type exists by the given name

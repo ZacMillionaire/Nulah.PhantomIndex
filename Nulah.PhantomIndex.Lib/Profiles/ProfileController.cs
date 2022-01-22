@@ -1,4 +1,5 @@
-﻿using Nulah.PhantomIndex.Lib.Images.Models;
+﻿using Nulah.PhantomIndex.Lib.Events.Models;
+using Nulah.PhantomIndex.Lib.Images.Models;
 using Nulah.PhantomIndex.Lib.Profiles.Models;
 using SQLite;
 using System;
@@ -30,6 +31,16 @@ namespace Nulah.PhantomIndex.Lib.Profiles
             ProfileTableName = ((TableAttribute)typeof(ProfileTable).GetCustomAttributes(typeof(TableAttribute), false).FirstOrDefault(new TableAttribute("Profile"))).Name;
         }
 
+        /// <summary>
+        /// Creates a profile with the given details.
+        /// </summary>
+        /// <param name="profileName"></param>
+        /// <param name="displayFirstname"></param>
+        /// <param name="pronouns"></param>
+        /// <param name="displayLastName"></param>
+        /// <param name="imageBlob"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception">Thrown on any failure</exception>
         public async Task<ProfileTable> Create(string profileName, string displayFirstname, string pronouns, string? displayLastName = null, byte[]? imageBlob = null)
         {
             var newProfile = new ProfileTable
@@ -41,6 +52,9 @@ namespace Nulah.PhantomIndex.Lib.Profiles
                 Pronouns = pronouns,
                 CreatedUtc = DateTime.UtcNow
             };
+
+            // Get the event type for Created events
+            var createdEventType = await PhantomIndexManager.Events.GetDefaultEventType(DefaultEventType.Created);
 
             var profileCreated = await PhantomIndexManager.Connection
                 !.InsertAsync(newProfile)
@@ -54,6 +68,11 @@ namespace Nulah.PhantomIndex.Lib.Profiles
                         .SaveImageForResource(newProfile.Id, imageBlob, nameof(ProfileTable))
                         .ConfigureAwait(false);
                 }
+
+                // Create a Created event to create an event that indicates the creation
+                // :V
+                await PhantomIndexManager.Events.CreateEvent(DateTime.UtcNow, newProfile.Id, createdEventType.Id);
+
                 return newProfile;
             }
 
@@ -113,6 +132,12 @@ namespace Nulah.PhantomIndex.Lib.Profiles
             //.ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Returns all profiles limited by the given parameters
+        /// </summary>
+        /// <param name="pageSize"></param>
+        /// <param name="pageStart"></param>
+        /// <returns></returns>
         private async Task<List<Profile>> GetProfilesAsync(int pageSize = 25, int pageStart = 0)
         {
             var selectQuery = $@"SELECT

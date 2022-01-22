@@ -17,11 +17,12 @@ namespace Nulah.PhantomIndex.Lib.Events.Models
         public Guid ProfileId { get; set; }
 
         [Indexed]
-        public Guid EventType { get; set; }
+        public Guid EventTypeId { get; set; }
 
         // Content can either be a string, int or byte array
         public string TextContent { get; set; }
         public int NumericContent { get; set; }
+        public DateTime DateTimeContent { get; set; }
         public byte[] BlobContent { get; set; }
     }
 }
