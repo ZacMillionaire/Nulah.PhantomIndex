@@ -18,6 +18,11 @@ namespace Nulah.PhantomIndex.Lib.Events
         internal string EventTableName;
         internal string EventTypeTableName;
 
+        /// <summary>
+        /// Assembly full name of the <see cref="DateTime"/> type for use with event type conversion
+        /// </summary>
+        private string _datetimeClassType = typeof(DateTime).FullName;
+
         internal override void Init()
         {
             base.Init();
@@ -61,7 +66,8 @@ namespace Nulah.PhantomIndex.Lib.Events
                 Id = Guid.NewGuid(),
                 EventTypeId = eventTypeId,
                 ProfileId = profileId,
-                DateTimeContent = dateTimeUTC
+                DateTimeContent = dateTimeUTC,
+                EventTimeUTC = DateTime.UtcNow
             };
 
             var eventCreated = await PhantomIndexManager.Connection
@@ -98,12 +104,20 @@ namespace Nulah.PhantomIndex.Lib.Events
 
             if (dateTimeEvent.Count == 1)
             {
+                // DateTimeContent can be null within the database, but should not be null
+                // for events created with a types of DateTime
+                if (dateTimeEvent[0].DateTimeContent == null)
+                {
+                    throw new NotSupportedException("Unable to understand event: DateTimeContent was null");
+                }
+
                 return new DateTimeEvent
                 {
                     Id = dateTimeEvent[0].Id,
                     ProfileId = dateTimeEvent[0].ProfileId,
                     EventTypeId = dateTimeEvent[0].EventTypeId,
-                    Content = dateTimeEvent[0].DateTimeContent
+                    EventTimeUTC = dateTimeEvent[0].EventTimeUTC,
+                    Content = dateTimeEvent[0].DateTimeContent!.Value
                 };
             }
 
@@ -176,6 +190,63 @@ namespace Nulah.PhantomIndex.Lib.Events
         }
 
 
+        // TODO: have fun getting all events from the database, then looking up each event type, getting its C# type,
+        // then casting each event to its proper event class (eg DateTimeEvent), and hoping it all fucking works
+        // TODO: need to add a datetime to events to track when they happened for timeline display
+        // TODO: the ui for events will be lazy loaded
+        public async Task<List<Event>> GetEventsForProfile(Guid profileId)
+        {
+            var profileEvents = new List<Event>();
+
+            var eventsForProfile = $@"SELECT
+	                E.Id,
+                    E.ProfileId,
+                    E.EventTypeId,
+	                E.EventTimeUTC,
+	                E.TextContent,
+	                E.NumericContent,
+	                E.DateTimeContent,
+	                E.BlobContent,
+	                ET.Type AS ClassType
+                FROM 
+	                [Events] AS E
+                JOIN [EventTypes] AS ET
+	                ON ET.[Id] = E.[EventTypeId]
+                WHERE
+	                E.[ProfileId] = ?";
+
+            var profileEventQuery = await PhantomIndexManager.Connection!.QueryAsync<EventHolding>(eventsForProfile, profileId);
+
+            foreach (EventHolding profileEvent in profileEventQuery)
+            {
+                if (profileEvent.ClassType == _datetimeClassType)
+                {
+                    profileEvents.Add(new DateTimeEvent
+                    {
+                        Content = profileEvent.DateTimeContent!.Value,
+                        EventTypeId = profileEvent.EventTypeId,
+                        EventTimeUTC = profileEvent.EventTimeUTC,
+                        Id = profileEvent.Id,
+                        ProfileId = profileId
+                    });
+                }
+            }
+
+            return profileEvents;
+        }
+
+        // TODO: temp class for mapping, should move or make a strong class later
+        public class EventHolding
+        {
+            public Guid Id { get; set; }
+            public Guid EventTypeId { get; set; }
+            public DateTime EventTimeUTC { get; set; }
+            public string? TextContent { get; set; }
+            public int? NumericContent { get; set; }
+            public DateTime? DateTimeContent { get; set; }
+            public byte[]? BlobContent { get; set; }
+            public string ClassType { get; set; }
+        }
 
         /// <summary>
         /// Returns true if an event type exists by the given name
