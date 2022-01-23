@@ -17,6 +17,8 @@ namespace Nulah.PhantomIndex.Lib
         public ImageController Images;
         public EventController Events;
 
+        public string DatabaseLocation;
+
         public PhantomIndexManager()
         {
             Profiles = new ProfileController(this);
@@ -26,6 +28,8 @@ namespace Nulah.PhantomIndex.Lib
 
         public void SetConnection(string connectionString)
         {
+            DatabaseLocation = connectionString;
+
             Connection = new SQLiteAsyncConnection(connectionString);
 
             Profiles.Init();
