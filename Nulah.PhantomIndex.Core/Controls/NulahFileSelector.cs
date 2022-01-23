@@ -46,7 +46,18 @@ namespace Nulah.PhantomIndex.Core.Controls
 
         // Using a DependencyProperty as the backing store for Filter.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty FilterProperty =
-            DependencyProperty.Register("Filter", typeof(string), typeof(NulahFileSelector), new PropertyMetadata("All Files (*.*)|*.*"));
+            DependencyProperty.Register(nameof(Filter), typeof(string), typeof(NulahFileSelector), new PropertyMetadata("All Files (*.*)|*.*"));
+
+
+        public string ButtonContent
+        {
+            get { return (string)GetValue(ButtonContentProperty); }
+            set { SetValue(ButtonContentProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ButtonContent.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ButtonContentProperty =
+            DependencyProperty.Register(nameof(ButtonContent), typeof(string), typeof(NulahFileSelector), new PropertyMetadata("Choose"));
 
 
         public event EventHandler<string> FileSelected;
@@ -58,14 +69,14 @@ namespace Nulah.PhantomIndex.Core.Controls
 
         public override void OnApplyTemplate()
         {
-            if (GetTemplateChild("UploadButton") is Button uploadButton && uploadButton != null)
+            if (GetTemplateChild("FileDialogButton") is Button fileDialogButton && fileDialogButton != null)
             {
-                uploadButton.Click += UploadButton_Click;
+                fileDialogButton.Click += FileDialogButton_Click;
             }
             base.OnApplyTemplate();
         }
 
-        private void UploadButton_Click(object sender, RoutedEventArgs e)
+        private void FileDialogButton_Click(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog();
 

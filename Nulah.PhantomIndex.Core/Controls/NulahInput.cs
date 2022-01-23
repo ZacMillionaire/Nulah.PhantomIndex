@@ -11,7 +11,7 @@ using System.Windows.Media;
 
 namespace Nulah.PhantomIndex.Core.Controls
 {
-    public class NulahInput : UserControl
+    public class NulahInput : TextBox
     {
         /// <summary>
         /// Label
@@ -56,14 +56,14 @@ namespace Nulah.PhantomIndex.Core.Controls
         /// <summary>
         /// Binding value for input value
         /// </summary>
-        public string Text
+        public new string Text
         {
             get { return (string)GetValue(TextProperty); }
             set { SetValue(TextProperty, value); }
         }
 
         // Using a DependencyProperty as the backing store for Text.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty TextProperty =
+        public new static readonly DependencyProperty TextProperty =
             DependencyProperty.Register(nameof(Text), typeof(string), typeof(NulahInput),
                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault)
                 {
@@ -83,6 +83,15 @@ namespace Nulah.PhantomIndex.Core.Controls
         public static readonly DependencyProperty UpdateValueOnKeyUpProperty =
             DependencyProperty.Register(nameof(UpdateValueOnKeyUp), typeof(bool), typeof(NulahInput), new PropertyMetadata(false, UpdateValueOnKeyUpPropertyChanged));
 
+        public List<Button> Buttons
+        {
+            get { return (List<Button>)GetValue(ButtonsProperty); }
+            set { SetValue(ButtonsProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for MenuItems.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ButtonsProperty =
+            DependencyProperty.Register(nameof(Buttons), typeof(List<Button>), typeof(NulahInput), new PropertyMetadata(null));
 
 
         public double LabelSize
@@ -119,6 +128,11 @@ namespace Nulah.PhantomIndex.Core.Controls
             {
                 ((NulahInput)d).SetInputKeyUpHandler((bool)e.NewValue);
             }
+        }
+
+        public NulahInput()
+        {
+            Buttons = new List<Button>();
         }
 
         static NulahInput()
