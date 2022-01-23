@@ -14,58 +14,60 @@
     <UserControl.Resources>
         <local:ColourEnhancerConverter x:Key="ColourEnhancer"/>
     </UserControl.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <Rectangle Panel.ZIndex="-1" Grid.Row="0" Grid.RowSpan="1">
-            <Rectangle.Fill>
-                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                    <GradientStop Color="{Binding ProfileColour}"/>
-                    <GradientStop Color="Transparent" Offset="1"/>
-                    <!--<GradientStop Color="{Binding ProfileColour, Converter={StaticResource ColourEnhancer}, ConverterParameter=0.25}"/>
-                    <GradientStop Color="{Binding ProfileColour}" Offset="0.5"/>
-                    <GradientStop Color="{Binding ProfileColour, Converter={StaticResource ColourEnhancer}, ConverterParameter=-0.25}" Offset="1"/>-->
-                </LinearGradientBrush>
-            </Rectangle.Fill>
-        </Rectangle>
-        <Grid Grid.Row="0" Margin="15">
-            <Grid.Resources>
-                <Style TargetType="TextBlock">
-                    <Setter Property="TextWrapping" Value="WrapWithOverflow" />
-                    <Setter Property="Margin" Value="10"/>
-                </Style>
-                <Style TargetType="WrapPanel">
-                    <Setter Property="Margin" Value="10,0" />
-                </Style>
-            </Grid.Resources>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" >
+        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
-            <controls:NulahImage Source="{Binding ProfileImage}" Size="200" BackgroundColour="{Binding ProfileColour}" BorderColour="{Binding ProfileColour}" VerticalAlignment="Top" Grid.RowSpan="5" Grid.Column="0"/>
-            <TextBlock Grid.Column="1" Grid.Row="0" d:Text="Profile Name asdgfasdg asdt adsgsad gasdg sad tgasd" Text="{Binding Name}" FontSize="{StaticResource FontSizeExtraLarge}"/>
-            <WrapPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
-                <WrapPanel.Resources>
-                    <Style TargetType="{x:Type TextBlock}">
-                        <Setter Property="Margin" Value="0,5"/>
-                        <Setter Property="FontSize" Value="{StaticResource FontSizeLarge}" />
+            <Rectangle Panel.ZIndex="-1" Grid.Row="0" Grid.RowSpan="1">
+                <Rectangle.Fill>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="{Binding ProfileColour}"/>
+                        <GradientStop Color="Transparent" Offset="1"/>
+                        <!--<GradientStop Color="{Binding ProfileColour, Converter={StaticResource ColourEnhancer}, ConverterParameter=0.25}"/>
+                    <GradientStop Color="{Binding ProfileColour}" Offset="0.5"/>
+                    <GradientStop Color="{Binding ProfileColour, Converter={StaticResource ColourEnhancer}, ConverterParameter=-0.25}" Offset="1"/>-->
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+            <Grid Grid.Row="0" Margin="15">
+                <Grid.Resources>
+                    <Style TargetType="TextBlock">
                         <Setter Property="TextWrapping" Value="WrapWithOverflow" />
+                        <Setter Property="Margin" Value="10"/>
                     </Style>
-                </WrapPanel.Resources>
-                <TextBlock d:Text="Display First Name" Text="{Binding DisplayFirstName}"/>
-                <TextBlock d:Text="Display Last Name        asdfasfasdfsdaf asdf               a" Text="{Binding DisplayLastName}" />
-            </WrapPanel>
-            <TextBlock Grid.Column="1" Grid.Row="2" d:Text="They/Them" Text="{Binding Pronouns}"/>
-            <TextBlock Grid.Column="1" Grid.Row="3" d:Text="01/01/1901" Text="{Binding Created}"/>
+                    <Style TargetType="WrapPanel">
+                        <Setter Property="Margin" Value="10,0" />
+                    </Style>
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <controls:NulahImage Source="{Binding ProfileImage}" Size="200" BackgroundColour="{Binding ProfileColour}" BorderColour="{Binding ProfileColour}" VerticalAlignment="Top" Grid.RowSpan="5" Grid.Column="0"/>
+                <TextBlock Grid.Column="1" Grid.Row="0" d:Text="Profile Name asdgfasdg asdt adsgsad gasdg sad tgasd" Text="{Binding Name}" FontSize="{StaticResource FontSizeExtraLarge}"/>
+                <WrapPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
+                    <WrapPanel.Resources>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Margin" Value="0,5"/>
+                            <Setter Property="FontSize" Value="{StaticResource FontSizeLarge}" />
+                            <Setter Property="TextWrapping" Value="WrapWithOverflow" />
+                        </Style>
+                    </WrapPanel.Resources>
+                    <TextBlock d:Text="Display First Name" Text="{Binding DisplayFirstName}"/>
+                    <TextBlock d:Text="Display Last Name        asdfasfasdfsdaf asdf               a" Text="{Binding DisplayLastName}" />
+                </WrapPanel>
+                <TextBlock Grid.Column="1" Grid.Row="2" d:Text="They/Them" Text="{Binding Pronouns}"/>
+                <TextBlock Grid.Column="1" Grid.Row="3" d:Text="01/01/1901" Text="{Binding Created}"/>
+            </Grid>
         </Grid>
-    </Grid>
+    </ScrollViewer>
 </UserControl>

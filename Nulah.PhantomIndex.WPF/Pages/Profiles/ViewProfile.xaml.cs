@@ -46,16 +46,26 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
         {
             await Task.Run(async () =>
             {
-                var profile = await App.Database.Profiles.GetProfile(profileId);
-                if (profile != null)
+                try
                 {
-                    _viewModel.Id = profile.Id;
-                    _viewModel.DisplayFirstName = profile.DisplayFirstName;
-                    _viewModel.DisplayLastName = profile.DisplayLastName;
-                    _viewModel.Name = profile.Name;
-                    _viewModel.Pronouns = profile.Pronouns;
-                    _viewModel.ImageBlob = profile.ImageBlob;
-                    _viewModel.Created = profile.CreatedUtc.ToLocalTime();
+                    var profile = await App.Database.Profiles.GetProfile(profileId);
+                    if (profile != null)
+                    {
+                        _viewModel.Id = profile.Id;
+                        _viewModel.DisplayFirstName = profile.DisplayFirstName;
+                        _viewModel.DisplayLastName = profile.DisplayLastName;
+                        _viewModel.Name = profile.Name;
+                        _viewModel.Pronouns = profile.Pronouns;
+                        _viewModel.ImageBlob = profile.ImageBlob;
+                        _viewModel.Created = profile.CreatedUtc.ToLocalTime();
+
+                        _viewModel.ProfileEvents = await App.Database.Events.GetEventsForProfile(profile.Id);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // TODO: start handling async exceptions as a precaution instead of letting the
+                    // run time silently eat them
                 }
             });
         }

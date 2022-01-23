@@ -1,4 +1,5 @@
 ﻿using Nulah.PhantomIndex.Core.ViewModels;
+using Nulah.PhantomIndex.Lib.Events.Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -92,6 +93,13 @@ namespace Nulah.PhantomIndex.WPF.ViewModels.Profiles
                 }
                 return _profileImage;
             }
+        }
+
+        private List<Event> _profileEvents = new List<Event>();
+        public List<Event> ProfileEvents
+        {
+            get => _profileEvents;
+            set => NotifyAndSetPropertyIfChanged(ref _profileEvents, value);
         }
     }
 }
