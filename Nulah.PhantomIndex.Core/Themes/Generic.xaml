@@ -7,6 +7,7 @@
         <ResourceDictionary Source="/Nulah.PhantomIndex.Core;component/Themes/NulahInput.xaml"/>
         <ResourceDictionary Source="/Nulah.PhantomIndex.Core;component/Themes/NulahFileSelector.xaml"/>
         <ResourceDictionary Source="/Nulah.PhantomIndex.Core;component/Themes/NulahOverlayDialog.xaml"/>
+        <ResourceDictionary Source="/Nulah.PhantomIndex.Core;component/Themes/NulahFancyBorder.xaml"/>
         <ResourceDictionary Source="/Nulah.PhantomIndex.Core;component/Themes/Colours.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
