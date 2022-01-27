@@ -1,4 +1,5 @@
 ﻿using Nulah.PhantomIndex.Core;
+using Nulah.PhantomIndex.Lib.Events.Models;
 using Nulah.PhantomIndex.Lib.Profiles.Models;
 using Nulah.PhantomIndex.WPF.ViewModels.Profiles;
 using System;
@@ -89,6 +90,27 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
+        }
+    }
+
+    public class ProfileEventSelector : DataTemplateSelector
+    {
+        public DataTemplate EventItemTemplate { get; set; }
+        public DataTemplate DateTimeItemTemplate { get; set; }
+
+        public override DataTemplate SelectTemplate(object item, DependencyObject container)
+        {
+            if (item == null)
+            {
+                return EventItemTemplate;
+            }
+
+            if (item is DateTimeEvent)
+            {
+                return DateTimeItemTemplate;
+            }
+
+            return EventItemTemplate;
         }
     }
 }

@@ -4,10 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Nulah.PhantomIndex.WPF.Pages.Profiles"
+             xmlns:lib="clr-namespace:Nulah.PhantomIndex.Lib.Events.Models;assembly=Nulah.PhantomIndex.Lib"
              mc:Ignorable="d" 
             xmlns:controls="clr-namespace:Nulah.PhantomIndex.Core.Controls;assembly=Nulah.PhantomIndex.Core" 
             xmlns:vm="clr-namespace:Nulah.PhantomIndex.WPF.ViewModels.Profiles"
-           d:DesignHeight="450" d:DesignWidth="800">
+           d:DesignHeight="1000
+             " d:DesignWidth="800">
     <UserControl.DataContext>
         <vm:ViewProfileViewModel/>
     </UserControl.DataContext>
@@ -31,6 +33,7 @@
                     </LinearGradientBrush>
                 </Rectangle.Fill>
             </Rectangle>
+            <!-- profile content -->
             <Grid Grid.Row="0" Margin="15">
                 <Grid.Resources>
                     <Style TargetType="TextBlock">
@@ -68,6 +71,88 @@
                 <TextBlock Grid.Column="1" Grid.Row="2" d:Text="They/Them" Text="{Binding Pronouns}"/>
                 <TextBlock Grid.Column="1" Grid.Row="3" d:Text="01/01/1901" Text="{Binding Created}"/>
             </Grid>
+            <!-- events panel -->
+            <StackPanel Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" FlowDirection="LeftToRight" Orientation="Vertical">
+                <ItemsControl x:Name="EventsItemsControl" ItemsSource="{Binding ProfileEvents}">
+                    <ItemsControl.Resources>
+                        <Style x:Key="EventControlStyle" TargetType="Grid">
+                            <Setter Property="Margin" Value="10,10,20,10" />
+                        </Style>
+                        <DataTemplate x:Key="DateTimeEventItemDataTemplate" DataType="{x:Type lib:DateTimeEvent}">
+                            <Grid Style="{StaticResource EventControlStyle}" HorizontalAlignment="Right">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Polygon Grid.RowSpan="2" Grid.ColumnSpan="2">
+                                    <Polygon.Points>
+                                        <Point X="0.25" Y="1"/>
+                                        <Point X="10" Y="0"/>
+                                        <Point X="9.75" Y="10"/>
+                                        <Point X="0" Y="9"/>
+                                    </Polygon.Points>
+                                    <Polygon.Style>
+                                        <Style TargetType="Polygon">
+                                            <Setter Property="Fill" Value="{StaticResource DefaultFontColour}" />
+                                            <Setter Property="Stretch" Value="Fill" />
+                                        </Style>
+                                    </Polygon.Style>
+                                </Polygon>
+                                <controls:NulahFancyBorder Grid.Row="0" Grid.Column="0">
+                                    <TextBlock Margin="10" Text="{Binding EventTypeName}" FontSize="{StaticResource FontSizeLarge}"/>
+                                </controls:NulahFancyBorder>
+                                <controls:NulahFancyBorder Grid.Row="1" Grid.Column="1">
+                                    <TextBlock TextWrapping="Wrap" Margin="10" Text="{Binding Content}" MaxWidth="500"/>
+                                </controls:NulahFancyBorder>
+                            </Grid>
+                        </DataTemplate>
+                        <DataTemplate x:Key="EventItemDataTemplate" DataType="{x:Type lib:Event}">
+                            <Grid Style="{StaticResource EventControlStyle}" HorizontalAlignment="Right">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Polygon Grid.RowSpan="2" Grid.ColumnSpan="2">
+                                    <Polygon.Points>
+                                        <Point X="0.25" Y="1"/>
+                                        <Point X="10" Y="0"/>
+                                        <Point X="9.75" Y="10"/>
+                                        <Point X="0" Y="9"/>
+                                    </Polygon.Points>
+                                    <Polygon.Style>
+                                        <Style TargetType="Polygon">
+                                            <Setter Property="Fill" Value="Red" />
+                                            <Setter Property="Stretch" Value="Fill" />
+                                        </Style>
+                                    </Polygon.Style>
+                                </Polygon>
+                                <controls:NulahFancyBorder Grid.Row="0" Grid.Column="0">
+                                    <TextBlock Margin="10" Text="{Binding EventTypeName}" FontSize="{StaticResource FontSizeLarge}"/>
+                                </controls:NulahFancyBorder>
+                                <controls:NulahFancyBorder Grid.Row="1" Grid.Column="1">
+                                    <TextBlock TextWrapping="Wrap" Margin="10" Text="{Binding Content}" MaxWidth="500"/>
+                                </controls:NulahFancyBorder>
+                            </Grid>
+                        </DataTemplate>
+                        <DataTemplate x:Key="TestItemDataTemplate" DataType="{x:Type lib:Event}">
+
+                        </DataTemplate>
+                    </ItemsControl.Resources>
+                    <ItemsControl.ItemTemplateSelector>
+                        <local:ProfileEventSelector 
+                            EventItemTemplate="{StaticResource EventItemDataTemplate}" 
+                            DateTimeItemTemplate="{StaticResource DateTimeEventItemDataTemplate}" />
+                    </ItemsControl.ItemTemplateSelector>
+                </ItemsControl>
+            </StackPanel>
         </Grid>
     </ScrollViewer>
 </UserControl>
