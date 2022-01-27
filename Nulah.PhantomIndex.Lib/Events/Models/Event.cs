@@ -11,6 +11,7 @@ namespace Nulah.PhantomIndex.Lib.Events.Models
         public Guid Id { get; set; }
         public Guid ProfileId { get; set; }
         public Guid EventTypeId { get; set; }
+        public string EventTypeName { get; set; }
         public DateTime EventTimeUTC { get; set; }
         public string Content { get; set; } = string.Empty;
     }

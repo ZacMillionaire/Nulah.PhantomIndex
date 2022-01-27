@@ -61,12 +61,17 @@ namespace Nulah.PhantomIndex.Lib.Events
         /// <exception cref="NotImplementedException"></exception>
         public async Task<DateTimeEvent> CreateEvent(DateTime dateTimeUTC, Guid profileId, Guid eventTypeId)
         {
+            // All events created should _always_ populate the TextContent as a fallback value.
+            // what that TextContent should be is up to whoever makes the code, but generally it should be the
+            // logical string representation of the stored value. That does not mean it has to be reversible to the original value.
+            // It helps, but for those cases it is the exception not the rule.
             var newEvent = new EventTable
             {
                 Id = Guid.NewGuid(),
                 EventTypeId = eventTypeId,
                 ProfileId = profileId,
                 DateTimeContent = dateTimeUTC,
+                TextContent = dateTimeUTC.ToString(),
                 EventTimeUTC = DateTime.UtcNow
             };
 
@@ -207,7 +212,8 @@ namespace Nulah.PhantomIndex.Lib.Events
 	                E.NumericContent,
 	                E.DateTimeContent,
 	                E.BlobContent,
-	                ET.Type AS ClassType
+	                ET.Type AS ClassType,
+                    ET.Name as EventTypeName
                 FROM 
 	                [Events] AS E
                 JOIN [EventTypes] AS ET
@@ -226,6 +232,22 @@ namespace Nulah.PhantomIndex.Lib.Events
                         Content = profileEvent.DateTimeContent!.Value,
                         EventTypeId = profileEvent.EventTypeId,
                         EventTimeUTC = profileEvent.EventTimeUTC,
+                        EventTypeName = profileEvent.EventTypeName,
+                        Id = profileEvent.Id,
+                        ProfileId = profileId
+                    });
+                }
+                else
+                {
+                    // Default for events is to only take the TextContent.
+                    // It could be serialised data or otherwise, it doesn't really matter as an
+                    // Event shouldn't exist on its own but it also shouldn't be the end of the world if one does either.
+                    profileEvents.Add(new Event
+                    {
+                        Content = profileEvent.TextContent,
+                        EventTypeId = profileEvent.EventTypeId,
+                        EventTimeUTC = profileEvent.EventTimeUTC,
+                        EventTypeName = profileEvent.EventTypeName,
                         Id = profileEvent.Id,
                         ProfileId = profileId
                     });
@@ -246,6 +268,7 @@ namespace Nulah.PhantomIndex.Lib.Events
             public DateTime? DateTimeContent { get; set; }
             public byte[]? BlobContent { get; set; }
             public string ClassType { get; set; }
+            public string EventTypeName { get; set; }
         }
 
         /// <summary>
