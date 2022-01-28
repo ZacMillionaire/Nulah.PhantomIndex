@@ -1,17 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Nulah.PhantomIndex.Core.ViewModels
 {
-    public class ViewModelBase : INotifyPropertyChanged, IDisposable
+
+    public abstract class ViewModelBase : INotifyPropertyChanged, IDisposable
     {
         public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Set to true in <see cref="ViewModelBase.ctor"/> once default values have been set
+        /// </summary>
+        private bool IsNotifyingChange = false;
+
+        /// <summary>
+        /// Binding flags to get view model properties
+        /// </summary>
+        private BindingFlags _derivedPropertyFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
+
+        public ViewModelBase()
+        {
+            // Set default values defined by DefaultValueAttributes, then turn on change notifications
+            SetDefaultValues();
+            IsNotifyingChange = true;
+        }
 
         /// <summary>
         /// Warns the developer if this object does not have
@@ -57,12 +77,31 @@ namespace Nulah.PhantomIndex.Core.ViewModels
         protected void NotifyAndSetPropertyIfChanged<T>(ref T property, T value,
             [CallerMemberName] string ____DO_NOT_SET___propertyName = null)
         {
+
             VerifyPropertyName(____DO_NOT_SET___propertyName);
 
-            if (value.Equals(property) == false)
+            if (value == null || value.Equals(property) == false)
             {
                 property = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(____DO_NOT_SET___propertyName));
+
+                if (IsNotifyingChange == true)
+                {
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(____DO_NOT_SET___propertyName));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Raises a <see cref="PropertyChanged"/> for a property
+        /// </summary>
+        /// <param name="propertyName"></param>
+        protected void NotifyPropertyChanged(string propertyName)
+        {
+            VerifyPropertyName(propertyName);
+
+            if (IsNotifyingChange == true)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
         }
 
@@ -72,6 +111,7 @@ namespace Nulah.PhantomIndex.Core.ViewModels
         /// <param name="propertyName">The property that has a new value.</param>
         protected virtual void OnPropertyChanged(string propertyName)
         {
+            throw new NotSupportedException("No longer used, use NotifyPropertyChanged(string propertyName) or NotifyAndSetPropertyIfChanged<T>(ref T property, T value)");
             VerifyPropertyName(propertyName);
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -101,13 +141,89 @@ namespace Nulah.PhantomIndex.Core.ViewModels
         /// </summary>
         protected virtual void OnDispose()
         {
+            PropertyChanged = null;
         }
 
         private bool _pageEnabled;
         public bool PageEnabled
         {
-            get { return _pageEnabled; }
-            set { _pageEnabled = value; OnPropertyChanged(nameof(PageEnabled)); }
+            get => _pageEnabled;
+            set => NotifyAndSetPropertyIfChanged(ref _pageEnabled, value);
+        }
+
+        private List<string> _validationErrors;
+
+        public List<string> ValidationErrors
+        {
+            get => _validationErrors;
+            set => NotifyAndSetPropertyIfChanged(ref _validationErrors, value);
+        }
+
+        /// <summary>
+        /// Validates the view models based on <see cref="System.ComponentModel.DataAnnotations"/> attributes
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="AggregateException"></exception>
+        public bool Validate()
+        {
+            var ctx = new ValidationContext(this, null, null);
+            var validationResults = new List<ValidationResult>();
+            var isValid = Validator.TryValidateObject(this, ctx, validationResults, true);
+
+            if (!isValid)
+            {
+                var validationErrors = new List<string>();
+
+                foreach (ValidationResult validationResult in validationResults)
+                {
+                    validationErrors.Add(validationResult.ErrorMessage);
+                }
+
+                ValidationErrors = validationErrors;
+
+                return false;
+            }
+
+            ValidationErrors = null;
+
+            return true;
+        }
+
+        private void SetDefaultValues()
+        {
+            // Get the derived type of this view model
+            var viewType = this.GetType();
+            // Get all properties from the view, ignoring inherited ones (eg: ones from this base view)
+            var props = viewType.GetProperties(_derivedPropertyFlags);
+            foreach (PropertyInfo prop in props)
+            {
+                // Ignore properties with no setter (certain struct properties like System.Windows.Media.Colour)
+                if (prop.SetMethod == null)
+                {
+                    continue;
+                }
+
+                if (prop.GetCustomAttribute(typeof(DefaultValueAttribute)) is DefaultValueAttribute defaultValue)
+                {
+                    prop.SetValue(this, defaultValue.Value);
+                }
+                else
+                {
+                    prop.SetValue(this, default);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Resets the view model to default values, and sets <see cref="PageEnabled"/> to true.
+        /// <para>
+        /// For derived types, <see cref="default"/> will be used for all properties unless annotated with a <see cref="DefaultValueAttribute"/>
+        /// </para>
+        /// </summary>
+        public void Reset()
+        {
+            SetDefaultValues();
+            PageEnabled = true;
         }
     }
 }

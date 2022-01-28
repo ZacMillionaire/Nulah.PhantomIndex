@@ -1,6 +1,12 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using Nulah.PhantomIndex.Lib.Images;
+using Nulah.PhantomIndex.Lib.Profiles;
+using Nulah.PhantomIndex.Lib.Profiles.Models;
+using Nulah.PhantomIndex.WPF.ViewModels.Profiles;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,14 +25,16 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
     /// <summary>
     /// Interaction logic for NewProfile.xaml
     /// </summary>
-    public partial class NewProfile : Page, INotifyPropertyChanged
+    public partial class NewProfile : UserControl, INotifyPropertyChanged
     {
+        public NewProfileViewModel _viewModel = new();
+
         public NewProfile()
         {
             InitializeComponent();
+            DataContext = _viewModel;
+            _viewModel.PageEnabled = true;
         }
-
-
 
         public bool? FileDropValid
         {
@@ -70,7 +78,7 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 var files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                if (files.Length == 1)
+                if (files.Length == 1 && ImageController.IsValidImageFormat(files[0]) == true)
                 {
                     e.Effects = DragDropEffects.Copy;
                     FileDropValid = true;
@@ -90,18 +98,124 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
             FileDropValid = null;
         }
 
-        private void DragDropControl_Drop(object sender, DragEventArgs e)
+        private async void DragDropControl_Drop(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 var files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 if (files.Length == 1)
                 {
-                    FileSourceInput.Text = files[0];
+                    await ProcessProfileImage(files[0]);
                 }
             }
 
             FileDropValid = null;
+        }
+
+        /// <summary>
+        /// Handles processing an image source, disabling the page view, and updating the drop canvas source
+        /// </summary>
+        /// <param name="imageSource"></param>
+        /// <returns></returns>
+        private async Task ProcessProfileImage(string imageSource)
+        {
+            if (string.IsNullOrWhiteSpace(imageSource) == true
+                || ImageController.IsValidImageFormat(imageSource) == false)
+            {
+                return;
+            }
+
+            _viewModel.PageEnabled = false;
+
+            var resizedImageBlob = await ResizeImage(imageSource);
+
+            _viewModel.ImageBlob = resizedImageBlob;
+            _viewModel.FileName = imageSource;
+            _viewModel.ProfileImage = Helpers.ImageByteArrayToBitmap(_viewModel.ImageBlob);
+
+            _viewModel.PageEnabled = true;
+        }
+
+        /// <summary>
+        /// Resizes an image file and returns the result
+        /// </summary>
+        /// <param name="imageSource"></param>
+        /// <returns></returns>
+        private async Task<byte[]> ResizeImage(string imageSource)
+        {
+            // Return a task here to ensure the UI is not blocked
+            return await Task.Run(async () =>
+            {
+                return await App.Database.Images
+                    .ResizeImageToWidth(imageSource, 300)
+                    .ConfigureAwait(false);
+            });
+        }
+
+        private async void NulahFileSelector_FileSelected(object sender, string selectedFile)
+        {
+            await ProcessProfileImage(selectedFile);
+        }
+
+        private async void CreateProfile_Click(object sender, RoutedEventArgs e)
+        {
+            var viewModelValid = _viewModel.Validate();
+            if (viewModelValid == false)
+            {
+                NewProfileScrollViewer.ScrollToTop();
+            }
+            else
+            {
+                var profileManager = await CreateNewProfile(_viewModel.ProfileName,
+                        _viewModel.DisplayFirstName,
+                        _viewModel.Pronouns,
+                        _viewModel.DisplayLastName,
+                        _viewModel.ImageBlob);
+
+                ShowHideDialog(true);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new profile and returns the result
+        /// </summary>
+        /// <param name="profileName"></param>
+        /// <param name="displayFirstname"></param>
+        /// <param name="pronouns"></param>
+        /// <param name="displayLastName"></param>
+        /// <param name="imageBlob"></param>
+        /// <returns></returns>
+        private async Task<ProfileTable> CreateNewProfile(string profileName, string displayFirstname, string pronouns, string? displayLastName = null, byte[]? imageBlob = null)
+        {
+            // Return a task here to ensure the UI is not blocked
+            return await Task.Run(async () =>
+            {
+                return await App.Database.Profiles
+                    .Create(profileName,
+                        displayFirstname,
+                        pronouns,
+                        displayLastName,
+                        imageBlob)
+                    .ConfigureAwait(false);
+            });
+        }
+
+        /// <summary>
+        /// Shows or hides the dialog, and sets the <see cref="Core.ViewModels.ViewModelBase.PageEnabled"/> as appropriate
+        /// </summary>
+        /// <param name="showDialog"></param>
+        private void ShowHideDialog(bool showDialog = true)
+        {
+            // Enabling the page is the inverse of showing the dialog.
+            // If the dialog is shown, the page is disabled 
+            _viewModel.PageEnabled = !showDialog;
+            OverlayDialog.Visibility = showDialog ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void CloseDialog_Click(object sender, RoutedEventArgs e)
+        {
+            ShowHideDialog(false);
+            _viewModel.Reset();
         }
     }
 }

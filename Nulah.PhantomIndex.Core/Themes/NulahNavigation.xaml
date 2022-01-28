@@ -22,10 +22,17 @@
                             <ColumnDefinition MinWidth="{StaticResource NavigationMinWidth}" Width="auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Grid Grid.Column="0" x:Name="MenuItemGrid">
-                            <ItemsControl x:Name="MenuItems" ItemsSource="{TemplateBinding MenuItems}" />
+                        <Grid Grid.Column="0" x:Name="MenuItemGrid" Background="{StaticResource DefaultBackgroundBrush}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+                                <ItemsControl x:Name="MenuItems" ItemsSource="{TemplateBinding MenuItems}" />
+                            </ScrollViewer>
+                            <ItemsControl Grid.Row="1"  x:Name="FooterMenuItems" ItemsSource="{TemplateBinding FooterMenuItems}" />
                         </Grid>
-                        <Frame Grid.Column="1" x:Name="NavigationContent" NavigationUIVisibility="Hidden"/>
+                        <Border BorderBrush="{StaticResource DefaultBackgroundMainBrush}" BorderThickness="2,0,0,0" Grid.Column="1" x:Name="NavigationContent"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -70,7 +77,7 @@
                             <Style TargetType="local:NavigationLink">
                                 <Style.Resources>
                                     <Style TargetType="Border">
-                                        <Setter Property="Background" Value="BurlyWood"/>
+                                        <Setter Property="Background" Value="Transparent"/>
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
                                                 <Setter Property="Background"  Value="AliceBlue"/>

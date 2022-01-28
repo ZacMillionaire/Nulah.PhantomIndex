@@ -17,6 +17,8 @@ namespace Nulah.PhantomIndex.Core.Controls
     {
         public static readonly RoutedEvent NavigationItemClicked = EventManager.RegisterRoutedEvent(nameof(NavigationItemClicked), RoutingStrategy.Bubble, typeof(NulahNavigation), typeof(NavigationItem));
 
+        // Why was whatever this was here?
+        /*
         public static void AddNavigationItemClickedHandler(DependencyObject d, RoutedEventHandler handler)
         {
             if (d is UIElement uie && uie != null)
@@ -24,13 +26,14 @@ namespace Nulah.PhantomIndex.Core.Controls
                 uie.AddHandler(NavigationItemClicked, handler);
             }
         }
+
         public static void RemoveNavigationItemClickedHandler(DependencyObject d, RoutedEventHandler handler)
         {
             if (d is UIElement uie && uie != null)
             {
                 uie.RemoveHandler(NavigationItemClicked, handler);
             }
-        }
+        }*/
 
         static NulahNavigation()
         {
@@ -40,6 +43,7 @@ namespace Nulah.PhantomIndex.Core.Controls
         public NulahNavigation()
         {
             MenuItems = new();
+            FooterMenuItems = new();
         }
 
         public List<NavigationLink> MenuItems
@@ -50,35 +54,38 @@ namespace Nulah.PhantomIndex.Core.Controls
 
         // Using a DependencyProperty as the backing store for MenuItems.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty MenuItemsProperty =
-            DependencyProperty.Register("MenuItems", typeof(List<NavigationLink>), typeof(NulahNavigation), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(MenuItems), typeof(List<NavigationLink>), typeof(NulahNavigation), new PropertyMetadata(null));
 
-        private Frame _navigationFrame;
+
+
+        public List<NavigationLink> FooterMenuItems
+        {
+            get { return (List<NavigationLink>)GetValue(FooterMenuItemsProperty); }
+            set { SetValue(FooterMenuItemsProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for FooterMenuItems.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty FooterMenuItemsProperty =
+            DependencyProperty.Register(nameof(FooterMenuItems), typeof(List<NavigationLink>), typeof(NulahNavigation), new PropertyMetadata(null));
+
+
+
+        private Border _navigationFrame;
 
         public override void OnApplyTemplate()
         {
-            //var menuItems = GetTemplateChild("MenuItems") as ItemsControl;
-
-            //if (menuItems != null)
-            //{
-            //    //menuItems.SelectionChanged += SelectedItemChanged;
-            //}
-
-            var navigationFrame = GetTemplateChild("NavigationContent") as Frame;
-            if (navigationFrame != null)
+            if (GetTemplateChild("NavigationContent") is Border navigationFrame)
             {
                 _navigationFrame = navigationFrame;
             }
 
-            var menuItemsControl = GetTemplateChild("MenuItems") as ItemsControl;
-            if (menuItemsControl != null)
-            {
-                menuItemsControl.AddHandler(NavigationItemClicked, new RoutedEventHandler(NeedsCleaningEvent));
-            }
+            // Register the routed event for NavigationItems to the entire control
+            AddHandler(NavigationItemClicked, new RoutedEventHandler(ChildNavigationClickEvent));
 
             base.OnApplyTemplate();
         }
 
-        private void NeedsCleaningEvent(object sender, RoutedEventArgs e)
+        private void ChildNavigationClickEvent(object sender, RoutedEventArgs e)
         {
             if (e.OriginalSource is NavigationItem source)
             {
@@ -86,17 +93,45 @@ namespace Nulah.PhantomIndex.Core.Controls
             }
         }
 
+        // future potential usercontrol caching
+        //private Dictionary<string, UserControl> _navigationCache = new();
+
+        private UserControl _currentUserControl = null;
+
         private void LoadPageFromNavigationItem(string navigationItemTag)
         {
             var pageViewFromAssembly = Assembly.GetEntryAssembly().ResolvePageViewFromAssembly(navigationItemTag);
 
+            /*
+            // future potential usercontrol caching
+            if (_navigationCache.ContainsKey(navigationItemTag))
+            {
+                _navigationFrame.Child = _navigationCache[navigationItemTag];
+                return;
+            }
+            */
             if (pageViewFromAssembly.PageView != null)
             {
-                var pageView = PageViewResolver.GetActivatedPageViewByParameters(pageViewFromAssembly.PageView, pageViewFromAssembly.PageViewParameters);
+                var pageView = PageViewResolver.GetActivatedPageViewByParameters<UserControl>(pageViewFromAssembly.PageView, pageViewFromAssembly.PageViewParameters);
 
                 if (pageView != null)
                 {
-                    _navigationFrame.Navigate(pageView);
+                    // Dispose the DataContext on a UserControl if it supports it
+                    if (_currentUserControl != null && _currentUserControl.DataContext is IDisposable disposableDataContext)
+                    {
+                        disposableDataContext.Dispose();
+                    }
+
+                    // Ensure the page correctly inherits snapping and layout rounding
+                    pageView.SnapsToDevicePixels = this.SnapsToDevicePixels;
+                    pageView.UseLayoutRounding = this.UseLayoutRounding;
+
+                    _currentUserControl = pageView;
+
+                    _navigationFrame.Child = _currentUserControl;
+
+                    // future potential usercontrol caching
+                    //_navigationCache.Add(navigationItemTag, pageView);
                 }
                 else
                 {
@@ -112,6 +147,15 @@ namespace Nulah.PhantomIndex.Core.Controls
         protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
+        }
+
+        /// <summary>
+        /// Sets the navigation content to the given location
+        /// </summary>
+        /// <param name="pageNavigationUri"></param>
+        public void NavigateToPage(string pageNavigationUri)
+        {
+            LoadPageFromNavigationItem(pageNavigationUri);
         }
     }
 

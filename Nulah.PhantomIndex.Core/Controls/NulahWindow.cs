@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -259,6 +260,7 @@ namespace Nulah.PhantomIndex.Core.Controls
             _hwndSource.AddHook(HookProc);
         }
 
+        [DebuggerStepThrough]
         public static IntPtr HookProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             if (msg == WM_GETMINMAXINFO)
