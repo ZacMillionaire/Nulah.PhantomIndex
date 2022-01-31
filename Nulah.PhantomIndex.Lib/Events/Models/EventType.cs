@@ -14,5 +14,10 @@ namespace Nulah.PhantomIndex.Lib.Events.Models
         /// C# DataType
         /// </summary>
         public string Type { get; set; }
+        public string StringFormat { get; set; }
+        /// <summary>
+        /// Indicates that the event type is required by the application and should be read only
+        /// </summary>
+        public bool IsReadOnly { get; set; }
     }
 }
