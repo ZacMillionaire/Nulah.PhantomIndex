@@ -17,7 +17,8 @@ namespace Nulah.PhantomIndex.Lib.Events
             typeof(decimal),
             typeof(double),
             typeof(DateTime),
-            typeof(TimeSpan)
+            typeof(TimeSpan),
+            typeof(byte[])
         };
 
         internal EventController(PhantomIndexManager phantomIndexManager)
@@ -48,6 +49,10 @@ namespace Nulah.PhantomIndex.Lib.Events
 
 
                 await CreateEventType<DateTime>(DefaultEventType.Created.ToString(), "o", true).ConfigureAwait(false);
+                await CreateEventType<string>(DefaultEventType.Note.ToString(), isReadOnly: true).ConfigureAwait(false);
+                await CreateEventType<string>(DefaultEventType.CallIncoming.ToString(), isReadOnly: true).ConfigureAwait(false);
+                await CreateEventType<string>(DefaultEventType.CallOutgoing.ToString(), isReadOnly: true).ConfigureAwait(false);
+                await CreateEventType<byte[]>(DefaultEventType.Image.ToString(), isReadOnly: true).ConfigureAwait(false);
 
                 // Validate all required default event types exist
                 foreach (var defaultEventType in Enum.GetValues<DefaultEventType>())

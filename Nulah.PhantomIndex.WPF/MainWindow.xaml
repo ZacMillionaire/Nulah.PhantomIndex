@@ -21,13 +21,12 @@
                     <control:NavigationItem Icon="EMI" Tag="Pages/Profiles/Index:Company">By Company</control:NavigationItem>
                 </control:NavigationItemCollapsable.MenuItems>
             </control:NavigationItemCollapsable>
-            <control:NavigationItemCollapsable Icon="Accident">
-                Collapsable Item Header
+            <control:NavigationItemCollapsable Icon="Tag">
+                Events and Categories
                 <control:NavigationItemCollapsable.MenuItems>
-                    <control:NavigationItem Tag="Pages/Profiles/Index:Company">collapsable list items</control:NavigationItem>
-                    <control:NavigationItem Tag="Pages/Profiles/Index:Company">Item 1</control:NavigationItem>
-                    <control:NavigationItem Tag="Pages/Profiles/Index:Company">Item 2</control:NavigationItem>
-                    <control:NavigationItem Tag="Pages/Profiles/Index:Company">Item 3</control:NavigationItem>
+                    <control:NavigationItem Tag="Pages/Interactions/Index" Icon="SwitchUser">Interactions</control:NavigationItem>
+                    <control:NavigationSeparator/>
+                    <control:NavigationItem Tag="Pages/Categories/Index">Categories</control:NavigationItem>
                 </control:NavigationItemCollapsable.MenuItems>
             </control:NavigationItemCollapsable>
             <control:NavigationHeader Icon="Accident">Header 2</control:NavigationHeader>
