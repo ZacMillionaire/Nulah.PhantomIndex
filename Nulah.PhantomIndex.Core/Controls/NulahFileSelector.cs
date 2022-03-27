@@ -25,6 +25,16 @@ namespace Nulah.PhantomIndex.Core.Controls
                 DefaultUpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
             });
 
+        public bool RaiseOnFileNameChange
+        {
+            get { return (bool)GetValue(RaiseOnFileNameChangeProperty); }
+            set { SetValue(RaiseOnFileNameChangeProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for RaiseEventOnFileNameChange.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty RaiseOnFileNameChangeProperty =
+            DependencyProperty.Register(nameof(RaiseOnFileNameChange), typeof(bool), typeof(NulahFileSelector), new PropertyMetadata(false));
+
         private static void FileSourcePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue == e.OldValue)
@@ -34,7 +44,7 @@ namespace Nulah.PhantomIndex.Core.Controls
 
             if (e.NewValue is string newFileSource && string.IsNullOrWhiteSpace(newFileSource) == false)
             {
-                ((NulahFileSelector)d).RaiseFileSourceChange(newFileSource);
+                ((NulahFileSelector)d).FileSourceChange(newFileSource);
             }
         }
 
@@ -67,6 +77,11 @@ namespace Nulah.PhantomIndex.Core.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(NulahFileSelector), new FrameworkPropertyMetadata(typeof(NulahFileSelector)));
         }
 
+        protected override void OnStyleChanged(Style oldStyle, Style newStyle)
+        {
+            base.OnStyleChanged(oldStyle, newStyle);
+        }
+
         public override void OnApplyTemplate()
         {
             if (GetTemplateChild("FileDialogButton") is Button fileDialogButton && fileDialogButton != null)
@@ -84,18 +99,34 @@ namespace Nulah.PhantomIndex.Core.Controls
 
             if (openFileDialog.ShowDialog() == true)
             {
-                RaiseFileSourceChange(openFileDialog.FileName);
+                // Set the flag to indicate the property change event came from code and not binding
+                // to prevent FileSelected from being invoked twice - once here, then once as a result of FileSource being updated
+                _fileLocationEventRaisedFromButton = true;
+
+                FileSource = openFileDialog.FileName;
+                FileSelected?.Invoke(this, FileSource);
+
+                _fileLocationEventRaisedFromButton = false;
             }
         }
 
         /// <summary>
-        /// Updates the value of <see cref="FileSource"/> updating any bindings to it, and raises the <see cref="FileSelected"/> event with the selected file location
+        /// Indicates if the file location changing was from button to prevent <see cref="FileSelected"/> from invoking twice.
+        /// </summary>
+        private bool _fileLocationEventRaisedFromButton = false;
+
+        /// <summary>
+        /// Raises the <see cref="FileSelected"/> event with the selected file location if <see cref="RaiseOnFileNameChange"/> is true
         /// </summary>
         /// <param name="newFileSource"></param>
-        public void RaiseFileSourceChange(string newFileSource)
+        public void FileSourceChange(string newFileSource)
         {
-            FileSource = newFileSource;
-            FileSelected?.Invoke(this, FileSource);
+            // Only invoke bound events if RaiseOnFileNameChange is true, and the property binding raising this event wasn't
+            // a result of the file dialog button click event
+            if (_fileLocationEventRaisedFromButton == false && RaiseOnFileNameChange == true)
+            {
+                FileSelected?.Invoke(this, FileSource);
+            }
         }
     }
 }

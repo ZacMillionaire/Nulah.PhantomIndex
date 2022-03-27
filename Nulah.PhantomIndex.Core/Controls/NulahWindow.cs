@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -9,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Shapes;
 
 // Based from https://blog.magnusmontin.net/2013/03/16/how-to-create-a-custom-window-in-wpf/
@@ -17,6 +19,39 @@ namespace Nulah.PhantomIndex.Core.Controls
 {
     public class NulahWindow : Window
     {
+
+        /// <summary>
+        /// This controls the active window title and border colours
+        /// </summary>
+        [Category("Brush")]
+        [Description("Active window and border colour")]
+        public Brush WindowColour
+        {
+            get { return (Brush)GetValue(WindowColourProperty); }
+            set { SetValue(WindowColourProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for WindowColour.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty WindowColourProperty =
+            DependencyProperty.Register(nameof(WindowColour), typeof(Brush), typeof(NulahWindow), new PropertyMetadata(null));
+
+        /// <summary>
+        /// This controls the inactive window title and border colours
+        /// </summary>
+        [Category("Brush")]
+        [Description("Inactive window and border colour")]
+        public Brush WindowColourInactive
+        {
+            get { return (Brush)GetValue(WindowColourInactiveProperty); }
+            set { SetValue(WindowColourInactiveProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for WindowColour.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty WindowColourInactiveProperty =
+            DependencyProperty.Register(nameof(WindowColourInactive), typeof(Brush), typeof(NulahWindow), new PropertyMetadata(null));
+
+
+
         public NulahWindow() : base()
         {
             // Set preview mouse move so the resize grid doesn't persist its cursor

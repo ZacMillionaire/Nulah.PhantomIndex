@@ -16,8 +16,8 @@
                             <ColumnDefinition/>
                             <ColumnDefinition Width="auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0" Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=FileSource}"></TextBox>
-                        <Button Grid.Column="1" x:Name="FileDialogButton" Content="{TemplateBinding ButtonContent}"/>
+                        <TextBox Grid.Column="0" Height="{TemplateBinding Height}" Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=FileSource}"></TextBox>
+                        <Button Grid.Column="1" Height="{TemplateBinding Height}" x:Name="FileDialogButton" Content="{TemplateBinding ButtonContent}"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
