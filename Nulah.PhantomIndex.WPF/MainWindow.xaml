@@ -6,11 +6,12 @@
         xmlns:local="clr-namespace:Nulah.PhantomIndex.WPF"
         xmlns:control="clr-namespace:Nulah.PhantomIndex.Core.Controls;assembly=Nulah.PhantomIndex.Core"
         mc:Ignorable="d"
-        Title="TestWindow" Height="768" Width="1024">
+        Title="TestWindow"
+        Style="{StaticResource DefaultWindowStyle}" Height="768" Width="1024">
     <control:NulahWindow.TitleBarControls>
         <Button>Test Title Button</Button>
     </control:NulahWindow.TitleBarControls>
-    <control:NulahNavigation x:Name="MainWindowNavigation">
+    <control:NulahNavigation x:Name="MainWindowNavigation" Style="{StaticResource DefaultNavigationStyle}">
         <control:NulahNavigation.MenuItems>
             <control:NavigationItemCollapsable Icon="GuestUser" Content="Profiles" Expanded="True">
                 <control:NavigationItemCollapsable.MenuItems>
