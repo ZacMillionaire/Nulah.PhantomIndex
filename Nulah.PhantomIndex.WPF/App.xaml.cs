@@ -23,7 +23,7 @@ namespace Nulah.PhantomIndex.WPF
         {
             // Ensure the application data folder for this application exists
             var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            string phantomIndexAppLocation = Path.Combine(localAppData, GetType()!.Namespace);
+            var phantomIndexAppLocation = Path.Combine(localAppData, GetType()!.Namespace);
             Directory.CreateDirectory(phantomIndexAppLocation);
 
             // Set the default database location if empty
