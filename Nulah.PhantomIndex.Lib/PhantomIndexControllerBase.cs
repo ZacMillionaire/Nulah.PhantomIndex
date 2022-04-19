@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Nulah.PhantomIndex.Lib
 {
-    public abstract class PhantomIndexControllerBase
+    public abstract class DatabaseControllerBase
     {
-        public readonly PhantomIndexManager PhantomIndexManager;
+        public readonly DatabaseManager DatabaseManager;
 
-        public PhantomIndexControllerBase(PhantomIndexManager phantomIndexManager)
+        public DatabaseControllerBase(DatabaseManager databaseManager)
         {
-            PhantomIndexManager = phantomIndexManager;
+            DatabaseManager = databaseManager;
         }
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace Nulah.PhantomIndex.Lib
         /// <exception cref="Exception"></exception>
         internal virtual void Init()
         {
-            if (PhantomIndexManager.Connection == null)
+            if (DatabaseManager.Connection == null)
             {
                 throw new Exception("Connection has not been created");
             }

@@ -16,7 +16,8 @@ namespace Nulah.PhantomIndex.WPF
     /// </summary>
     public partial class App : Application
     {
-        public readonly static PhantomIndexManager Database = new PhantomIndexManager();
+        public readonly static PhantomIndexManager PhantomIndexManager = new PhantomIndexManager();
+        public static DatabaseManager Database => PhantomIndexManager.Database;
 
         public App()
         {
@@ -31,7 +32,14 @@ namespace Nulah.PhantomIndex.WPF
                 WPF.Properties.Settings.Default.Save();
             }
 
+            if (string.IsNullOrWhiteSpace(WPF.Properties.Settings.Default.PluginLocation) == true)
+            {
+                WPF.Properties.Settings.Default.PluginLocation = Path.Combine(localAppData, "Plugins");
+                WPF.Properties.Settings.Default.Save();
+            }
+
             Database.SetConnection(WPF.Properties.Settings.Default.ProfileDatabaseLocation);
+            PhantomIndexManager.SetPluginLocation(WPF.Properties.Settings.Default.PluginLocation);
         }
     }
 }

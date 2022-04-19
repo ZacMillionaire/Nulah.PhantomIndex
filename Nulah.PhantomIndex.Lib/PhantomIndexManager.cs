@@ -1,5 +1,6 @@
 ﻿using Nulah.PhantomIndex.Lib.Events;
 using Nulah.PhantomIndex.Lib.Images;
+using Nulah.PhantomIndex.Lib.Plugins;
 using Nulah.PhantomIndex.Lib.Profiles;
 using SQLite;
 using System;
@@ -12,29 +13,18 @@ namespace Nulah.PhantomIndex.Lib
 {
     public sealed class PhantomIndexManager
     {
-        internal SQLiteAsyncConnection? Connection;
-        public ProfileController Profiles;
-        public ImageController Images;
-        public EventController Events;
-
-        public string DatabaseLocation;
+        public readonly DatabaseManager Database;
+        private PluginManager _pluginManager;
 
         public PhantomIndexManager()
         {
-            Profiles = new ProfileController(this);
-            Images = new ImageController(this);
-            Events = new EventController(this);
+            Database = new DatabaseManager();
+            _pluginManager = new PluginManager();
         }
 
-        public void SetConnection(string connectionString)
+        public void SetPluginLocation(string pluginDirectory)
         {
-            DatabaseLocation = connectionString;
-
-            Connection = new SQLiteAsyncConnection(connectionString);
-
-            Profiles.Init();
-            Images.Init();
-            Events.Init();
+            _pluginManager.Location = pluginDirectory;
         }
     }
 }
