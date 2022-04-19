@@ -22,11 +22,13 @@
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Padding" Value="1"/>-->
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Border.CornerRadius" Value="3" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Grid>
-                        <Border x:Name="MainBorder" CornerRadius="3" BorderBrush="#333" BorderThickness="1">
+                        <Border x:Name="MainBorder" CornerRadius="{TemplateBinding Border.CornerRadius}" BorderBrush="#333" BorderThickness="1">
                             <Border.Style>
                                 <Style TargetType="Border">
                                     <Setter Property="Background">
@@ -43,13 +45,13 @@
                                 <Border CornerRadius="2" Margin="0" BorderBrush="White" BorderThickness="0,1,0,0" />
                                 <Grid>
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" />
                                     </Grid.RowDefinitions>
-                                    <TextBlock x:Name="Title" VerticalAlignment="Center" FontWeight="SemiBold" HorizontalAlignment="Center" FontSize="{StaticResource FontSizeNormal}" Margin="5" Foreground="#000">
+                                    <TextBlock x:Name="Title" VerticalAlignment="Center" FontWeight="SemiBold" HorizontalAlignment="Center" FontSize="{TemplateBinding FontSize}" Margin="5" Foreground="#000">
                                         <TextBlock.Effect>
                                             <DropShadowEffect BlurRadius="2" Color="#fff" Direction="90" Opacity="0.5" ShadowDepth="1" />
                                         </TextBlock.Effect>
-                                            <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                        <ContentPresenter x:Name="contentPresenter" Focusable="False" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                                     </TextBlock>
                                 </Grid>
                             </Grid>

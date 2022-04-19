@@ -8,6 +8,10 @@ namespace Nulah.PhantomIndex.Lib.Events.Models
 {
     public enum DefaultEventType
     {
-        Created
+        Created,
+        Note,
+        CallIncoming,
+        CallOutgoing,
+        Image
     }
 }

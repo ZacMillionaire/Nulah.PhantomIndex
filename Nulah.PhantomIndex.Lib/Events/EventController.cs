@@ -10,6 +10,17 @@ namespace Nulah.PhantomIndex.Lib.Events
 {
     public class EventController : PhantomIndexControllerBase
     {
+        private readonly List<Type> _validEventTypes = new List<Type>
+        {
+            typeof(string),
+            typeof(int),
+            typeof(decimal),
+            typeof(double),
+            typeof(DateTime),
+            typeof(TimeSpan),
+            typeof(byte[])
+        };
+
         internal EventController(PhantomIndexManager phantomIndexManager)
             : base(phantomIndexManager)
         {
@@ -37,7 +48,11 @@ namespace Nulah.PhantomIndex.Lib.Events
                 EventTypeTableName = ((TableAttribute)typeof(EventTypeTable).GetCustomAttributes(typeof(TableAttribute), false).FirstOrDefault(new TableAttribute("EventType"))).Name;
 
 
-                await CreateEventType<DateTime>(DefaultEventType.Created.ToString()).ConfigureAwait(false);
+                await CreateEventType<DateTime>(DefaultEventType.Created.ToString(), "o", true).ConfigureAwait(false);
+                await CreateEventType<string>(DefaultEventType.Note.ToString(), isReadOnly: true).ConfigureAwait(false);
+                await CreateEventType<string>(DefaultEventType.CallIncoming.ToString(), isReadOnly: true).ConfigureAwait(false);
+                await CreateEventType<string>(DefaultEventType.CallOutgoing.ToString(), isReadOnly: true).ConfigureAwait(false);
+                await CreateEventType<byte[]>(DefaultEventType.Image.ToString(), isReadOnly: true).ConfigureAwait(false);
 
                 // Validate all required default event types exist
                 foreach (var defaultEventType in Enum.GetValues<DefaultEventType>())
@@ -89,11 +104,41 @@ namespace Nulah.PhantomIndex.Lib.Events
         }
 
         /// <summary>
+        /// Creates a generic note with the given content on the given profile
+        /// </summary>
+        /// <param name="noteContent"></param>
+        /// <param name="profileId"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<Event> CreateNote(string noteContent, Guid profileId)
+        {
+            var newNoteEvent = new EventTable
+            {
+                Id = Guid.NewGuid(),
+                EventTypeId = (await GetDefaultEventType(DefaultEventType.Note)).Id,
+                TextContent = noteContent,
+                EventTimeUTC = DateTime.UtcNow,
+                ProfileId = profileId
+            };
+
+            var eventCreated = await PhantomIndexManager.Connection
+                !.InsertAsync(newNoteEvent)
+                .ConfigureAwait(false);
+
+            if (eventCreated == 1)
+            {
+                return await GetStringEvent(newNoteEvent.Id);
+            }
+
+            throw new NotImplementedException("No error path for create note implemented");
+        }
+
+        /// <summary>
         /// Returns a <see cref="DateTimeEvent"/> by <paramref name="eventId"/> if it exists
         /// </summary>
         /// <param name="eventId"></param>
         /// <returns></returns>
-        public async Task<DateTimeEvent?> GetDateTimeEvent(Guid eventId)
+        private async Task<DateTimeEvent?> GetDateTimeEvent(Guid eventId)
         {
             var getEventQuery = $@"SELECT
 	                [Id],
@@ -126,7 +171,60 @@ namespace Nulah.PhantomIndex.Lib.Events
                 };
             }
 
-            return null;
+            throw new Exception($"Event does not exist by given eventId: {eventId}");
+        }
+
+        /// <summary>
+        /// Returns a generic event that uses TextContent
+        /// </summary>
+        /// <param name="eventId"></param>
+        /// <returns></returns>
+        /// <exception cref="NotSupportedException"></exception>
+        private async Task<Event> GetStringEvent(Guid eventId)
+        {
+            var getEventQuery = $@"SELECT
+	                [Id],
+	                [ProfileId],
+	                [EventTypeId],
+	                [TextContent]
+                FROM
+	                [Events] AS Events
+                WHERE
+	                Events.[Id] = ?";
+
+            var genericEvent = await PhantomIndexManager.Connection!.QueryAsync<EventTable>(getEventQuery, eventId);
+
+            if (genericEvent.Count == 1)
+            {
+                // DateTimeContent can be null within the database, but should not be null
+                // for events created with a types of DateTime
+                if (genericEvent[0].TextContent == null)
+                {
+                    throw new NotSupportedException("Unable to understand event: TextContent was null");
+                }
+
+                return new Event
+                {
+                    Id = genericEvent[0].Id,
+                    ProfileId = genericEvent[0].ProfileId,
+                    EventTypeId = genericEvent[0].EventTypeId,
+                    EventTimeUTC = genericEvent[0].EventTimeUTC,
+                    Content = genericEvent[0].TextContent!
+                };
+            }
+
+            throw new Exception($"Event does not exist by given eventId: {eventId}");
+        }
+
+        /// <summary>
+        /// Returns true if the <paramref name="incomingType"/> is a valid type
+        /// </summary>
+        /// <param name="incomingType"></param>
+        /// <returns></returns>
+        private bool CheckIfValidType(Type incomingType)
+        {
+            // For now we just check if the type exists, later we may need to support multiple types
+            return _validEventTypes.Contains(incomingType);
         }
 
         /// <summary>
@@ -140,8 +238,13 @@ namespace Nulah.PhantomIndex.Lib.Events
         /// <returns></returns>
         /// <exception cref="NotSupportedException"></exception>
         /// <exception cref="Exception"></exception>
-        public async Task<EventType> CreateEventType<T>(string name)
+        public async Task<EventType> CreateEventType<T>(string name, string? stringFormat = null, bool isReadOnly = false)
         {
+            if (CheckIfValidType(typeof(T)) == false)
+            {
+                throw new NotSupportedException($"{typeof(T)} is not supported as an event type.");
+            }
+
             var typeName = typeof(T).FullName;
             // Certain types will not have a .FullName, which is required for when we convert the event types...type back
             // to its original Type using Type.GetType(string typeName)
@@ -162,7 +265,9 @@ namespace Nulah.PhantomIndex.Lib.Events
             {
                 Id = Guid.NewGuid(),
                 Name = name,
-                Type = typeName
+                Type = typeName,
+                StringFormat = stringFormat,
+                IsReadOnly = isReadOnly
             };
 
             var insert = await PhantomIndexManager.Connection!.InsertAsync(newEventType).ConfigureAwait(false);
@@ -198,7 +303,7 @@ namespace Nulah.PhantomIndex.Lib.Events
         // TODO: have fun getting all events from the database, then looking up each event type, getting its C# type,
         // then casting each event to its proper event class (eg DateTimeEvent), and hoping it all fucking works
         // TODO: need to add a datetime to events to track when they happened for timeline display
-        // TODO: the ui for events will be lazy loaded
+        // TODO: the ui for events will be lazy loaded?
         public async Task<List<Event>> GetEventsForProfile(Guid profileId)
         {
             var profileEvents = new List<Event>();
@@ -257,8 +362,29 @@ namespace Nulah.PhantomIndex.Lib.Events
             return profileEvents;
         }
 
+        /// <summary>
+        /// Returns all event types from the database
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<EventType>> GetEventTypes()
+        {
+            var eventTypeQuery = $@"SELECT
+	            [Id],
+	            [Name],
+	            [Type],
+	            [StringFormat],
+                [IsReadOnly]
+            FROM [EventTypes]
+                AS EventType";
+
+            var eventTypes = await PhantomIndexManager.Connection!.QueryAsync<EventType>(eventTypeQuery);
+
+            return eventTypes;
+        }
+
+
         // TODO: temp class for mapping, should move or make a strong class later
-        public class EventHolding
+        private class EventHolding
         {
             public Guid Id { get; set; }
             public Guid EventTypeId { get; set; }
@@ -299,7 +425,9 @@ namespace Nulah.PhantomIndex.Lib.Events
             var eventTypeQuery = $@"SELECT 
 	                [Id],
 	                [Name],
-	                [Type]
+	                [Type],
+                    [StringFormat],
+                    [IsReadOnly]
                 FROM [EventTypes]
 	                AS EventType
                 WHERE EventType.[Name] = ?";

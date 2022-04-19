@@ -70,6 +70,24 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
                 }
             });
         }
+
+        private async void NewNoteButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(NewNoteText.Text))
+                {
+                    MessageBox.Show(Window.GetWindow(this), "No note content set");
+                    return;
+                }
+                var newNoteEvent = await App.Database.Events.CreateNote(NewNoteText.Text, _viewModel.Id);
+                _viewModel.ProfileEvents = await App.Database.Events.GetEventsForProfile(_viewModel.Id);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
     }
 
 

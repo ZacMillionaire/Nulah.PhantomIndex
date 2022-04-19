@@ -21,7 +21,7 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
     /// </summary>
     public partial class Index : UserControl
     {
-        public ProfileIndexViewModel _viewModel = new();
+        private ProfileIndexViewModel _viewModel = new();
 
         public Index()
         {

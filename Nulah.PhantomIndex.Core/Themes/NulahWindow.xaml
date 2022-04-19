@@ -54,19 +54,19 @@
         </Setter>
     </Style>
     <Style x:Key="WindowTitle" TargetType="Border">
-        <Setter Property="Background" Value="{StaticResource WindowTitleBarActiveBackground}" />
+        <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=WindowColour}" />
         <Style.Triggers>
             <DataTrigger Binding="{Binding IsActive, RelativeSource={RelativeSource AncestorType=Window}}" Value="False">
-                <Setter Property="Background" Value="{StaticResource WindowTitleBarInactiveBackground}" />
+                <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=WindowColourInactive}" />
             </DataTrigger>
         </Style.Triggers>
     </Style>
     <Style x:Key="WindowBorder" TargetType="Border">
-        <Setter Property="BorderBrush" Value="{StaticResource WindowTitleBarActiveBackground}" />
+        <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=WindowColour}" />
         <Setter Property="BorderThickness" Value="1,0,1,1" />
         <Style.Triggers>
             <DataTrigger Binding="{Binding IsActive, RelativeSource={RelativeSource AncestorType=Window}}" Value="False">
-                <Setter Property="BorderBrush" Value="{StaticResource WindowTitleBarInactiveBackground}" />
+                <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=WindowColourInactive}" />
             </DataTrigger>
         </Style.Triggers>
     </Style>
@@ -76,6 +76,8 @@
         <Setter Property="Background" Value="White"/>
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="UseLayoutRounding" Value="true" />
+        <Setter Property="WindowColour" Value="{StaticResource WindowTitleBarActiveBackground}" />
+        <Setter Property="WindowColourInactive" Value="{StaticResource WindowTitleBarInactiveBackground}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:NulahWindow}">

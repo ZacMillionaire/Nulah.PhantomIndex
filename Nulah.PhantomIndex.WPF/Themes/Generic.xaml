@@ -1,5 +1,6 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:control="clr-namespace:Nulah.PhantomIndex.Core.Controls;assembly=Nulah.PhantomIndex.Core"
     xmlns:System="clr-namespace:System;assembly=System.Runtime">
     <SolidColorBrush x:Key="DefaultFontColour" Color="#FF40006F"/>
     <System:Double x:Key="FontSizeNormal">14</System:Double>
@@ -8,5 +9,18 @@
     <Color x:Key="LoadingComplete">#FFA7FFBD</Color>
     <Color x:Key="LoadingDark">#FF7458FF</Color>
     <Color x:Key="LoadingLight">#FF9389C7</Color>
+
+    <Style x:Key="DefaultWindowStyle" TargetType="{x:Type control:NulahWindow}">
+        <Setter Property="WindowColour" Value="#FF008CE6" />
+    </Style>
+    <Style x:Key="DefaultNavigationStyle" TargetType="{x:Type control:NulahNavigation}">
+        <Setter Property="Background" Value="#FF825E9C"/>
+        <Setter Property="BorderBrush" Value="#FF40006F" />
+    </Style>
+    <Style x:Key="DefaultDialogBoxStyle" TargetType="{x:Type control:NulahOverlayDialog}">
+        <Setter Property="BorderBrush" Value="#FF008CE6"/>
+        <Setter Property="Background" Value="#FF53AFEA"/>
+        <Setter Property="Foreground" Value="#ffffffff" />
+    </Style>
 
 </ResourceDictionary>

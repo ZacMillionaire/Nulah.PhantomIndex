@@ -20,5 +20,13 @@ namespace Nulah.PhantomIndex.Lib.Events.Models
         /// </summary>
         [NotNull]
         public string Type { get; set; } = string.Empty;
+        /// <summary>
+        /// String format to use when displaying the value of the attached Event
+        /// </summary>
+        public string? StringFormat { get; set; }
+        /// <summary>
+        /// Indicates if the event type is required by the application (read only as far as logic should be concerned)
+        /// </summary>
+        public bool IsReadOnly { get; set; }
     }
 }
