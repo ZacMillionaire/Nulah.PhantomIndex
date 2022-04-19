@@ -15,5 +15,14 @@ namespace Nulah.PhantomIndex.WPF.ViewModels.Settings
             get => _applicationDatabaseLocation;
             set => NotifyAndSetPropertyIfChanged(ref _applicationDatabaseLocation, value);
         }
+
+        private string? _pluginLocation;
+
+        public string? PluginLocation
+        {
+            get => _pluginLocation;
+            set => NotifyAndSetPropertyIfChanged(ref _pluginLocation, value);
+        }
+
     }
 }

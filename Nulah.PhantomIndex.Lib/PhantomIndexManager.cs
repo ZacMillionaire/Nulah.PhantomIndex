@@ -25,6 +25,7 @@ namespace Nulah.PhantomIndex.Lib
         public void SetPluginLocation(string pluginDirectory)
         {
             _pluginManager.Location = pluginDirectory;
+            Directory.CreateDirectory(pluginDirectory);
         }
     }
 }
