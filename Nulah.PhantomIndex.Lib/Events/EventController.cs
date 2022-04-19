@@ -104,11 +104,41 @@ namespace Nulah.PhantomIndex.Lib.Events
         }
 
         /// <summary>
+        /// Creates a generic note with the given content on the given profile
+        /// </summary>
+        /// <param name="noteContent"></param>
+        /// <param name="profileId"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<Event> CreateNote(string noteContent, Guid profileId)
+        {
+            var newNoteEvent = new EventTable
+            {
+                Id = Guid.NewGuid(),
+                EventTypeId = (await GetDefaultEventType(DefaultEventType.Note)).Id,
+                TextContent = noteContent,
+                EventTimeUTC = DateTime.UtcNow,
+                ProfileId = profileId
+            };
+
+            var eventCreated = await PhantomIndexManager.Connection
+                !.InsertAsync(newNoteEvent)
+                .ConfigureAwait(false);
+
+            if (eventCreated == 1)
+            {
+                return await GetStringEvent(newNoteEvent.Id);
+            }
+
+            throw new NotImplementedException("No error path for create note implemented");
+        }
+
+        /// <summary>
         /// Returns a <see cref="DateTimeEvent"/> by <paramref name="eventId"/> if it exists
         /// </summary>
         /// <param name="eventId"></param>
         /// <returns></returns>
-        public async Task<DateTimeEvent?> GetDateTimeEvent(Guid eventId)
+        private async Task<DateTimeEvent?> GetDateTimeEvent(Guid eventId)
         {
             var getEventQuery = $@"SELECT
 	                [Id],
@@ -141,7 +171,49 @@ namespace Nulah.PhantomIndex.Lib.Events
                 };
             }
 
-            return null;
+            throw new Exception($"Event does not exist by given eventId: {eventId}");
+        }
+
+        /// <summary>
+        /// Returns a generic event that uses TextContent
+        /// </summary>
+        /// <param name="eventId"></param>
+        /// <returns></returns>
+        /// <exception cref="NotSupportedException"></exception>
+        private async Task<Event> GetStringEvent(Guid eventId)
+        {
+            var getEventQuery = $@"SELECT
+	                [Id],
+	                [ProfileId],
+	                [EventTypeId],
+	                [TextContent]
+                FROM
+	                [Events] AS Events
+                WHERE
+	                Events.[Id] = ?";
+
+            var genericEvent = await PhantomIndexManager.Connection!.QueryAsync<EventTable>(getEventQuery, eventId);
+
+            if (genericEvent.Count == 1)
+            {
+                // DateTimeContent can be null within the database, but should not be null
+                // for events created with a types of DateTime
+                if (genericEvent[0].TextContent == null)
+                {
+                    throw new NotSupportedException("Unable to understand event: TextContent was null");
+                }
+
+                return new Event
+                {
+                    Id = genericEvent[0].Id,
+                    ProfileId = genericEvent[0].ProfileId,
+                    EventTypeId = genericEvent[0].EventTypeId,
+                    EventTimeUTC = genericEvent[0].EventTimeUTC,
+                    Content = genericEvent[0].TextContent!
+                };
+            }
+
+            throw new Exception($"Event does not exist by given eventId: {eventId}");
         }
 
         /// <summary>

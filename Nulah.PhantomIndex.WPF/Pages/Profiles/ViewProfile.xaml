@@ -73,6 +73,8 @@
             </Grid>
             <!-- events panel -->
             <StackPanel Grid.Row="1" HorizontalAlignment="Right" VerticalAlignment="Top" FlowDirection="LeftToRight" Orientation="Vertical">
+                <controls:NulahInput x:Name="NewNoteText"></controls:NulahInput>
+                <Button x:Name="NewNoteButton" Click="NewNoteButton_Click">New Note</Button>
                 <ItemsControl x:Name="EventsItemsControl" ItemsSource="{Binding ProfileEvents}">
                     <ItemsControl.Resources>
                         <Style x:Key="EventControlStyle" TargetType="Grid">
