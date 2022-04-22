@@ -13,7 +13,7 @@
     </control:NulahWindow.TitleBarControls>
     <control:NulahNavigation x:Name="MainWindowNavigation" Style="{StaticResource DefaultNavigationStyle}">
         <control:NulahNavigation.MenuItems>
-            <control:NavigationItemCollapsable Icon="GuestUser" Content="Profiles" Expanded="True">
+            <control:NavigationItemCollapsable Icon="GuestUser" Title="Profiles">
                 <control:NavigationItemCollapsable.MenuItems>
                     <control:NavigationItem Icon="AddFriend" Tag="Pages/Profiles/NewProfile">New</control:NavigationItem>
                     <control:NavigationSeparator/>
@@ -22,8 +22,7 @@
                     <control:NavigationItem Icon="EMI" Tag="Pages/Profiles/Index:Company">By Company</control:NavigationItem>
                 </control:NavigationItemCollapsable.MenuItems>
             </control:NavigationItemCollapsable>
-            <control:NavigationItemCollapsable Icon="Tag">
-                Events and Categories
+            <control:NavigationItemCollapsable Icon="Tag" Title="Events and Categories">
                 <control:NavigationItemCollapsable.MenuItems>
                     <control:NavigationItem Tag="Pages/Interactions/Index" Icon="SwitchUser">Interactions</control:NavigationItem>
                     <control:NavigationSeparator/>

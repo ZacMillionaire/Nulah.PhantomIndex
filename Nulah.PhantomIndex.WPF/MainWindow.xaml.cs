@@ -1,10 +1,15 @@
 ﻿using Nulah.PhantomIndex.Core;
 using Nulah.PhantomIndex.Core.Controls;
+using Nulah.PhantomIndex.Lib.Plugins;
 using Nulah.PhantomIndex.WPF.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -30,45 +35,40 @@ namespace Nulah.PhantomIndex.WPF
         public AppViewModel AppViewModel = new();
         public static Core.Controls.NulahNavigation Navigation;
 
-
         public MainWindow()
         {
             InitializeComponent();
             this.DataContext = AppViewModel;
 
             Navigation = MainWindowNavigation;
-            /*
-            var a = typeof(MainWindow).ResolvePageViewFromAssembly("Pages/Profiles/Index");
 
-            if (a.PageView != null)
+            var plugins = App.PhantomIndexManager.GetPlugins();
+
+            foreach (IPlugin plugin in plugins)
             {
-                var b = NavigationContent.Navigate(a.PageViewParameters != null
-                    ? Activator.CreateInstance(a.PageView, a.PageViewParameters)
-                    : Activator.CreateInstance(a.PageView)
-                );
+                var pluginMenuSection = new NavigationItemCollapsable(plugin.Name);
+
+                foreach (KeyValuePair<string, (FontIcon?, string)> navigationItem in plugin.Pages)
+                {
+                    if (navigationItem.Value.Item1.HasValue)
+                    {
+                        pluginMenuSection.MenuItems.Add(new NavigationItem(navigationItem.Value.Item2, navigationItem.Key, navigationItem.Value.Item1.Value)
+                        {
+                            NavigationSourceType = plugin.GetType()
+                        });
+                    }
+                    else
+                    {
+                        pluginMenuSection.MenuItems.Add(new NavigationItem(navigationItem.Value.Item2, navigationItem.Key)
+                        {
+                            NavigationSourceType = plugin.GetType()
+                        });
+                    }
+                }
+
+
+                Navigation.MenuItems.Add(pluginMenuSection);
             }
-            */
         }
-
-        //private void Button_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var s = (Button)sender;
-
-        //    var a = typeof(MainWindow).ResolvePageViewFromAssembly(s.Tag as string);
-
-        //    if (a.PageView != null)
-        //    {
-        //        var pageView = Activator.CreateInstance(a.PageView) as Page;
-
-        //        //NavigationContent.Navigate(pageView, "asdf");
-
-        //        /*
-        //        NavigationContent.Navigate(a.PageViewParameters != null
-        //            ? Activator.CreateInstance(a.PageView, a.PageViewParameters)
-        //            : Activator.CreateInstance(a.PageView)
-        //        );
-        //        */
-        //    }
-        //}
     }
 }
