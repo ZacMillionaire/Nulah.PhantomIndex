@@ -1,13 +1,4 @@
-﻿using Nulah.PhantomIndex.Lib.Events;
-using Nulah.PhantomIndex.Lib.Images;
-using Nulah.PhantomIndex.Lib.Plugins;
-using Nulah.PhantomIndex.Lib.Profiles;
-using SQLite;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Nulah.PhantomIndex.Lib.Plugins;
 
 namespace Nulah.PhantomIndex.Lib
 {
