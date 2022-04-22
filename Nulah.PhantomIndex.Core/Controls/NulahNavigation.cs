@@ -89,27 +89,31 @@ namespace Nulah.PhantomIndex.Core.Controls
         {
             if (e.OriginalSource is NavigationItem source)
             {
-                LoadPageFromNavigationItem(source.Tag as string);
+                if (source.NavigationSourceType == null)
+                {
+                    LoadPageFromNavigationItemFromCallingAssembly(source.Tag as string);
+                }
+                else
+                {
+                    LoadPageFromNavigationItemInType(source.NavigationSourceType, source.Tag as string);
+                }
             }
         }
 
-        // future potential usercontrol caching
-        //private Dictionary<string, UserControl> _navigationCache = new();
-
         private UserControl _currentUserControl = null;
 
-        private void LoadPageFromNavigationItem(string navigationItemTag)
+        /// <summary>
+        /// Used for navigation items where the pages to navigate to reside in the calling assembly.
+        /// 
+        /// Generally this will be for navigation items created in xaml, or dynamically where <see cref="NavigationItem.NavigationSourceType"/> is null
+        /// </summary>
+        /// <param name="navigationItemTag"></param>
+        private void LoadPageFromNavigationItemFromCallingAssembly(string navigationItemTag)
         {
-            var pageViewFromAssembly = Assembly.GetEntryAssembly().ResolvePageViewFromAssembly(navigationItemTag);
+            // The entry assembly is most likely the calling assembly.
+            // There may be a future where this is somehow not the case, but that's future someones problem (probably me)
+            var pageViewFromAssembly = PageViewResolver.ResolvePageViewFromAssembly(Assembly.GetEntryAssembly(), navigationItemTag);
 
-            /*
-            // future potential usercontrol caching
-            if (_navigationCache.ContainsKey(navigationItemTag))
-            {
-                _navigationFrame.Child = _navigationCache[navigationItemTag];
-                return;
-            }
-            */
             if (pageViewFromAssembly.PageView != null)
             {
                 var pageView = PageViewResolver.GetActivatedPageViewByParameters<UserControl>(pageViewFromAssembly.PageView, pageViewFromAssembly.PageViewParameters);
@@ -129,9 +133,47 @@ namespace Nulah.PhantomIndex.Core.Controls
                     _currentUserControl = pageView;
 
                     _navigationFrame.Child = _currentUserControl;
+                }
+                else
+                {
+                    MessageBox.Show("Unable to find page view with parameter");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Unable to find page");
+            }
+        }
 
-                    // future potential usercontrol caching
-                    //_navigationCache.Add(navigationItemTag, pageView);
+        /// <summary>
+        /// Used to resolve pages from the assembly of the given type, where <see cref="NavigationItem.NavigationSourceType"/> is not null.
+        /// </summary>
+        /// <param name="plugin"></param>
+        /// <param name="navigationItemTag"></param>
+        private void LoadPageFromNavigationItemInType(Type plugin, string navigationItemTag)
+        {
+            // Get the assembly from the type given
+            var pageViewFromAssembly = PageViewResolver.ResolvePageViewFromAssembly(Assembly.GetAssembly(plugin), navigationItemTag);
+
+            if (pageViewFromAssembly.PageView != null)
+            {
+                var pageView = PageViewResolver.GetActivatedPageViewByParameters<UserControl>(pageViewFromAssembly.PageView, pageViewFromAssembly.PageViewParameters);
+
+                if (pageView != null)
+                {
+                    // Dispose the DataContext on a UserControl if it supports it
+                    if (_currentUserControl != null && _currentUserControl.DataContext is IDisposable disposableDataContext)
+                    {
+                        disposableDataContext.Dispose();
+                    }
+
+                    // Ensure the page correctly inherits snapping and layout rounding
+                    pageView.SnapsToDevicePixels = this.SnapsToDevicePixels;
+                    pageView.UseLayoutRounding = this.UseLayoutRounding;
+
+                    _currentUserControl = pageView;
+
+                    _navigationFrame.Child = _currentUserControl;
                 }
                 else
                 {
@@ -155,7 +197,7 @@ namespace Nulah.PhantomIndex.Core.Controls
         /// <param name="pageNavigationUri"></param>
         public void NavigateToPage(string pageNavigationUri)
         {
-            LoadPageFromNavigationItem(pageNavigationUri);
+            LoadPageFromNavigationItemFromCallingAssembly(pageNavigationUri);
         }
     }
 
@@ -205,6 +247,11 @@ namespace Nulah.PhantomIndex.Core.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(NavigationItem),
                 new FrameworkPropertyMetadata(typeof(NavigationItem)));
         }
+
+        /// <summary>
+        /// Only required if the page the navigation item points to resides in another assembly (such as a plugin)
+        /// </summary>
+        public Type NavigationSourceType { get; set; }
 
         public NavigationItem() { }
 
