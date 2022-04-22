@@ -32,7 +32,7 @@ namespace Nulah.PhantomIndex.WPF.Pages.Settings
             InitializeComponent();
 
             _viewModel.ApplicationDatabaseLocation = new FileInfo(App.Database.DatabaseLocation).DirectoryName;
-            _viewModel.PluginLocation = Properties.Settings.Default.PluginLocation;
+            _viewModel.PluginLocation = Properties.Settings.Default.UserPluginLocation;
 
             DataContext = _viewModel;
             //var processesWithLocks = FileUtil.WhoIsLocking(App.Database.DatabaseLocation);

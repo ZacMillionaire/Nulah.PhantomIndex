@@ -23,24 +23,23 @@ namespace Nulah.PhantomIndex.WPF
         {
             // Ensure the application data folder for this application exists
             var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var phantomIndexAppLocation = Path.Combine(localAppData, GetType()!.Namespace);
-            Directory.CreateDirectory(phantomIndexAppLocation);
+            PhantomIndexManager.SetApplicationLocation(Path.Combine(localAppData, GetType()!.Namespace!));
 
             // Set the default database location if empty
             if (string.IsNullOrWhiteSpace(WPF.Properties.Settings.Default.ProfileDatabaseLocation) == true)
             {
-                WPF.Properties.Settings.Default.ProfileDatabaseLocation = Path.Combine(phantomIndexAppLocation, "app.db");
+                WPF.Properties.Settings.Default.ProfileDatabaseLocation = Path.Combine(PhantomIndexManager.ApplicationLocation, "app.db");
                 WPF.Properties.Settings.Default.Save();
             }
 
-            if (string.IsNullOrWhiteSpace(WPF.Properties.Settings.Default.PluginLocation) == true)
+            if (string.IsNullOrWhiteSpace(WPF.Properties.Settings.Default.UserPluginLocation) == true)
             {
-                WPF.Properties.Settings.Default.PluginLocation = Path.Combine(phantomIndexAppLocation, "Plugins");
+                WPF.Properties.Settings.Default.UserPluginLocation = Path.Combine(PhantomIndexManager.ApplicationLocation, "Plugins");
                 WPF.Properties.Settings.Default.Save();
             }
 
             Database.SetConnection(WPF.Properties.Settings.Default.ProfileDatabaseLocation);
-            PhantomIndexManager.SetPluginLocation(WPF.Properties.Settings.Default.PluginLocation);
+            PhantomIndexManager.SetLocalPluginLocation(WPF.Properties.Settings.Default.UserPluginLocation);
         }
     }
 }

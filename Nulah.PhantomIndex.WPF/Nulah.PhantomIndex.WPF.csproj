@@ -17,6 +17,8 @@
 
   <ItemGroup>
     <Content Include="Icons\logo.ico" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
+    <PackageReference Include="System.Reflection.MetadataLoadContext" Version="6.0.0" />
     <Resource Include="Icons\check_confirm.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>

@@ -38,12 +38,12 @@ namespace Nulah.PhantomIndex.WPF.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string PluginLocation {
+        public string UserPluginLocation {
             get {
-                return ((string)(this["PluginLocation"]));
+                return ((string)(this["UserPluginLocation"]));
             }
             set {
-                this["PluginLocation"] = value;
+                this["UserPluginLocation"] = value;
             }
         }
     }

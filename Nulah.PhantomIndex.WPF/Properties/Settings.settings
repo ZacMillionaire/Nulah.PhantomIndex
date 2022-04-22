@@ -5,7 +5,7 @@
     <Setting Name="ProfileDatabaseLocation" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="PluginLocation" Type="System.String" Scope="User">
+    <Setting Name="UserPluginLocation" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
   </Settings>
