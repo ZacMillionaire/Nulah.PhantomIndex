@@ -126,7 +126,7 @@
                             <RowDefinition/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
-                        <local:NavigationLink TextBlock.FontWeight="Bold" Grid.Column="0" x:Name="CollapseHeader" Grid.Row="0" Icon="{TemplateBinding Icon}" Content="{TemplateBinding Content}">
+                        <local:NavigationLink TextBlock.FontWeight="Bold" Grid.Column="0" x:Name="CollapseHeader" Grid.Row="0" Icon="{TemplateBinding Icon}" Content="{TemplateBinding Title}">
                             <local:NavigationLink.Style>
                                 <Style TargetType="local:NavigationLink">
                                     <Style.Resources>

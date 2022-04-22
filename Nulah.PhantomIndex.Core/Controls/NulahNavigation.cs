@@ -171,6 +171,18 @@ namespace Nulah.PhantomIndex.Core.Controls
         public static readonly DependencyProperty IconProperty =
             DependencyProperty.Register(nameof(Icon), typeof(FontIcon?), typeof(NavigationLink), new PropertyMetadata(null));
 
+        public string Title
+        {
+            get { return (string)GetValue(TitleProperty); }
+            set { SetValue(TitleProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Title.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty TitleProperty =
+            DependencyProperty.Register("Title", typeof(string), typeof(NavigationLink), new PropertyMetadata(null));
+
+
+
         static NavigationLink()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(NavigationLink),
@@ -192,6 +204,21 @@ namespace Nulah.PhantomIndex.Core.Controls
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(NavigationItem),
                 new FrameworkPropertyMetadata(typeof(NavigationItem)));
+        }
+
+        public NavigationItem() { }
+
+        public NavigationItem(string title, string pageLocation) : this()
+        {
+            Content = title;
+            Tag = pageLocation;
+        }
+
+        public NavigationItem(string title, string pageLocation, FontIcon icon) : this()
+        {
+            Content = title;
+            Tag = pageLocation;
+            Icon = icon;
         }
 
         public override void OnApplyTemplate()
@@ -265,6 +292,16 @@ namespace Nulah.PhantomIndex.Core.Controls
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(NavigationItemCollapsable),
                 new FrameworkPropertyMetadata(typeof(NavigationItemCollapsable)));
+        }
+
+        public NavigationItemCollapsable(string title) : this()
+        {
+            Title = title;
+        }
+        public NavigationItemCollapsable(FontIcon icon, string title) : this()
+        {
+            Icon = icon;
+            Title = title;
         }
 
         public override void OnApplyTemplate()
