@@ -17,24 +17,6 @@ namespace Nulah.PhantomIndex.Core.Controls
     {
         public static readonly RoutedEvent NavigationItemClicked = EventManager.RegisterRoutedEvent(nameof(NavigationItemClicked), RoutingStrategy.Bubble, typeof(NulahNavigation), typeof(NavigationItem));
 
-        // Why was whatever this was here?
-        /*
-        public static void AddNavigationItemClickedHandler(DependencyObject d, RoutedEventHandler handler)
-        {
-            if (d is UIElement uie && uie != null)
-            {
-                uie.AddHandler(NavigationItemClicked, handler);
-            }
-        }
-
-        public static void RemoveNavigationItemClickedHandler(DependencyObject d, RoutedEventHandler handler)
-        {
-            if (d is UIElement uie && uie != null)
-            {
-                uie.RemoveHandler(NavigationItemClicked, handler);
-            }
-        }*/
-
         static NulahNavigation()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(NulahNavigation), new FrameworkPropertyMetadata(typeof(NulahNavigation)));

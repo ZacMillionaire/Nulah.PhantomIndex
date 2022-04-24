@@ -43,6 +43,14 @@ namespace Nulah.PhantomIndex.Core
             return (view, pageviewParameters);
         }
 
+        /// <summary>
+        /// Creates a new instance of a page view
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="pageViewType"></param>
+        /// <param name="pageViewParameters"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public static T GetActivatedPageViewByParameters<T>(Type pageViewType, string[] pageViewParameters)
         {
             if (pageViewParameters == null || pageViewParameters.Length == 0)
