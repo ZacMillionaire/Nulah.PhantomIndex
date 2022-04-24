@@ -12,7 +12,7 @@
         <Button>Test Title Button</Button>
     </control:NulahWindow.TitleBarControls>
     <control:NulahNavigation x:Name="MainWindowNavigation" Style="{StaticResource DefaultNavigationStyle}">
-        <control:NulahNavigation.MenuItems>
+        <!--<control:NulahNavigation.MenuItems>
             <control:NavigationItemCollapsable Icon="GuestUser" Title="Profiles">
                 <control:NavigationItemCollapsable.MenuItems>
                     <control:NavigationItem Icon="AddFriend" Tag="Pages/Profiles/NewProfile">New</control:NavigationItem>
@@ -30,7 +30,7 @@
                 </control:NavigationItemCollapsable.MenuItems>
             </control:NavigationItemCollapsable>
             <control:NavigationHeader Icon="Accident">Header 2</control:NavigationHeader>
-        </control:NulahNavigation.MenuItems>
+        </control:NulahNavigation.MenuItems>-->
         <control:NulahNavigation.FooterMenuItems>
             <control:NavigationItem Tag="Pages/Settings/Index" Icon="Setting">Settings</control:NavigationItem>
         </control:NulahNavigation.FooterMenuItems>

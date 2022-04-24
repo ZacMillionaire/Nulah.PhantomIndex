@@ -253,19 +253,13 @@ namespace Nulah.PhantomIndex.Core.Controls
         /// </summary>
         public Type NavigationSourceType { get; set; }
 
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public NavigationItem() { }
 
         public NavigationItem(string title, string pageLocation) : this()
         {
             Content = title;
             Tag = pageLocation;
-        }
-
-        public NavigationItem(string title, string pageLocation, FontIcon icon) : this()
-        {
-            Content = title;
-            Tag = pageLocation;
-            Icon = icon;
         }
 
         public override void OnApplyTemplate()
@@ -343,11 +337,6 @@ namespace Nulah.PhantomIndex.Core.Controls
 
         public NavigationItemCollapsable(string title) : this()
         {
-            Title = title;
-        }
-        public NavigationItemCollapsable(FontIcon icon, string title) : this()
-        {
-            Icon = icon;
             Title = title;
         }
 

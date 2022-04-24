@@ -9,7 +9,8 @@ namespace Nulah.PhantomIndex.Lib.Plugins
 {
     public interface IPlugin
     {
-        public string Name { get; set; }
-        public Dictionary<string, (FontIcon?, string)> Pages { get; set; }
+        public string Name { get; }
+        public FontIcon Icon { get; }
+        public List<PluginMenuItem> Pages { get; }
     }
 }

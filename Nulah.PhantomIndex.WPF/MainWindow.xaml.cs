@@ -46,28 +46,39 @@ namespace Nulah.PhantomIndex.WPF
 
             foreach (IPlugin plugin in plugins)
             {
-                var pluginMenuSection = new NavigationItemCollapsable(plugin.Name);
-
-                foreach (KeyValuePair<string, (FontIcon?, string)> navigationItem in plugin.Pages)
+                var pluginMenuSection = new NavigationItemCollapsable(plugin.Name)
                 {
-                    if (navigationItem.Value.Item1.HasValue)
-                    {
-                        pluginMenuSection.MenuItems.Add(new NavigationItem(navigationItem.Value.Item2, navigationItem.Key, navigationItem.Value.Item1.Value)
-                        {
-                            NavigationSourceType = plugin.GetType()
-                        });
-                    }
-                    else
-                    {
-                        pluginMenuSection.MenuItems.Add(new NavigationItem(navigationItem.Value.Item2, navigationItem.Key)
-                        {
-                            NavigationSourceType = plugin.GetType()
-                        });
-                    }
-                }
+                    Icon = plugin.Icon
+                };
 
+                BuildNavigationFromPlugin(pluginMenuSection, plugin.Pages, plugin.GetType());
 
                 Navigation.MenuItems.Add(pluginMenuSection);
+            }
+        }
+
+        private void BuildNavigationFromPlugin(NavigationItemCollapsable parent, List<PluginMenuItem> pluginNavigationItems, Type pluginType)
+        {
+            foreach (PluginMenuItem pluginItem in pluginNavigationItems)
+            {
+                if (pluginItem is PluginMenuCategory subPage && subPage.Pages != null && subPage.Pages.Count != 0)
+                {
+                    var pluginSubMenuItem = new NavigationItemCollapsable(subPage.DisplayName)
+                    {
+                        Icon = subPage.Icon
+                    };
+                    BuildNavigationFromPlugin(pluginSubMenuItem, subPage.Pages, pluginType);
+                    parent.MenuItems.Add(pluginSubMenuItem);
+                }
+                else
+                {
+                    var navigationItem = new NavigationItem(pluginItem.DisplayName, pluginItem.PageLocation)
+                    {
+                        Icon = pluginItem.Icon,
+                        NavigationSourceType = pluginType
+                    };
+                    parent.MenuItems.Add(navigationItem);
+                }
             }
         }
     }
