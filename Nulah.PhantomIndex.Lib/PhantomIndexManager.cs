@@ -76,9 +76,9 @@ namespace Nulah.PhantomIndex.Lib
             // Does it work? Yes.
             // Will it cause me problems later when I want more complex navigation? Maybe!
             var t = plugin.GetType();
-            var pi = t.GetField("Instance");
+            var pi = t.GetField("Instance", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
 
-            if (pi != null)
+            if (pi != null && pi.IsStatic)
             {
                 pi.SetValue(plugin, plugin);
             }
