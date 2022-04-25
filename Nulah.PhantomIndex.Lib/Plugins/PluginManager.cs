@@ -29,6 +29,8 @@ namespace Nulah.PhantomIndex.Lib.Plugins
                new FileInfo(Assembly.GetExecutingAssembly().Location).DirectoryName!,
                 "Plugins"
             );
+            // Ensure the plugin directory exists by creating it
+            Directory.CreateDirectory(defaultPluginStore);
 
             // Get all top level folders within it (do not search sub directories)
             GetPluginDirectories(defaultPluginStore, catalog);
