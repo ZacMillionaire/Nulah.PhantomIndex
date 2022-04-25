@@ -33,7 +33,7 @@ namespace Nulah.PhantomIndex.WPF
     public partial class MainWindow : NulahWindow
     {
         public AppViewModel AppViewModel = new();
-        public static Core.Controls.NulahNavigation Navigation;
+        public static NulahNavigation Navigation;
 
         public MainWindow()
         {
@@ -42,7 +42,7 @@ namespace Nulah.PhantomIndex.WPF
 
             Navigation = MainWindowNavigation;
 
-            var plugins = App.PhantomIndexManager.GetPlugins();
+            var plugins = App.PhantomIndexManager.GetPlugins(Navigation);
 
             foreach (IPlugin plugin in plugins)
             {

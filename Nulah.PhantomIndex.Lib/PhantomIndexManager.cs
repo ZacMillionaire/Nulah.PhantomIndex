@@ -1,5 +1,7 @@
-﻿using Nulah.PhantomIndex.Lib.Plugins;
+﻿using Nulah.PhantomIndex.Core.Controls;
+using Nulah.PhantomIndex.Lib.Plugins;
 using System.ComponentModel.Composition;
+using System.Reflection;
 
 namespace Nulah.PhantomIndex.Lib
 {
@@ -7,6 +9,10 @@ namespace Nulah.PhantomIndex.Lib
     {
         public readonly DatabaseManager Database;
         private readonly PluginManager _pluginManager;
+        /// <summary>
+        /// Binding flags to use when discovering static fields to inject into
+        /// </summary>
+        private readonly BindingFlags _staticBindingFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public;
 
         //[Export(PluginConstants.ApplicationDataLocationContractName)]
         public string? ApplicationLocation { get; private set; }
@@ -46,12 +52,12 @@ namespace Nulah.PhantomIndex.Lib
             _exportContracts.Add(PluginConstants.UserPluginLocationContractName, localPluginDirectory);
         }
 
-        public List<IPlugin> GetPlugins()
+        public List<IPlugin> GetPlugins(NulahNavigation navigation)
         {
             _pluginManager.DiscoverPlugins(_exportContracts);
 
             return _pluginManager.Plugins
-                .Select(x => SetPluginSelfInstance(x.Value))
+                .Select(x => SetPluginSelfInstance(x.Value, navigation))
                 .ToList();
         }
 
@@ -65,7 +71,7 @@ namespace Nulah.PhantomIndex.Lib
         /// </summary>
         /// <param name="plugin"></param>
         /// <returns></returns>
-        private IPlugin SetPluginSelfInstance(IPlugin plugin)
+        private IPlugin SetPluginSelfInstance(IPlugin plugin, NulahNavigation navigation)
         {
             // Honestly this is a bit of a hack, but for windowless plugins
             // (ones that use the main window and live in the NulahNavigation frame),
@@ -76,11 +82,18 @@ namespace Nulah.PhantomIndex.Lib
             // Does it work? Yes.
             // Will it cause me problems later when I want more complex navigation? Maybe!
             var t = plugin.GetType();
-            var pi = t.GetField("Instance", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
+            var staticInstanceField = t.GetField("Instance", _staticBindingFlags);
+            var staticNavigationField = t.GetFields(_staticBindingFlags)
+                .FirstOrDefault(x => x.FieldType == typeof(NulahNavigation));
 
-            if (pi != null && pi.IsStatic)
+            if (staticInstanceField != null && staticInstanceField.IsStatic)
             {
-                pi.SetValue(plugin, plugin);
+                staticInstanceField.SetValue(plugin, plugin);
+            }
+
+            if (staticNavigationField != null && staticNavigationField.IsStatic)
+            {
+                staticNavigationField.SetValue(plugin, navigation);
             }
 
             return plugin;

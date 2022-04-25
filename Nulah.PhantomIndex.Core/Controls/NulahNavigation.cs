@@ -181,6 +181,17 @@ namespace Nulah.PhantomIndex.Core.Controls
         {
             LoadPageFromNavigationItemFromCallingAssembly(pageNavigationUri);
         }
+
+        /// <summary>
+        /// Used to navigate to a page within a different assembly, where <typeparamref name="T"/> resides
+        /// outside of the main application (eg. Plugins)
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="pageNavigationUri"></param>
+        public void NavigateToPage<T>(string pageNavigationUri)
+        {
+            LoadPageFromNavigationItemInType(typeof(T), pageNavigationUri);
+        }
     }
 
     public class NavigationLink : UserControl
