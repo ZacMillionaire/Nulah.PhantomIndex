@@ -151,6 +151,12 @@ namespace Nulah.PhantomIndex.Core.Controls
 
         protected void ResizeRectangle_MouseMove(object sender, MouseEventArgs e)
         {
+            // Do nothing if the window is maximised
+            if (WindowState == WindowState.Maximized)
+            {
+                return;
+            }
+
             var rectangle = sender as Rectangle;
             switch (rectangle.Name)
             {
@@ -189,6 +195,12 @@ namespace Nulah.PhantomIndex.Core.Controls
 
         protected void ResizeRectangle_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
+            // Prevent resize on maximised window
+            if (WindowState == WindowState.Maximized)
+            {
+                return;
+            }
+
             Rectangle rectangle = sender as Rectangle;
             switch (rectangle.Name)
             {
@@ -284,6 +296,10 @@ namespace Nulah.PhantomIndex.Core.Controls
 
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            if (e.ClickCount == 2)
+            {
+                OnMaximizeRestoreButtonClick(sender, e);
+            }
             Cursor = Cursors.Arrow;
             DragMove();
         }
