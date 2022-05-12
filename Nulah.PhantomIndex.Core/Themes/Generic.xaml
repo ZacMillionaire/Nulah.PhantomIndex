@@ -5,6 +5,7 @@
         <ResourceDictionary Source="/Nulah.PhantomIndex.Core;component/Themes/NulahImage.xaml"/>
         <ResourceDictionary Source="/Nulah.PhantomIndex.Core;component/Themes/NulahWindow.xaml"/>
         <ResourceDictionary Source="/Nulah.PhantomIndex.Core;component/Themes/NulahInput.xaml"/>
+        <ResourceDictionary Source="/Nulah.PhantomIndex.Core;component/Themes/NulahIcon.xaml"/>
         <ResourceDictionary Source="/Nulah.PhantomIndex.Core;component/Themes/NulahFileSelector.xaml"/>
         <ResourceDictionary Source="/Nulah.PhantomIndex.Core;component/Themes/NulahOverlayDialog.xaml"/>
         <ResourceDictionary Source="/Nulah.PhantomIndex.Core;component/Themes/NulahFancyBorder.xaml"/>
