@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Profile 1": {
+      "commandName": "Executable",
+      "executablePath": "E:\\C#\\Nulah\\Nulah.PhantomIndex\\Nulah.PhantomIndex.WPF\\bin\\Debug\\net6.0-windows7.0\\Nulah.PhantomIndex.WPF.exe"
+    }
+  }
+}
