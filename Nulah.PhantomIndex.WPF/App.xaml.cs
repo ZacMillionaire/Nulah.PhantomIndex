@@ -16,22 +16,30 @@ namespace Nulah.PhantomIndex.WPF
     /// </summary>
     public partial class App : Application
     {
-        public readonly static PhantomIndexManager Database = new PhantomIndexManager();
+        public readonly static PhantomIndexManager PhantomIndexManager = new PhantomIndexManager();
+        public static DatabaseManager Database => PhantomIndexManager.Database;
 
         public App()
         {
             // Ensure the application data folder for this application exists
             var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            Directory.CreateDirectory(Path.Combine(localAppData, GetType()!.Namespace));
+            PhantomIndexManager.SetApplicationLocation(Path.Combine(localAppData, GetType()!.Namespace!));
 
             // Set the default database location if empty
             if (string.IsNullOrWhiteSpace(WPF.Properties.Settings.Default.ProfileDatabaseLocation) == true)
             {
-                WPF.Properties.Settings.Default.ProfileDatabaseLocation = Path.Combine(localAppData, GetType()!.Namespace, "app.db");
+                WPF.Properties.Settings.Default.ProfileDatabaseLocation = Path.Combine(PhantomIndexManager.ApplicationLocation, "app.db");
+                WPF.Properties.Settings.Default.Save();
+            }
+
+            if (string.IsNullOrWhiteSpace(WPF.Properties.Settings.Default.UserPluginLocation) == true)
+            {
+                WPF.Properties.Settings.Default.UserPluginLocation = Path.Combine(PhantomIndexManager.ApplicationLocation, "Plugins");
                 WPF.Properties.Settings.Default.Save();
             }
 
             Database.SetConnection(WPF.Properties.Settings.Default.ProfileDatabaseLocation);
+            PhantomIndexManager.SetLocalPluginLocation(WPF.Properties.Settings.Default.UserPluginLocation);
         }
     }
 }

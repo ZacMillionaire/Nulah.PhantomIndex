@@ -34,5 +34,17 @@ namespace Nulah.PhantomIndex.WPF.Properties {
                 this["ProfileDatabaseLocation"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string UserPluginLocation {
+            get {
+                return ((string)(this["UserPluginLocation"]));
+            }
+            set {
+                this["UserPluginLocation"] = value;
+            }
+        }
     }
 }

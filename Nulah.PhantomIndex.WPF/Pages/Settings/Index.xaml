@@ -18,10 +18,16 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <controls:NulahInput Label="Application Database Location" Grid.Row="0" Text="{Binding ApplicationDatabaseLocation}" IsReadOnly="True">
             <controls:NulahInput.Buttons>
-                <Button x:Name="OpenExplorerButton" Content="Open" Click="OpenExplorerButton_Click"/>
+                <Button x:Name="OpenDatabaseLocationButton" Content="Open" Click="OpenDatabaseLocationButton_Click"/>
+            </controls:NulahInput.Buttons>
+        </controls:NulahInput>
+        <controls:NulahInput Label="Plugin Location" Grid.Row="1" Text="{Binding PluginLocation}" IsReadOnly="True">
+            <controls:NulahInput.Buttons>
+                <Button x:Name="OpenPluginLocationButton" Content="Open" Click="OpenPluginLocationButton_Click"/>
             </controls:NulahInput.Buttons>
         </controls:NulahInput>
     </Grid>

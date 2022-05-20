@@ -8,7 +8,7 @@ namespace Nulah.PhantomIndex.Core
     {
         private static Type[] _defaultPageViewParameterConstructorTypes = new Type[] { typeof(string) };
 
-        public static (Type PageView, string[] PageViewParameters) ResolvePageViewFromAssembly(this Type parentAssemblyType, string pageViewLocation)
+        public static (Type PageView, string[] PageViewParameters) ResolvePageViewFromAssembly(Type parentAssemblyType, string pageViewLocation)
         {
             var callingNamespace = parentAssemblyType.Namespace;
             var pathFragments = ResolvePageViewLocation(pageViewLocation);
@@ -25,7 +25,8 @@ namespace Nulah.PhantomIndex.Core
 
             return (view, pageviewParameters);
         }
-        public static (Type PageView, string[] PageViewParameters) ResolvePageViewFromAssembly(this Assembly executingAssembly, string pageViewLocation)
+
+        public static (Type PageView, string[] PageViewParameters) ResolvePageViewFromAssembly(Assembly executingAssembly, string pageViewLocation)
         {
             var pathFragments = ResolvePageViewLocation(pageViewLocation);
             string[] pageviewParameters = null;
@@ -42,6 +43,14 @@ namespace Nulah.PhantomIndex.Core
             return (view, pageviewParameters);
         }
 
+        /// <summary>
+        /// Creates a new instance of a page view
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="pageViewType"></param>
+        /// <param name="pageViewParameters"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public static T GetActivatedPageViewByParameters<T>(Type pageViewType, string[] pageViewParameters)
         {
             if (pageViewParameters == null || pageViewParameters.Length == 0)

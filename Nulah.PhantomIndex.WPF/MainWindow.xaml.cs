@@ -1,10 +1,15 @@
 ﻿using Nulah.PhantomIndex.Core;
 using Nulah.PhantomIndex.Core.Controls;
+using Nulah.PhantomIndex.Lib.Plugins;
 using Nulah.PhantomIndex.WPF.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -28,8 +33,7 @@ namespace Nulah.PhantomIndex.WPF
     public partial class MainWindow : NulahWindow
     {
         public AppViewModel AppViewModel = new();
-        public static Core.Controls.NulahNavigation Navigation;
-
+        public static NulahNavigation Navigation;
 
         public MainWindow()
         {
@@ -37,38 +41,45 @@ namespace Nulah.PhantomIndex.WPF
             this.DataContext = AppViewModel;
 
             Navigation = MainWindowNavigation;
-            /*
-            var a = typeof(MainWindow).ResolvePageViewFromAssembly("Pages/Profiles/Index");
 
-            if (a.PageView != null)
+            var plugins = App.PhantomIndexManager.GetPlugins(Navigation);
+
+            foreach (IPlugin plugin in plugins)
             {
-                var b = NavigationContent.Navigate(a.PageViewParameters != null
-                    ? Activator.CreateInstance(a.PageView, a.PageViewParameters)
-                    : Activator.CreateInstance(a.PageView)
-                );
+                var pluginMenuSection = new NavigationItemCollapsable(plugin.Name)
+                {
+                    Icon = plugin.Icon
+                };
+
+                BuildNavigationFromPlugin(pluginMenuSection, plugin.Pages, plugin.GetType());
+
+                Navigation.MenuItems.Add(pluginMenuSection);
             }
-            */
         }
 
-        //private void Button_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var s = (Button)sender;
-
-        //    var a = typeof(MainWindow).ResolvePageViewFromAssembly(s.Tag as string);
-
-        //    if (a.PageView != null)
-        //    {
-        //        var pageView = Activator.CreateInstance(a.PageView) as Page;
-
-        //        //NavigationContent.Navigate(pageView, "asdf");
-
-        //        /*
-        //        NavigationContent.Navigate(a.PageViewParameters != null
-        //            ? Activator.CreateInstance(a.PageView, a.PageViewParameters)
-        //            : Activator.CreateInstance(a.PageView)
-        //        );
-        //        */
-        //    }
-        //}
+        private void BuildNavigationFromPlugin(NavigationItemCollapsable parent, List<PluginMenuItem> pluginNavigationItems, Type pluginType)
+        {
+            foreach (PluginMenuItem pluginItem in pluginNavigationItems)
+            {
+                if (pluginItem is PluginMenuCategory subPage && subPage.Pages != null && subPage.Pages.Count != 0)
+                {
+                    var pluginSubMenuItem = new NavigationItemCollapsable(subPage.DisplayName)
+                    {
+                        Icon = subPage.Icon
+                    };
+                    BuildNavigationFromPlugin(pluginSubMenuItem, subPage.Pages, pluginType);
+                    parent.MenuItems.Add(pluginSubMenuItem);
+                }
+                else
+                {
+                    var navigationItem = new NavigationItem(pluginItem.DisplayName, pluginItem.PageLocation)
+                    {
+                        Icon = pluginItem.Icon,
+                        NavigationSourceType = pluginType
+                    };
+                    parent.MenuItems.Add(navigationItem);
+                }
+            }
+        }
     }
 }

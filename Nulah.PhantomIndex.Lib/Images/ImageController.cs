@@ -12,7 +12,7 @@ using SQLite;
 
 namespace Nulah.PhantomIndex.Lib.Images
 {
-    public class ImageController : PhantomIndexControllerBase
+    public class ImageController : DatabaseControllerBase
     {
         public readonly static string FileDialogSupportedImageFormats;
 
@@ -24,8 +24,8 @@ namespace Nulah.PhantomIndex.Lib.Images
             FileDialogSupportedImageFormats = GetSupportedFileDialogFilterString();
         }
 
-        public ImageController(PhantomIndexManager phantomIndexManager)
-            : base(phantomIndexManager)
+        public ImageController(DatabaseManager databaseManager)
+            : base(databaseManager)
         { }
 
         internal override void Init()
@@ -35,10 +35,10 @@ namespace Nulah.PhantomIndex.Lib.Images
             // Create tables required for this controller
             Task.Run(() =>
             {
-                PhantomIndexManager.Connection
+                DatabaseManager.Connection
                     !.CreateTableAsync<ImageResourceTable>()
                     .ConfigureAwait(false);
-                PhantomIndexManager.Connection
+                DatabaseManager.Connection
                     !.CreateTableAsync<Image_ResourceTable>()
                     .ConfigureAwait(false);
             });
@@ -101,9 +101,9 @@ namespace Nulah.PhantomIndex.Lib.Images
 
             try
             {
-                await PhantomIndexManager.Connection!.RunInTransactionAsync(async a =>
+                await DatabaseManager.Connection!.RunInTransactionAsync(async a =>
                     {
-                        var imagesInserted = await PhantomIndexManager.Connection
+                        var imagesInserted = await DatabaseManager.Connection
                             !.InsertAsync(newImage)
                             .ConfigureAwait(false);
 
@@ -145,7 +145,7 @@ namespace Nulah.PhantomIndex.Lib.Images
                 Type = resourceType
             };
 
-            var imagesInserted = await PhantomIndexManager.Connection
+            var imagesInserted = await DatabaseManager.Connection
                 !.InsertAsync(imageResourceLink)
                 .ConfigureAwait(false);
 

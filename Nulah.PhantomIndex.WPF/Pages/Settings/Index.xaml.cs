@@ -32,13 +32,20 @@ namespace Nulah.PhantomIndex.WPF.Pages.Settings
             InitializeComponent();
 
             _viewModel.ApplicationDatabaseLocation = new FileInfo(App.Database.DatabaseLocation).DirectoryName;
+            _viewModel.PluginLocation = Properties.Settings.Default.UserPluginLocation;
+
             DataContext = _viewModel;
             //var processesWithLocks = FileUtil.WhoIsLocking(App.Database.DatabaseLocation);
         }
 
-        private void OpenExplorerButton_Click(object sender, RoutedEventArgs e)
+        private void OpenDatabaseLocationButton_Click(object sender, RoutedEventArgs e)
         {
             Process.Start("explorer.exe", _viewModel.ApplicationDatabaseLocation);
+        }
+
+        private void OpenPluginLocationButton_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start("explorer.exe", _viewModel.PluginLocation);
         }
     }
 

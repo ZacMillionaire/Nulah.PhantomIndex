@@ -10,10 +10,10 @@ using System.Threading.Tasks;
 
 namespace Nulah.PhantomIndex.Lib.Profiles
 {
-    public class ProfileController : PhantomIndexControllerBase
+    public class ProfileController : DatabaseControllerBase
     {
-        internal ProfileController(PhantomIndexManager phantomIndexManager)
-            : base(phantomIndexManager)
+        internal ProfileController(DatabaseManager databaseManager)
+            : base(databaseManager)
         {
         }
 
@@ -24,7 +24,7 @@ namespace Nulah.PhantomIndex.Lib.Profiles
             base.Init();
 
             // Create tables required for this controller
-            Task.Run(() => PhantomIndexManager.Connection
+            Task.Run(() => DatabaseManager.Connection
                 !.CreateTableAsync<ProfileTable>()
                 .ConfigureAwait(false));
 
@@ -54,9 +54,9 @@ namespace Nulah.PhantomIndex.Lib.Profiles
             };
 
             // Get the event type for Created events
-            var createdEventType = await PhantomIndexManager.Events.GetDefaultEventType(DefaultEventType.Created);
+            var createdEventType = await DatabaseManager.Events.GetDefaultEventType(DefaultEventType.Created);
 
-            var profileCreated = await PhantomIndexManager.Connection
+            var profileCreated = await DatabaseManager.Connection
                 !.InsertAsync(newProfile)
                 .ConfigureAwait(false);
 
@@ -64,14 +64,14 @@ namespace Nulah.PhantomIndex.Lib.Profiles
             {
                 if (imageBlob != null)
                 {
-                    ImageResourceTable profileImage = await PhantomIndexManager.Images
+                    ImageResourceTable profileImage = await DatabaseManager.Images
                         .SaveImageForResource(newProfile.Id, imageBlob, nameof(ProfileTable))
                         .ConfigureAwait(false);
                 }
 
                 // Create a Created event to create an event that indicates the creation
                 // :V
-                await PhantomIndexManager.Events.CreateEvent(DateTime.UtcNow, newProfile.Id, createdEventType.Id);
+                await DatabaseManager.Events.CreateEvent(DateTime.UtcNow, newProfile.Id, createdEventType.Id);
 
                 return newProfile;
             }
@@ -97,15 +97,15 @@ namespace Nulah.PhantomIndex.Lib.Profiles
 	                Image.[{nameof(ImageResourceTable.ImageBlob)}] AS {nameof(Profile.ImageBlob)}
                 FROM 
                     [{ProfileTableName}] AS Profile
-                LEFT JOIN [{PhantomIndexManager.Images.ImageResourceLinkTableName}] AS IR
+                LEFT JOIN [{DatabaseManager.Images.ImageResourceLinkTableName}] AS IR
 	                ON IR.[ResourceId] = Profile.[Id]
-                LEFT JOIN [{PhantomIndexManager.Images.ImageTableName}] AS Image
+                LEFT JOIN [{DatabaseManager.Images.ImageTableName}] AS Image
 	                ON IR.[ImageId] = Image.[Id]
                 WHERE
                     Profile.[Id] = ?;
                 ";
 
-            var profile = await PhantomIndexManager.Connection!.QueryAsync<Profile>(selectQuery, new[] { profileId.ToString() });
+            var profile = await DatabaseManager.Connection!.QueryAsync<Profile>(selectQuery, new[] { profileId.ToString() });
 
             return profile.FirstOrDefault();
         }
@@ -116,7 +116,7 @@ namespace Nulah.PhantomIndex.Lib.Profiles
         /// <returns></returns>
         public async Task<int> GetProfileCount()
         {
-            return await PhantomIndexManager.Connection!.Table<ProfileTable>()
+            return await DatabaseManager.Connection!.Table<ProfileTable>()
                 .CountAsync();
         }
 
@@ -150,15 +150,15 @@ namespace Nulah.PhantomIndex.Lib.Profiles
 	                Image.[{nameof(ImageResourceTable.ImageBlob)}] AS {nameof(Profile.ImageBlob)}
                 FROM 
                     [{ProfileTableName}] AS Profile
-                LEFT JOIN [{PhantomIndexManager.Images.ImageResourceLinkTableName}] AS IR
+                LEFT JOIN [{DatabaseManager.Images.ImageResourceLinkTableName}] AS IR
 	                ON IR.[ResourceId] = Profile.[Id]
-                LEFT JOIN [{PhantomIndexManager.Images.ImageTableName}] AS Image
+                LEFT JOIN [{DatabaseManager.Images.ImageTableName}] AS Image
 	                ON IR.[ImageId] = Image.[Id]
                 LIMIT 
                     {pageStart},{pageSize + pageStart};
                 ";
 
-            var profiles = await PhantomIndexManager.Connection!.QueryAsync<Profile>(selectQuery);
+            var profiles = await DatabaseManager.Connection!.QueryAsync<Profile>(selectQuery);
 
             return profiles;
         }

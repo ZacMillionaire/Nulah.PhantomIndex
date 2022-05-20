@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Nulah.PhantomIndex.Lib.Events
 {
-    public class EventController : PhantomIndexControllerBase
+    public class EventController : DatabaseControllerBase
     {
         private readonly List<Type> _validEventTypes = new List<Type>
         {
@@ -21,8 +21,8 @@ namespace Nulah.PhantomIndex.Lib.Events
             typeof(byte[])
         };
 
-        internal EventController(PhantomIndexManager phantomIndexManager)
-            : base(phantomIndexManager)
+        internal EventController(DatabaseManager databaseManager)
+            : base(databaseManager)
         {
         }
 
@@ -41,8 +41,8 @@ namespace Nulah.PhantomIndex.Lib.Events
             // Create tables required for this controller
             Task.Run(async () =>
             {
-                await PhantomIndexManager.Connection!.CreateTableAsync<EventTable>().ConfigureAwait(false);
-                await PhantomIndexManager.Connection!.CreateTableAsync<EventTypeTable>().ConfigureAwait(false);
+                await DatabaseManager.Connection!.CreateTableAsync<EventTable>().ConfigureAwait(false);
+                await DatabaseManager.Connection!.CreateTableAsync<EventTypeTable>().ConfigureAwait(false);
 
                 EventTableName = ((TableAttribute)typeof(EventTable).GetCustomAttributes(typeof(TableAttribute), false).FirstOrDefault(new TableAttribute("Event"))).Name;
                 EventTypeTableName = ((TableAttribute)typeof(EventTypeTable).GetCustomAttributes(typeof(TableAttribute), false).FirstOrDefault(new TableAttribute("EventType"))).Name;
@@ -90,7 +90,7 @@ namespace Nulah.PhantomIndex.Lib.Events
                 EventTimeUTC = DateTime.UtcNow
             };
 
-            var eventCreated = await PhantomIndexManager.Connection
+            var eventCreated = await DatabaseManager.Connection
                 !.InsertAsync(newEvent)
                 .ConfigureAwait(false);
 
@@ -121,7 +121,7 @@ namespace Nulah.PhantomIndex.Lib.Events
                 ProfileId = profileId
             };
 
-            var eventCreated = await PhantomIndexManager.Connection
+            var eventCreated = await DatabaseManager.Connection
                 !.InsertAsync(newNoteEvent)
                 .ConfigureAwait(false);
 
@@ -150,7 +150,7 @@ namespace Nulah.PhantomIndex.Lib.Events
                 WHERE
 	                Events.[Id] = ?";
 
-            var dateTimeEvent = await PhantomIndexManager.Connection!.QueryAsync<EventTable>(getEventQuery, eventId);
+            var dateTimeEvent = await DatabaseManager.Connection!.QueryAsync<EventTable>(getEventQuery, eventId);
 
             if (dateTimeEvent.Count == 1)
             {
@@ -192,7 +192,7 @@ namespace Nulah.PhantomIndex.Lib.Events
                 WHERE
 	                Events.[Id] = ?";
 
-            var genericEvent = await PhantomIndexManager.Connection!.QueryAsync<EventTable>(getEventQuery, eventId);
+            var genericEvent = await DatabaseManager.Connection!.QueryAsync<EventTable>(getEventQuery, eventId);
 
             if (genericEvent.Count == 1)
             {
@@ -270,7 +270,7 @@ namespace Nulah.PhantomIndex.Lib.Events
                 IsReadOnly = isReadOnly
             };
 
-            var insert = await PhantomIndexManager.Connection!.InsertAsync(newEventType).ConfigureAwait(false);
+            var insert = await DatabaseManager.Connection!.InsertAsync(newEventType).ConfigureAwait(false);
 
             if (insert == 1)
             {
@@ -326,7 +326,7 @@ namespace Nulah.PhantomIndex.Lib.Events
                 WHERE
 	                E.[ProfileId] = ?";
 
-            var profileEventQuery = await PhantomIndexManager.Connection!.QueryAsync<EventHolding>(eventsForProfile, profileId);
+            var profileEventQuery = await DatabaseManager.Connection!.QueryAsync<EventHolding>(eventsForProfile, profileId);
 
             foreach (EventHolding profileEvent in profileEventQuery)
             {
@@ -377,7 +377,7 @@ namespace Nulah.PhantomIndex.Lib.Events
             FROM [EventTypes]
                 AS EventType";
 
-            var eventTypes = await PhantomIndexManager.Connection!.QueryAsync<EventType>(eventTypeQuery);
+            var eventTypes = await DatabaseManager.Connection!.QueryAsync<EventType>(eventTypeQuery);
 
             return eventTypes;
         }
@@ -410,7 +410,7 @@ namespace Nulah.PhantomIndex.Lib.Events
                 WHERE
                     EventTypeTable.[Name] = ?";
 
-            var exists = await PhantomIndexManager.Connection!.ExecuteScalarAsync<bool>(existsQuery, new object[] { eventTypeName });
+            var exists = await DatabaseManager.Connection!.ExecuteScalarAsync<bool>(existsQuery, new object[] { eventTypeName });
 
             return exists;
         }
@@ -432,7 +432,7 @@ namespace Nulah.PhantomIndex.Lib.Events
 	                AS EventType
                 WHERE EventType.[Name] = ?";
 
-            var eventTypes = await PhantomIndexManager.Connection!.QueryAsync<EventTypeTable>(eventTypeQuery, eventTypeName);
+            var eventTypes = await DatabaseManager.Connection!.QueryAsync<EventTypeTable>(eventTypeQuery, eventTypeName);
 
             if (eventTypes.Count == 1)
             {

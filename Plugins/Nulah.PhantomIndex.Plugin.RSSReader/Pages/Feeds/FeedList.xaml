@@ -1,0 +1,173 @@
+﻿<UserControl x:Class="Nulah.PhantomIndex.Plugin.RSSReader.Pages.Feeds.FeedList"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Nulah.PhantomIndex.Plugin.RSSReader.Pages.Feeds"
+             xmlns:vm="clr-namespace:Nulah.PhantomIndex.Plugin.RSSReader.ViewModels.Feeds"
+             xmlns:datamodel="clr-namespace:Nulah.PhantomIndex.Plugin.RSSReader.Data.Models"
+             xmlns:nulahcore="clr-namespace:Nulah.PhantomIndex.Core.Controls;assembly=Nulah.PhantomIndex.Core"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800" 
+             d:DataContext="{d:DesignInstance Type=vm:FeedListViewModel, IsDesignTimeCreatable=True}"
+             IsEnabled="{Binding PageEnabled}"
+             Background="{DynamicResource PageBackground}"
+             >
+    <UserControl.Resources>
+        <ResourceDictionary Source="/Nulah.PhantomIndex.Plugin.RSSReader;component/Generic.xaml"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0">Feed List</TextBlock>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Button x:Name="ToggleContentPanelButton" VerticalAlignment="Center" Grid.Row="0" Style="{StaticResource NulahButtonGeneric}" Padding="10,0" HorizontalAlignment="Right" Click="ToggleContentPanelButton_Click">Show</Button>
+            <Border x:Name="AddFeedForm" Grid.Row="1" Background="White" BorderBrush="Black" BorderThickness="0,1" Padding="5" Visibility="Collapsed">
+                <StackPanel>
+                    <UserControl 
+                        x:Name="AddFeedFormControl"
+                            xmlns:vm="clr-namespace:Nulah.PhantomIndex.Plugin.RSSReader.ViewModels.Feeds"
+                            xmlns:nulahcore="clr-namespace:Nulah.PhantomIndex.Core.Controls;assembly=Nulah.PhantomIndex.Core"
+                            d:DataContext="{d:DesignInstance Type=vm:AddFeedViewModel}"
+                            IsEnabled="{Binding PageEnabled}"
+                        >
+                        <UserControl.Resources>
+                            <ResourceDictionary Source="/Nulah.PhantomIndex.Core;component/Themes/NulahTheme.xaml"/>
+                        </UserControl.Resources>
+                        <UserControl.DataContext>
+                            <x:Null/>
+                        </UserControl.DataContext>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition Height="auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Row="0" x:Name="ErrorPanel">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ValidationErrors}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Hidden" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ValidationErrors.Count}" Value="0">
+                                                <Setter Property="Visibility" Value="Hidden" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
+                                <Border BorderBrush="Red" BorderThickness="1" Background="LightPink">
+                                    <ItemsControl ItemsSource="{Binding ValidationErrors}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock FontSize="18" Foreground="Black" Text="{Binding}"/>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Border>
+                            </StackPanel>
+                            <nulahcore:NulahInput x:Name="UrlInput" InputSize="18" Grid.Row="1" Label="RSS Feed" Hint="Feed URL" Text="{Binding Url}" Grid.ColumnSpan="2"/>
+                            <nulahcore:NulahInput x:Name="NameInput" InputSize="18" Grid.Row="2" Label="Name" Hint="Display Name" Text="{Binding Name}" Grid.ColumnSpan="2"/>
+                            <Button x:Name="AddFeedButton" Click="AddFeedButton_Click" Grid.Row="3" Grid.Column="1" Style="{StaticResource NulahButtonGeneric}" Margin="0,5,0,0" Padding="10,0" HorizontalAlignment="Right">Add</Button>
+                        </Grid>
+                    </UserControl>
+                </StackPanel>
+            </Border>
+        </Grid>
+        <ItemsControl Grid.Row="2" ItemsSource="{Binding Feeds}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type datamodel:Feed}">
+                    <Border Margin="5">
+                        <Grid>
+                            <Border CornerRadius="5" Margin="0" BorderThickness="1,1,1,1" >
+                                <Border.BorderBrush>
+                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                        <GradientStop Color="#3FFFFFFF"/>
+                                        <GradientStop Color="#0F696969" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.BorderBrush>
+                            </Border>
+                            <Border CornerRadius="5" Padding="5">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background">
+                                            <Setter.Value>
+                                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                    <GradientStop Color="#3FFFFFFF"/>
+                                                    <GradientStop Color="#19FFFFFF" Offset="1"/>
+                                                </LinearGradientBrush>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                                            <GradientStop Color="#4FFFFFFF"/>
+                                                            <GradientStop Color="#3fFFFFFF" Offset="1"/>
+                                                        </LinearGradientBrush>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel x:Name="FeedItemGrid" PreviewMouseDown="FeedItemGrid_PreviewMouseDown" Grid.Column="0">
+                                        <StackPanel.Style>
+                                            <Style TargetType="StackPanel">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Cursor" Value="Hand" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </StackPanel.Style>
+                                        <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="24" Foreground="White"/>
+                                        <TextBlock Text="{Binding Url}" FontSize="14" Foreground="#FFC1C1C1"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                        <Button x:Name="RemoveFeedButton" Style="{StaticResource NulahButtonGeneric}" Click="RemoveFeedButton_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <nulahcore:NulahIcon Icon="Delete"/>
+                                                <TextBlock>Remove</TextBlock>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button x:Name="EditFeedButton" Style="{StaticResource NulahButtonGeneric}" Click="EditFeedButton_Click">
+                                            <StackPanel Orientation="Horizontal">
+                                                <nulahcore:NulahIcon Icon="Edit"/>
+                                                <TextBlock>Edit</TextBlock>
+                                            </StackPanel>
+                                        </Button>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</UserControl>
