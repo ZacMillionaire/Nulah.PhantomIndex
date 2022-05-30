@@ -55,14 +55,20 @@
     </Style>
     <Style x:Key="WindowTitle" TargetType="Border">
         <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=WindowColour}" />
+        <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=WindowBorder}" />
+        <Setter Property="BorderThickness" Value="1,1,1,0" />
         <Style.Triggers>
             <DataTrigger Binding="{Binding IsActive, RelativeSource={RelativeSource AncestorType=Window}}" Value="False">
                 <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=WindowColourInactive}" />
+                <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=WindowColourInactive}" />
+            </DataTrigger>
+            <DataTrigger Binding="{Binding WindowState, RelativeSource={RelativeSource AncestorType=Window}}" Value="{x:Static WindowState.Maximized}">
+                <Setter Property="BorderThickness" Value="0" />
             </DataTrigger>
         </Style.Triggers>
     </Style>
     <Style x:Key="WindowBorder" TargetType="Border">
-        <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=WindowColour}" />
+        <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=WindowBorder}" />
         <Setter Property="BorderThickness" Value="1,0,1,1" />
         <Style.Triggers>
             <DataTrigger Binding="{Binding IsActive, RelativeSource={RelativeSource AncestorType=Window}}" Value="False">
@@ -95,23 +101,25 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <Image Grid.Column="0" Width="22" Height="22" Margin="4" Source="/Nulah.PhantomIndex.WPF;component/Icons/logo.png" Stretch="Fill" />
-                                    <TextBlock Grid.Column="1" Margin="4 0 0 0" VerticalAlignment="Center" FontSize="14" Text="{TemplateBinding Title}">
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding IsActive, RelativeSource={RelativeSource AncestorType=Window}}" Value="False">
-                                                        <Setter Property="Foreground" Value="{StaticResource WindowTitleBarInactiveText}" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
+                                    <StackPanel x:Name="WindowTitleHitBar" Grid.Column="1" Orientation="Horizontal">
+                                        <Image Width="22" Height="22" Margin="4" Source="/Nulah.PhantomIndex.WPF;component/Icons/logo.png" Stretch="Fill" />
+                                        <TextBlock Padding="4 0 0 0" FontSize="14" Text="{TemplateBinding Title}" VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsActive, RelativeSource={RelativeSource AncestorType=Window}}" Value="False">
+                                                            <Setter Property="Foreground" Value="{StaticResource WindowTitleBarInactiveText}" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </StackPanel>
                                     <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
                                         <ContentPresenter x:Name="TitleBarControls" Content="{TemplateBinding TitleBarControls}"/>
                                     </StackPanel>

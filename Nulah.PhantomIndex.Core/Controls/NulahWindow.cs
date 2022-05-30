@@ -24,7 +24,7 @@ namespace Nulah.PhantomIndex.Core.Controls
         /// This controls the active window title and border colours
         /// </summary>
         [Category("Brush")]
-        [Description("Active window and border colour")]
+        [Description("Active window colour")]
         public Brush WindowColour
         {
             get { return (Brush)GetValue(WindowColourProperty); }
@@ -34,6 +34,18 @@ namespace Nulah.PhantomIndex.Core.Controls
         // Using a DependencyProperty as the backing store for WindowColour.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty WindowColourProperty =
             DependencyProperty.Register(nameof(WindowColour), typeof(Brush), typeof(NulahWindow), new PropertyMetadata(null));
+
+        [Category("Brush")]
+        [Description("Active window border colour")]
+        public Brush WindowBorder
+        {
+            get { return (Brush)GetValue(WindowBorderProperty); }
+            set { SetValue(WindowBorderProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for WindowColour.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty WindowBorderProperty =
+            DependencyProperty.Register(nameof(WindowBorder), typeof(Brush), typeof(NulahWindow), new PropertyMetadata(null));
 
         /// <summary>
         /// This controls the inactive window title and border colours
@@ -118,7 +130,9 @@ namespace Nulah.PhantomIndex.Core.Controls
                 closeButton.Click += OnCloseButtonClick;
             }
 
-            var windowTitleBar = GetTemplateChild("WindowTitleBar") as Border;
+            //var titleBarControls = GetTemplateChild("TitleBarControls") as ContentPresenter;
+
+            var windowTitleBar = GetTemplateChild("WindowTitleHitBar") as StackPanel;
             if (windowTitleBar != null)
             {
                 windowTitleBar.MouseLeftButtonDown += Border_MouseLeftButtonDown;
