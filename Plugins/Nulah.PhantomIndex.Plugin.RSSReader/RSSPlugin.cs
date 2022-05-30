@@ -16,33 +16,34 @@ using System.Xml.Linq;
 
 namespace Nulah.PhantomIndex.Plugin.RSSReader
 {
-    [Export(typeof(IPlugin))]
-    internal class RSSPlugin : IPlugin
+    [Export(typeof(NulahPlugin))]
+    internal class RSSPlugin : NulahPlugin
     {
-        // In lieu of being able to define statics on interfaces
-        // https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/tutorials/static-abstract-interface-methods
-        internal static RSSPlugin Instance;
-        internal static NulahNavigation WindowNavigation;
+        internal static RSSPlugin Instance = null;
 
-        public string Name => "RSS";
+        public RSSFeeder? Feeder { get; private set; }
 
-        public FontIcon Icon => FontIcon.Wifi;
-
-        public List<PluginMenuItem> Pages => new()
+        public RSSPlugin()
         {
-            new PluginMenuItem("Feeds", "Pages/Feeds/FeedList")
-        };
+            Instance = this;
+        }
 
-        public readonly string PluginDataLocation;
-        public readonly RSSFeeder Feeder;
-
-        [ImportingConstructor]
-        public RSSPlugin([Import(PluginConstants.UserPluginLocationContractName)] string pluginAppDataLocation)
+        public override Task OnPluginInitialise()
         {
-            PluginDataLocation = Path.Combine(pluginAppDataLocation, Name);
-            Directory.CreateDirectory(PluginDataLocation);
 
-            Feeder = new RSSFeeder(Path.Combine(PluginDataLocation, $"{Name}.db"));
+            Name = "RSS";
+            Icon = FontIcon.Wifi;
+
+            Pages.Add(new PluginMenuItem("Feeds", "Pages/Feeds/FeedList"));
+
+            Feeder = new RSSFeeder(Path.Combine(Details.PluginDataLocation, $"{Name}.db"));
+
+            return Task.CompletedTask;
+        }
+
+        public override Task OnApplicationClose()
+        {
+            throw new NotImplementedException();
         }
     }
 }
