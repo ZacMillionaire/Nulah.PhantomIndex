@@ -10,12 +10,25 @@
     <Color x:Key="LoadingDark">#FF7458FF</Color>
     <Color x:Key="LoadingLight">#FF9389C7</Color>
 
+    <SolidColorBrush x:Key="Primary" Color="#FF867AA0"/>
+    <SolidColorBrush x:Key="PrimaryVariant" Color="#FFB3A9C8"/>
+    <SolidColorBrush x:Key="PrimaryVariantDark" Color="#FF383246"/>
+    <SolidColorBrush x:Key="WindowBackground">#FF212121</SolidColorBrush>
+
     <Style x:Key="DefaultWindowStyle" TargetType="{x:Type control:NulahWindow}">
-        <Setter Property="WindowColour" Value="#FF008CE6" />
+        <Setter Property="WindowColour" Value="{DynamicResource Primary}" />
+        <Setter Property="WindowBorder" Value="{DynamicResource PrimaryVariantDark}" />
+        <Setter Property="Background" Value="{DynamicResource WindowBackground}" />
     </Style>
     <Style x:Key="DefaultNavigationStyle" TargetType="{x:Type control:NulahNavigation}">
-        <Setter Property="Background" Value="#FF825E9C"/>
-        <Setter Property="BorderBrush" Value="#FF40006F" />
+        <Setter Property="Background" Value="{DynamicResource Primary}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource PrimaryVariantDark}" />
+        <Setter Property="NavigationItemBackground" Value="{DynamicResource Primary}" />
+        <Setter Property="NavigationItemBackgroundMouseOver" Value="{DynamicResource PrimaryVariant}" />
+        <!--<Setter Property="NavigationItemCollapsableBackground" Value="{DynamicResource PrimaryVariant}" />-->
+        <Setter Property="NavigationItemCollapsableBackgroundMouseOver" Value="{DynamicResource PrimaryVariant}" />
+        <!--<Setter Property="Background" Value="#FF825E9C"/>
+        <Setter Property="BorderBrush" Value="#FF40006F" />-->
     </Style>
     <Style x:Key="DefaultDialogBoxStyle" TargetType="{x:Type control:NulahOverlayDialog}">
         <Setter Property="BorderBrush" Value="#FF008CE6"/>

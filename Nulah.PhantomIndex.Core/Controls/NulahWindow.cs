@@ -21,7 +21,7 @@ namespace Nulah.PhantomIndex.Core.Controls
     {
 
         /// <summary>
-        /// This controls the active window title and border colours
+        /// This controls the active window title colour
         /// </summary>
         [Category("Brush")]
         [Description("Active window colour")]
@@ -35,6 +35,9 @@ namespace Nulah.PhantomIndex.Core.Controls
         public static readonly DependencyProperty WindowColourProperty =
             DependencyProperty.Register(nameof(WindowColour), typeof(Brush), typeof(NulahWindow), new PropertyMetadata(null));
 
+        /// <summary>
+        /// This controls the active window border colour
+        /// </summary>
         [Category("Brush")]
         [Description("Active window border colour")]
         public Brush WindowBorder
