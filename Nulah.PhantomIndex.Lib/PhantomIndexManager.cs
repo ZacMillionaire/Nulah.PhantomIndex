@@ -9,20 +9,8 @@ namespace Nulah.PhantomIndex.Lib
     {
         public readonly DatabaseManager Database;
         private readonly PluginManager _pluginManager;
-        /// <summary>
-        /// Binding flags to use when discovering static fields to inject into
-        /// </summary>
-        private readonly BindingFlags _staticBindingFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public;
 
-        //[Export(PluginConstants.ApplicationDataLocationContractName)]
         public string? ApplicationLocation { get; private set; }
-
-        /// <summary>
-        /// Explicitly exported types to avoid annotation exports from Lib.
-        /// </summary>
-        // While some [Export] attributes may work (such as fields), others will fail to be imported,
-        // such as properties. Why is unknown but uncomment the export attribute above and attempt to [Import] it in a plugin to see.
-        private Dictionary<string, object> _exportContracts = new Dictionary<string, object>();
 
         public PhantomIndexManager()
         {
@@ -38,7 +26,6 @@ namespace Nulah.PhantomIndex.Lib
         {
             ApplicationLocation = applicationLocalLocation;
             Directory.CreateDirectory(ApplicationLocation);
-            _exportContracts.Add(PluginConstants.ApplicationDataLocationContractName, applicationLocalLocation);
         }
 
         /// <summary>
@@ -49,52 +36,31 @@ namespace Nulah.PhantomIndex.Lib
         {
             _pluginManager.UserPluginLocation = localPluginDirectory;
             Directory.CreateDirectory(localPluginDirectory);
-            _exportContracts.Add(PluginConstants.UserPluginLocationContractName, localPluginDirectory);
-        }
-
-        public List<IPlugin> GetPlugins(NulahNavigation navigation)
-        {
-            _pluginManager.DiscoverPlugins(_exportContracts);
-
-            return _pluginManager.Plugins
-                .Select(x => SetPluginSelfInstance(x.Value, navigation))
-                .ToList();
         }
 
         /// <summary>
-        /// Sets the static Instance field to the plugin itself
-        /// <para>
-        /// A plugin will only have a static reference to itself if a field matching
-        /// <code>static IPlugin Instance;</code>
-        /// exists by name and signature, irrespective of scope.
-        /// </para>
+        /// Finds and configures all plugins found, and returns them ready for <see cref="NulahPlugin.OnPluginInitialise"/>
         /// </summary>
-        /// <param name="plugin"></param>
+        /// <param name="navigation">Global navigation object for the application</param>
         /// <returns></returns>
-        private IPlugin SetPluginSelfInstance(IPlugin plugin, NulahNavigation navigation)
+        // todo: remove the reliance on global navigation and leave in-plugin application up to the given plugin.
+        // having it injected is annoying me
+        public List<NulahPlugin> GetPlugins(NulahNavigation navigation)
         {
-            // Honestly this is a bit of a hack, but for windowless plugins
-            // (ones that use the main window and live in the NulahNavigation frame),
-            // they may wish to keep plugin information within the plugin class itself.
-            // Lacking a means of DI will at least allow them a reference to the plugin instance itself.
+            _pluginManager.DiscoverPlugins();
 
-            // Could this be better? Yes.
-            // Does it work? Yes.
-            // Will it cause me problems later when I want more complex navigation? Maybe!
-            var t = plugin.GetType();
-            var staticInstanceField = t.GetField("Instance", _staticBindingFlags);
-            var staticNavigationField = t.GetFields(_staticBindingFlags)
-                .FirstOrDefault(x => x.FieldType == typeof(NulahNavigation));
+            return _pluginManager.Plugins
+                .Select(x => SetPluginDetails(x.Value, navigation))
+                .ToList();
+        }
 
-            if (staticInstanceField != null && staticInstanceField.IsStatic)
-            {
-                staticInstanceField.SetValue(plugin, plugin);
-            }
+        private NulahPlugin SetPluginDetails(NulahPlugin plugin, NulahNavigation navigation)
+        {
+            var config = new PluginConfiguration(Path.Combine(_pluginManager.UserPluginLocation!, plugin.GetType().Name));
+            Directory.CreateDirectory(config.PluginDataLocation);
 
-            if (staticNavigationField != null && staticNavigationField.IsStatic)
-            {
-                staticNavigationField.SetValue(plugin, navigation);
-            }
+            plugin.Details = config;
+            plugin.WindowNavigation = navigation;
 
             return plugin;
         }

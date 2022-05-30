@@ -11,16 +11,13 @@ namespace Nulah.PhantomIndex.Lib.Plugins
         /// </summary>
         public string? UserPluginLocation { get; internal set; }
 
-        [ImportMany(typeof(IPlugin))]
-        internal List<Lazy<IPlugin, IDictionary<string, object>>> Plugins = new();
+        [ImportMany(typeof(NulahPlugin))]
+        internal List<Lazy<NulahPlugin, IDictionary<string, object>>> Plugins = new();
 
         /// <summary>
         /// Finds all plugins in the application plugin folder, and the users %localAppData% location
         /// </summary>
-        /// <param name="exportedValues">A dictionary of values to be imported into plugins. 
-        /// This is equivalent to annotaing with <see cref="ExportAttribute"/> for values
-        /// </param>
-        internal void DiscoverPlugins(Dictionary<string, object> exportedValues)
+        internal void DiscoverPlugins()
         {
             var catalog = new AggregateCatalog();
 
@@ -38,20 +35,6 @@ namespace Nulah.PhantomIndex.Lib.Plugins
             GetPluginDirectories(UserPluginLocation, catalog);
 
             var _container = new CompositionContainer(catalog);
-
-            // Add any values we want to be importable by plugins, certain values cannot be successfully exported via annotations
-            // so we enable direct passing of values during discovery that we want available
-            foreach (KeyValuePair<string, object> exportedValue in exportedValues)
-            {
-                // exported values are objects, but ComposeExportedValue won't correctly retrieve their runtime type
-                // due to the override being <T>, which exports objects which...breaks anything trying to import
-                // import a specific type.
-                // Casting properly ensures that <T> resolves to the actual type.
-                if (exportedValue.Value is string exportedString)
-                {
-                    _container.ComposeExportedValue(exportedValue.Key, exportedString);
-                }
-            }
 
             _container.SatisfyImportsOnce(this);
         }
