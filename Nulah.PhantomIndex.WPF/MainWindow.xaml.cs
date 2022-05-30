@@ -81,5 +81,10 @@ namespace Nulah.PhantomIndex.WPF
                 }
             }
         }
+
+        private void SettingsTitleButton_MouseDown(object sender, RoutedEventArgs e)
+        {
+            Navigation.NavigateToPage("Pages/Settings/Index");
+        }
     }
 }

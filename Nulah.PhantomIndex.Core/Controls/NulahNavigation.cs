@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Nulah.PhantomIndex.Core.Controls
 {
@@ -37,6 +38,66 @@ namespace Nulah.PhantomIndex.Core.Controls
         // Using a DependencyProperty as the backing store for MenuItems.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty MenuItemsProperty =
             DependencyProperty.Register(nameof(MenuItems), typeof(List<NavigationLink>), typeof(NulahNavigation), new PropertyMetadata(null));
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Category("Brush")]
+        [Description("Navigation item background colour")]
+        public Brush NavigationItemBackground
+        {
+            get { return (Brush)GetValue(NavigationItemBackgroundProperty); }
+            set { SetValue(NavigationItemBackgroundProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for WindowColour.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty NavigationItemBackgroundProperty =
+            DependencyProperty.Register(nameof(NavigationItemBackground), typeof(Brush), typeof(NulahNavigation), new PropertyMetadata(Brushes.Transparent));
+
+        /// <summary>
+        /// This controls the active window title and border colours
+        /// </summary>
+        [Category("Brush")]
+        [Description("Navigation item background hover colour")]
+        public Brush NavigationItemBackgroundMouseOver
+        {
+            get { return (Brush)GetValue(NavigationItemBackgroundMouseOverProperty); }
+            set { SetValue(NavigationItemBackgroundMouseOverProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for WindowColour.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty NavigationItemBackgroundMouseOverProperty =
+            DependencyProperty.Register(nameof(NavigationItemBackgroundMouseOver), typeof(Brush), typeof(NulahNavigation), new PropertyMetadata(Brushes.Transparent));
+
+        /// <summary>
+        /// 
+        /// </summary>
+        [Category("Brush")]
+        [Description("Navigation item background colour")]
+        public Brush NavigationItemCollapsableBackground
+        {
+            get { return (Brush)GetValue(NavigationItemCollapsableBackgroundProperty); }
+            set { SetValue(NavigationItemCollapsableBackgroundProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for WindowColour.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty NavigationItemCollapsableBackgroundProperty =
+            DependencyProperty.Register(nameof(NavigationItemCollapsableBackground), typeof(Brush), typeof(NulahNavigation), new PropertyMetadata(Brushes.Transparent));
+
+        /// <summary>
+        /// This controls the active window title and border colours
+        /// </summary>
+        [Category("Brush")]
+        [Description("Navigation item background hover colour")]
+        public Brush NavigationItemCollapsableBackgroundMouseOver
+        {
+            get { return (Brush)GetValue(NavigationItemCollapsableBackgroundMouseOverProperty); }
+            set { SetValue(NavigationItemCollapsableBackgroundMouseOverProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for WindowColour.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty NavigationItemCollapsableBackgroundMouseOverProperty =
+            DependencyProperty.Register(nameof(NavigationItemCollapsableBackgroundMouseOver), typeof(Brush), typeof(NulahNavigation), new PropertyMetadata(Brushes.Transparent));
 
 
 
@@ -240,6 +301,22 @@ namespace Nulah.PhantomIndex.Core.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(NavigationItem),
                 new FrameworkPropertyMetadata(typeof(NavigationItem)));
         }
+
+        ///// <summary>
+        ///// Background colour for the navigation item. Defaults to <see cref="Brushes.Transparent"/>
+        ///// </summary>
+        //[Category("Brush")]
+        //[Description("Navigation Item Background")]
+        //public Brush NavigationItemBackground
+        //{
+        //    get { return (Brush)GetValue(NavigationItemBackgroundProperty); }
+        //    set { SetValue(NavigationItemBackgroundProperty, value); }
+        //}
+
+        //// Using a DependencyProperty as the backing store for WindowColour.  This enables animation, styling, binding, etc...
+        //public static readonly DependencyProperty NavigationItemBackgroundProperty =
+        //    DependencyProperty.Register(nameof(NavigationItemBackground), typeof(Brush), typeof(NulahNavigation), new PropertyMetadata(Brushes.Transparent));
+
 
         /// <summary>
         /// Only required if the page the navigation item points to resides in another assembly (such as a plugin)
