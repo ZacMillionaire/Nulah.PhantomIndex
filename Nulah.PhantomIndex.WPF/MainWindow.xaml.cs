@@ -44,19 +44,59 @@ namespace Nulah.PhantomIndex.WPF
 
             var plugins = App.PhantomIndexManager.GetPlugins(Navigation);
 
-            foreach (IPlugin plugin in plugins)
+            foreach (NulahPlugin plugin in plugins)
             {
-                var pluginMenuSection = new NavigationItemCollapsable(plugin.Name)
-                {
-                    Icon = plugin.Icon
-                };
+                plugin.OnPluginInitialise();
 
-                BuildNavigationFromPlugin(pluginMenuSection, plugin.Pages, plugin.GetType());
-
-                Navigation.MenuItems.Add(pluginMenuSection);
+                Navigation.MenuItems.Add(BuildPluginNavigation(plugin));
             }
         }
 
+        /// <summary>
+        /// Builds navigation for a plugin for use with menus within the main application
+        /// </summary>
+        /// <param name="plugin"></param>
+        /// <returns></returns>
+        private NavigationItemCollapsable BuildPluginNavigation(NulahPlugin plugin)
+        {
+            var pluginMenuGroup = new NavigationItemCollapsable(plugin.Name)
+            {
+                Icon = plugin.Icon
+            };
+
+            var pluginType = plugin.GetType();
+
+            foreach (PluginMenuItem pluginItem in plugin.Pages)
+            {
+                if (pluginItem is PluginMenuCategory subPage && subPage.Pages != null && subPage.Pages.Count != 0)
+                {
+                    var pluginSubMenuItem = new NavigationItemCollapsable(subPage.DisplayName)
+                    {
+                        Icon = subPage.Icon
+                    };
+                    BuildNavigationFromPlugin(pluginSubMenuItem, subPage.Pages, pluginType);
+                    pluginMenuGroup.MenuItems.Add(pluginSubMenuItem);
+                }
+                else
+                {
+                    var navigationItem = new NavigationItem(pluginItem.DisplayName, pluginItem.PageLocation)
+                    {
+                        Icon = pluginItem.Icon,
+                        NavigationSourceType = pluginType
+                    };
+                    pluginMenuGroup.MenuItems.Add(navigationItem);
+                }
+            }
+
+            return pluginMenuGroup;
+        }
+
+        /// <summary>
+        /// Builds any sub navigation items for a plugin.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="pluginNavigationItems"></param>
+        /// <param name="pluginType"></param>
         private void BuildNavigationFromPlugin(NavigationItemCollapsable parent, List<PluginMenuItem> pluginNavigationItems, Type pluginType)
         {
             foreach (PluginMenuItem pluginItem in pluginNavigationItems)
