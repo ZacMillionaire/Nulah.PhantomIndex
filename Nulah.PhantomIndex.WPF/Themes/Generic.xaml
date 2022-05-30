@@ -2,6 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:control="clr-namespace:Nulah.PhantomIndex.Core.Controls;assembly=Nulah.PhantomIndex.Core"
     xmlns:System="clr-namespace:System;assembly=System.Runtime">
+    
+    
     <SolidColorBrush x:Key="DefaultFontColour" Color="#FF40006F"/>
     <System:Double x:Key="FontSizeNormal">14</System:Double>
     <System:Double x:Key="FontSizeLarge">28</System:Double>
@@ -27,13 +29,15 @@
         <Setter Property="NavigationItemBackgroundMouseOver" Value="{DynamicResource PrimaryVariant}" />
         <!--<Setter Property="NavigationItemCollapsableBackground" Value="{DynamicResource PrimaryVariant}" />-->
         <Setter Property="NavigationItemCollapsableBackgroundMouseOver" Value="{DynamicResource PrimaryVariant}" />
-        <!--<Setter Property="Background" Value="#FF825E9C"/>
-        <Setter Property="BorderBrush" Value="#FF40006F" />-->
     </Style>
     <Style x:Key="DefaultDialogBoxStyle" TargetType="{x:Type control:NulahOverlayDialog}">
         <Setter Property="BorderBrush" Value="#FF008CE6"/>
         <Setter Property="Background" Value="#FF53AFEA"/>
         <Setter Property="Foreground" Value="#ffffffff" />
     </Style>
+    
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/Nulah.PhantomIndex.Core;component/Themes/NulahTheme.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>
