@@ -46,8 +46,6 @@ namespace Nulah.PhantomIndex.WPF
 
             foreach (NulahPlugin plugin in plugins)
             {
-                plugin.OnPluginInitialise();
-
                 Navigation.MenuItems.Add(BuildPluginNavigation(plugin));
             }
         }

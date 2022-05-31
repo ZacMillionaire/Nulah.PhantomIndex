@@ -50,7 +50,12 @@ namespace Nulah.PhantomIndex.Lib
             _pluginManager.DiscoverPlugins();
 
             return _pluginManager.Plugins
-                .Select(x => SetPluginDetails(x.Value, navigation))
+                .Select(x =>
+                {
+                    var plugin = SetPluginDetails(x.Value, navigation);
+                    plugin.OnPluginInitialise();
+                    return plugin;
+                })
                 .ToList();
         }
 
