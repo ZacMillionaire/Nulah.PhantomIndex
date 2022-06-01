@@ -65,7 +65,6 @@ namespace Nulah.PhantomIndex.Lib
             Directory.CreateDirectory(config.PluginDataLocation);
 
             plugin.Details = config;
-            plugin.WindowNavigation = navigation;
 
             return plugin;
         }

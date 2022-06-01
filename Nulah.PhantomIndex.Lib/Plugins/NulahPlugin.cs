@@ -14,8 +14,6 @@ namespace Nulah.PhantomIndex.Lib.Plugins
     public abstract class NulahPlugin
     {
         public PluginConfiguration Details { get; internal set; }
-        [Obsolete("Here as a hold over - navigation should be managed by the plugins own navigation component")]
-        public NulahNavigation WindowNavigation { get; internal set; }
 
         public List<PluginMenuItem> Pages = new();
         public string Name { get; set; }
