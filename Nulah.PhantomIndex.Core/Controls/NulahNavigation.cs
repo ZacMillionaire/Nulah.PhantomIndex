@@ -23,6 +23,11 @@ namespace Nulah.PhantomIndex.Core.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(NulahNavigation), new FrameworkPropertyMetadata(typeof(NulahNavigation)));
         }
 
+        /// <summary>
+        /// If set, the assembly that contains this type will be used to locate pages
+        /// </summary>
+        public Type NavigationSourceType { get; set; }
+
         public NulahNavigation()
         {
             MenuItems = new();
@@ -132,15 +137,30 @@ namespace Nulah.PhantomIndex.Core.Controls
         {
             if (e.OriginalSource is NavigationItem source)
             {
-                if (source.NavigationSourceType == null)
+                // If a navigation has a navigation source type set, attempt to locate the page within that assembly
+                if (source.NavigationSourceType != null)
                 {
-                    LoadPageFromNavigationItemFromCallingAssembly(source.Tag as string);
-                }
-                else
-                {
+                    // There is no guarantee the destination page exists within the assembly defined by NavigationSourceType
                     LoadPageFromNavigationItemInType(source.NavigationSourceType, source.Tag as string);
                 }
+                else if (source.NavigationSourceType == null)
+                {
+                    // If no NavigationSourceType was given on the menu item, and the parent NulahNavigation doesn't have a source type set either,
+                    // defer to locating the page within the executing/calling assembly - which will usually be the executing assembly
+                    if (NavigationSourceType == null)
+                    {
+                        LoadPageFromNavigationItemFromCallingAssembly(source.Tag as string);
+                    }
+                    else
+                    {
+                        // Otherwise, attempt to locate the page from the NavigationSourceType defined on the parent NulahNavigation
+                        LoadPageFromNavigationItemInType(NavigationSourceType, source.Tag as string);
+                    }
+                }
             }
+
+            // Don't bubble events up for NulahNavigation nested within navigation frames of other NulahNavigations
+            e.Handled = true;
         }
 
         private UserControl _currentUserControl = null;
