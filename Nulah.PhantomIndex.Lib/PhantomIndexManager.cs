@@ -45,21 +45,21 @@ namespace Nulah.PhantomIndex.Lib
         /// <returns></returns>
         // todo: remove the reliance on global navigation and leave in-plugin application up to the given plugin.
         // having it injected is annoying me
-        public List<NulahPlugin> GetPlugins(NulahNavigation navigation)
+        public List<NulahPlugin> GetPlugins()
         {
             _pluginManager.DiscoverPlugins();
 
             return _pluginManager.Plugins
                 .Select(x =>
                 {
-                    var plugin = SetPluginDetails(x.Value, navigation);
+                    var plugin = SetPluginDetails(x.Value);
                     plugin.OnPluginInitialise();
                     return plugin;
                 })
                 .ToList();
         }
 
-        private NulahPlugin SetPluginDetails(NulahPlugin plugin, NulahNavigation navigation)
+        private NulahPlugin SetPluginDetails(NulahPlugin plugin)
         {
             var config = new PluginConfiguration(Path.Combine(_pluginManager.UserPluginLocation!, plugin.GetType().Name));
             Directory.CreateDirectory(config.PluginDataLocation);

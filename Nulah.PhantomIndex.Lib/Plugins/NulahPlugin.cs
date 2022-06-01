@@ -18,6 +18,10 @@ namespace Nulah.PhantomIndex.Lib.Plugins
         public List<PluginMenuItem> Pages = new();
         public string Name { get; set; }
         public FontIcon Icon { get; set; }
+        /// <summary>
+        /// Path to the "index" page of the plugin, without extensions
+        /// </summary>
+        public string EntryPage { get; set; }
 
         public abstract Task OnPluginInitialise();
         public abstract Task OnApplicationClose();
