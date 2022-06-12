@@ -104,8 +104,6 @@ namespace Nulah.PhantomIndex.Core.Controls
         public static readonly DependencyProperty NavigationItemCollapsableBackgroundMouseOverProperty =
             DependencyProperty.Register(nameof(NavigationItemCollapsableBackgroundMouseOver), typeof(Brush), typeof(NulahNavigation), new PropertyMetadata(Brushes.Transparent));
 
-
-
         public List<NavigationLink> FooterMenuItems
         {
             get { return (List<NavigationLink>)GetValue(FooterMenuItemsProperty); }
@@ -116,7 +114,15 @@ namespace Nulah.PhantomIndex.Core.Controls
         public static readonly DependencyProperty FooterMenuItemsProperty =
             DependencyProperty.Register(nameof(FooterMenuItems), typeof(List<NavigationLink>), typeof(NulahNavigation), new PropertyMetadata(null));
 
+        public bool MenuHidden
+        {
+            get => (bool)GetValue(MenuHiddenProperty);
+            set => SetValue(MenuHiddenProperty, value);
+        }
 
+        // Using a DependencyProperty as the backing store for FooterMenuItems.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MenuHiddenProperty =
+            DependencyProperty.Register(nameof(MenuHidden), typeof(bool), typeof(NulahNavigation), new PropertyMetadata(null));
 
         private Border _navigationFrame;
 
@@ -196,6 +202,9 @@ namespace Nulah.PhantomIndex.Core.Controls
                     _currentUserControl = pageView;
 
                     _navigationFrame.Child = _currentUserControl;
+
+                    // Ensure all command bindings have their CanExecutes re-evaluated
+                    Dispatcher.Invoke(CommandManager.InvalidateRequerySuggested);
                 }
                 else
                 {
@@ -237,6 +246,9 @@ namespace Nulah.PhantomIndex.Core.Controls
                     _currentUserControl = pageView;
 
                     _navigationFrame.Child = _currentUserControl;
+
+                    // Ensure all command bindings have their CanExecutes re-evaluated
+                    Dispatcher.Invoke(CommandManager.InvalidateRequerySuggested);
                 }
                 else
                 {
@@ -272,6 +284,30 @@ namespace Nulah.PhantomIndex.Core.Controls
         public void NavigateToPage<T>(string pageNavigationUri)
         {
             LoadPageFromNavigationItemInType(typeof(T), pageNavigationUri);
+        }
+    }
+
+    public class MenuVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            bool menuHidden;
+            if (value is bool b)
+            {
+                menuHidden = b;
+            }
+            else
+            {
+                bool? tmp = (bool?)value;
+                menuHidden = tmp ?? false;
+            }
+
+            return menuHidden == false ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
         }
     }
 
