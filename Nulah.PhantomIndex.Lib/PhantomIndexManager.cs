@@ -41,10 +41,7 @@ namespace Nulah.PhantomIndex.Lib
         /// <summary>
         /// Finds and configures all plugins found, and returns them ready for <see cref="NulahPlugin.OnPluginInitialise"/>
         /// </summary>
-        /// <param name="navigation">Global navigation object for the application</param>
         /// <returns></returns>
-        // todo: remove the reliance on global navigation and leave in-plugin application up to the given plugin.
-        // having it injected is annoying me
         public List<NulahPlugin> GetPlugins()
         {
             _pluginManager.DiscoverPlugins();
