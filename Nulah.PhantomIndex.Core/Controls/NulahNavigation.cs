@@ -285,6 +285,17 @@ namespace Nulah.PhantomIndex.Core.Controls
         {
             LoadPageFromNavigationItemInType(typeof(T), pageNavigationUri);
         }
+
+        /// <summary>
+        /// Used to navigate to a page within a different assembly, where <paramref name="containingType"/> resides
+        /// outside of the main application (eg. Plugins)
+        /// </summary>
+        /// <param name="pageNavigationUri"></param>
+        /// <param name="containingType"></param>
+        public void NavigateToPage(string pageNavigationUri, Type containingType)
+        {
+            LoadPageFromNavigationItemInType(containingType, pageNavigationUri);
+        }
     }
 
     public class MenuVisibilityConverter : IValueConverter
