@@ -33,21 +33,69 @@ namespace Nulah.PhantomIndex.WPF
     public partial class MainWindow : NulahWindow
     {
         public AppViewModel AppViewModel = new();
-        public static NulahNavigation Navigation;
 
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = AppViewModel;
 
-            Navigation = MainWindowNavigation;
+            DataContext = AppViewModel;
 
-            var plugins = App.PhantomIndexManager.GetPlugins(Navigation);
+            var plugins = App.PhantomIndexManager.GetPlugins();
 
             foreach (NulahPlugin plugin in plugins)
             {
-                Navigation.MenuItems.Add(BuildPluginNavigation(plugin));
+                var navigationItem = new NavigationItem(plugin.Name, plugin.EntryPage)
+                {
+                    Icon = plugin.Icon,
+                    NavigationSourceType = plugin.GetType()
+                };
+
+                MainWindowNavigation.MenuItems.Add(navigationItem);
+
+                MenuBar.Items.Add(BuildPluginMenu(plugin));
             }
+        }
+
+        private MenuItem BuildPluginMenu(NulahPlugin plugin)
+        {
+            var baseMenuItem = new MenuItem()
+            {
+                Header = plugin.Name
+            };
+
+            // TODO: menu commands won't update the main navigation frame to the plugin, maybe look at wrapping the command with another so it does?
+            // or maybe just relegate the menu to the plugins themselves and not have navigation
+            // or maybe pass in the main navigation component as well as a command parameter for a plugincommand?
+            foreach (PluginMenuItem pluginItem in plugin.Pages)
+            {
+                // TODO: handle submenus
+                if (pluginItem is PluginMenuCategory subPage && subPage.Pages != null && subPage.Pages.Count != 0)
+                {
+                    //var pluginSubMenuItem = new MenuItem()
+                    //{
+                    //    Icon = subPage.Icon,
+                    //    Header = subPage.DisplayName,
+                    //    Tag = subPage.
+                    //};
+                    //BuildNavigationFromPlugin(pluginSubMenuItem, subPage.Pages, pluginType);
+                    //pluginMenuGroup.MenuItems.Add(pluginSubMenuItem);
+                }
+                else
+                {
+                    var navigationItem = new MenuItem()
+                    {
+                        Icon = pluginItem.Icon,
+                        Header = pluginItem.DisplayName,
+                        Tag = pluginItem.PageLocation,
+                        Command = pluginItem.Command,
+                        CommandParameter = pluginItem.PageLocation
+                    };
+
+                    baseMenuItem.Items.Add(navigationItem);
+                }
+            }
+
+            return baseMenuItem;
         }
 
         /// <summary>
@@ -122,7 +170,7 @@ namespace Nulah.PhantomIndex.WPF
 
         private void SettingsTitleButton_MouseDown(object sender, RoutedEventArgs e)
         {
-            Navigation.NavigateToPage("Pages/Settings/Index");
+            MainWindowNavigation.NavigateToPage("Pages/Settings/Index");
         }
     }
 }

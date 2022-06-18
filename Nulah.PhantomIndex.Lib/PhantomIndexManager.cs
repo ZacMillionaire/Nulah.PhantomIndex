@@ -58,7 +58,9 @@ namespace Nulah.PhantomIndex.Lib
 
         private NulahPlugin SetPluginDetails(NulahPlugin plugin)
         {
-            var config = new PluginConfiguration(Path.Combine(_pluginManager.UserPluginLocation!, plugin.GetType().Name));
+            var config = new PluginConfiguration(Path.Combine(_pluginManager.UserPluginLocation!, plugin.GetType().Name),
+                // It shouldn't be possible for the plugin assembly location to be null
+                new DirectoryInfo(plugin.GetType().Assembly.Location).Parent!.FullName);
             Directory.CreateDirectory(config.PluginDataLocation);
 
             plugin.Details = config;

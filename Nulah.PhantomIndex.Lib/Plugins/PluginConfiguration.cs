@@ -14,12 +14,19 @@ namespace Nulah.PhantomIndex.Lib.Plugins
         public string PluginDataLocation;
 
         /// <summary>
+        /// Location of the plugin assemblies. Guaranteed to exist.
+        /// </summary>
+        public string PluginLocation;
+
+        /// <summary>
         /// Internal use only to ensure values are only set before initialisation
         /// </summary>
         /// <param name="pluginDataLocation"></param>
-        internal PluginConfiguration(string pluginDataLocation)
+        /// <paramref name="pluginAssemblyLocation"/>
+        internal PluginConfiguration(string pluginDataLocation, string pluginAssemblyLocation)
         {
             PluginDataLocation = pluginDataLocation;
+            PluginLocation = pluginAssemblyLocation;
         }
     }
 }
