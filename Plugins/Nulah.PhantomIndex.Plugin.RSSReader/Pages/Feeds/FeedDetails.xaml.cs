@@ -54,7 +54,7 @@ namespace Nulah.PhantomIndex.Plugin.RSSReader.Pages.Feeds
 
         private void BackToFeedListButton_Click(object sender, RoutedEventArgs e)
         {
-            RSSPlugin.Instance.WindowNavigation.NavigateToPage<FeedList>($"Pages/Feeds/FeedList");
+            RSSPlugin.Instance.Navigation.NavigateToPage<FeedList>($"Pages/Feeds/FeedList");
         }
 
         private void FeedItemGrid_PreviewMouseDown(object sender, MouseButtonEventArgs e)
