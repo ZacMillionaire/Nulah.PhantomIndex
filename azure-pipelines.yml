@@ -16,4 +16,4 @@ steps:
       git tag "$(Build.BuildNumber)"
       git push azure "$(Build.BuildNumber)"
     displayName: 'git tag'
-    condition: eq($(Build.SourceBranchName), $(defaultBranch'))
+    condition: eq($(Build.SourceBranchName), $(defaultBranch))
