@@ -14,6 +14,6 @@ steps:
     displayName: 'configure git credentials'
   - script: | 
       git tag "$(Build.BuildNumber)"
-      git push azure "$(Build.BuildNumber)"
+      git push origin "$(Build.BuildNumber)"
     displayName: 'git tag'
     condition: eq(variables['Build.SourceBranchName'], variables['defaultBranch'])
