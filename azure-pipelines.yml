@@ -1,0 +1,19 @@
+trigger:
+- test
+
+pool: DesktopPC
+
+name: $(major).$(minor).$(patch)
+
+steps:
+  - checkout: self
+    persistCredentials: true
+  - script: |
+      git config user.email ${$(user.email)}
+      git config user.name ${$(user.name)}
+    displayName: 'configure git credentials'
+  - script: | 
+      git tag "$(Build.BuildNumber)"
+      git push origin "$(Build.BuildNumber)"
+    displayName: 'git tag'
+    condition: eq(variables['Build.SourceBranchName'], variables['defaultBranch'])
