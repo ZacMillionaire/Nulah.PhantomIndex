@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Controls;
 
@@ -8,7 +9,7 @@ namespace Nulah.PhantomIndex.Core
     {
         private static Type[] _defaultPageViewParameterConstructorTypes = new Type[] { typeof(string) };
 
-        public static (Type PageView, string[] PageViewParameters) ResolvePageViewFromAssembly(this Type parentAssemblyType, string pageViewLocation)
+        public static (Type PageView, string[] PageViewParameters) ResolvePageViewFromAssembly(Type parentAssemblyType, string pageViewLocation)
         {
             var callingNamespace = parentAssemblyType.Namespace;
             var pathFragments = ResolvePageViewLocation(pageViewLocation);
@@ -25,7 +26,8 @@ namespace Nulah.PhantomIndex.Core
 
             return (view, pageviewParameters);
         }
-        public static (Type PageView, string[] PageViewParameters) ResolvePageViewFromAssembly(this Assembly executingAssembly, string pageViewLocation)
+
+        public static (Type PageView, string[] PageViewParameters) ResolvePageViewFromAssembly(Assembly executingAssembly, string pageViewLocation)
         {
             var pathFragments = ResolvePageViewLocation(pageViewLocation);
             string[] pageviewParameters = null;
@@ -41,12 +43,16 @@ namespace Nulah.PhantomIndex.Core
 
             return (view, pageviewParameters);
         }
-        public static Page GetActivatedPageViewByParameters(Type pageViewType, string[] pageViewParameters)
-        {
-            return GetActivatedPageViewByParameters<Page>(pageViewType, pageViewParameters);
-        }
 
-        public static T GetActivatedPageViewByParameters<T>(Type pageViewType, string[] pageViewParameters) where T : Page
+        /// <summary>
+        /// Creates a new instance of a page view
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="pageViewType"></param>
+        /// <param name="pageViewParameters"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static T GetActivatedPageViewByParameters<T>(Type pageViewType, string[] pageViewParameters)
         {
             if (pageViewParameters == null || pageViewParameters.Length == 0)
             {
@@ -69,7 +75,15 @@ namespace Nulah.PhantomIndex.Core
 
         private static string[] ResolvePageViewLocation(string pageViewLocation)
         {
-            var fragments = pageViewLocation.Split('/');
+            var pageLocation = pageViewLocation.Split(":");
+            var fragments = pageLocation[0].Split('/');
+
+            // If we have a parameter character, the colon, append it to the last fragment entry to preserve parameter checking lately.
+            // TODO: This is a hack to get something working instead of refactoring the callsite.
+            if (pageLocation.Length == 2)
+            {
+                fragments[^1] += $":{pageLocation[1]}";
+            }
 
 
             return fragments;

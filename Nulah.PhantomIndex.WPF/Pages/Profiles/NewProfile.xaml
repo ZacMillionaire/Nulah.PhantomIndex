@@ -1,45 +1,121 @@
-﻿<Page x:Class="Nulah.PhantomIndex.WPF.Pages.Profiles.NewProfile"
+﻿<UserControl x:Class="Nulah.PhantomIndex.WPF.Pages.Profiles.NewProfile"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:Nulah.PhantomIndex.WPF.Pages.Profiles"
-      mc:Ignorable="d" 
-      x:Name="Page1"
+      xmlns:vm="clr-namespace:Nulah.PhantomIndex.WPF.ViewModels.Profiles"
+      xmlns:controls="clr-namespace:Nulah.PhantomIndex.Core.Controls;assembly=Nulah.PhantomIndex.Core" 
+      xmlns:images="clr-namespace:Nulah.PhantomIndex.Lib.Images;assembly=Nulah.PhantomIndex.Lib"    
+      xmlns:sys="clr-namespace:System;assembly=mscorlib"
+      mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="NewProfile">
+      d:SnapsToDevicePixels="True"
+      d:UseLayoutRounding="True">
+    <UserControl.DataContext>
+        <vm:NewProfileViewModel/>
+    </UserControl.DataContext>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-        </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" FontWeight="Bold">New Profile</TextBlock>
-        <TextBox Grid.Row="1" x:Name="Name"/>
-        <Grid Grid.Row="2">
-            <StackPanel x:Name="DragDropControl" AllowDrop="True"
-                    PreviewDragEnter="DragDropControl_DragEnter" 
-                    PreviewDragOver="DragDropControl_DragOver" 
-                    PreviewDragLeave="DragDropControl_DragLeave"
-                    Drop="DragDropControl_Drop">
-                <StackPanel.Style>
-                    <Style TargetType="StackPanel">
-                        <Style.Setters>
-                            <Setter Property="Background" Value="White"/>
-                        </Style.Setters>
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding FileDropValid, RelativeSource={RelativeSource AncestorType=local:NewProfile}}" Value="True">
-                                <Setter Property="Background" Value="Green"/>
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding FileDropValid, RelativeSource={RelativeSource AncestorType=local:NewProfile}}" Value="False">
-                                <Setter Property="Background" Value="Red"/>
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </StackPanel.Style>
-                <Canvas x:Name="ImageDropCanvas" Height="300" Width="300"/>
-                <TextBox x:Name="FileSourceInput" IsReadOnly="true"/>
-            </StackPanel>
-        </Grid>
+        <controls:NulahOverlayDialog x:Name="OverlayDialog" Visibility="Collapsed">
+            <Grid Margin="15" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Image Grid.Row="0" Grid.Column="0" Width="44" Height="44" Source="/Icons/check_confirm.png" Stretch="None" />
+                <TextBlock Grid.Row="0" VerticalAlignment="Center" Grid.Column="1" Padding="5,0" FontSize="{StaticResource FontSizeLarge}" FontWeight="Bold">Profile created</TextBlock>
+                <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource NulahButtonGeneric}" x:Name="CloseDialog" Click="CloseDialog_Click">Ok</Button>
+            </Grid>
+        </controls:NulahOverlayDialog>
+        <ScrollViewer x:Name="NewProfileScrollViewer"
+      IsEnabled="{Binding PageEnabled}">
+            <ScrollViewer.Style>
+                <Style TargetType="ScrollViewer">
+                    <Setter Property="IsEnabled" Value="True" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding PageEnabled}" Value="False">
+                            <Setter Property="IsEnabled" Value="False" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ScrollViewer.Style>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" FontWeight="Bold">New Profile</TextBlock>
+                <StackPanel Grid.Row="1" x:Name="ErrorPanel">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ValidationErrors}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Hidden" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding ValidationErrors.Count}" Value="0">
+                                    <Setter Property="Visibility" Value="Hidden" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <Border BorderBrush="Red" BorderThickness="1" Background="LightPink">
+                        <ItemsControl ItemsSource="{Binding ValidationErrors}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock FontSize="{StaticResource FontSizeNormal}" Foreground="{StaticResource DefaultFontColour}" Text="{Binding}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Border>
+                </StackPanel>
+                <Grid Grid.Row="2">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0">
+                            <controls:NulahInput Label="Profile Name" Text="{Binding ProfileName}" Hint="All given names for the profile" />
+                            <controls:NulahInput Label="Display First Name" Text="{Binding DisplayFirstName}" Hint="Name(s) to use for their first name" />
+                            <controls:NulahInput Label="Display Last Name" Text="{Binding DisplayLastName}" Hint="Name(s) to use for their last name" />
+                            <controls:NulahInput Label="Pronouns" Text="{Binding Pronouns}" Hint="Pronouns" />
+                        </StackPanel>
+                        <StackPanel Grid.Row="1" x:Name="DragDropControl" 
+                                AllowDrop="True"
+                                PreviewDragEnter="DragDropControl_DragEnter" 
+                                PreviewDragOver="DragDropControl_DragOver" 
+                                PreviewDragLeave="DragDropControl_DragLeave"
+                                Drop="DragDropControl_Drop">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Style.Setters>
+                                        <Setter Property="Background" Value="White"/>
+                                    </Style.Setters>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding FileDropValid, RelativeSource={RelativeSource AncestorType=local:NewProfile}}" Value="True">
+                                            <Setter Property="Background" Value="Green"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding FileDropValid, RelativeSource={RelativeSource AncestorType=local:NewProfile}}" Value="False">
+                                            <Setter Property="Background" Value="Red"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+                            <TextBlock Grid.Row="0" FontWeight="Bold">Profile Image</TextBlock>
+                            <controls:NulahFileSelector FileSource="{Binding FileName}" Filter="{x:Static images:ImageController.FileDialogSupportedImageFormats}" FileSelected="NulahFileSelector_FileSelected" />
+                            <controls:NulahImage x:Name="ImageDropCanvas" Source="{Binding ProfileImage}" />
+                        </StackPanel>
+                        <Button Click="CreateProfile_Click" x:Name="CreateProfile" Grid.Row="2">Create Profile</Button>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </ScrollViewer>
     </Grid>
-</Page>
+</UserControl>

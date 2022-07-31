@@ -1,10 +1,15 @@
 ﻿using Nulah.PhantomIndex.Core;
 using Nulah.PhantomIndex.Core.Controls;
+using Nulah.PhantomIndex.Lib.Plugins;
 using Nulah.PhantomIndex.WPF.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -32,39 +37,140 @@ namespace Nulah.PhantomIndex.WPF
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = AppViewModel;
-            /*
-            var a = typeof(MainWindow).ResolvePageViewFromAssembly("Pages/Profiles/Index");
 
-            if (a.PageView != null)
+            DataContext = AppViewModel;
+
+            var plugins = App.PhantomIndexManager.GetPlugins();
+
+            foreach (NulahPlugin plugin in plugins)
             {
-                var b = NavigationContent.Navigate(a.PageViewParameters != null
-                    ? Activator.CreateInstance(a.PageView, a.PageViewParameters)
-                    : Activator.CreateInstance(a.PageView)
-                );
+                var navigationItem = new NavigationItem(plugin.Name, plugin.EntryPage)
+                {
+                    Icon = plugin.Icon,
+                    NavigationSourceType = plugin.GetType()
+                };
+
+                MainWindowNavigation.MenuItems.Add(navigationItem);
+
+                MenuBar.Items.Add(BuildPluginMenu(plugin));
             }
-            */
         }
 
-        //private void Button_Click(object sender, RoutedEventArgs e)
-        //{
-        //    var s = (Button)sender;
+        private MenuItem BuildPluginMenu(NulahPlugin plugin)
+        {
+            var baseMenuItem = new MenuItem()
+            {
+                Header = plugin.Name
+            };
 
-        //    var a = typeof(MainWindow).ResolvePageViewFromAssembly(s.Tag as string);
+            // TODO: menu commands won't update the main navigation frame to the plugin, maybe look at wrapping the command with another so it does?
+            // or maybe just relegate the menu to the plugins themselves and not have navigation
+            // or maybe pass in the main navigation component as well as a command parameter for a plugincommand?
+            foreach (PluginMenuItem pluginItem in plugin.Pages)
+            {
+                // TODO: handle submenus
+                if (pluginItem is PluginMenuCategory subPage && subPage.Pages != null && subPage.Pages.Count != 0)
+                {
+                    //var pluginSubMenuItem = new MenuItem()
+                    //{
+                    //    Icon = subPage.Icon,
+                    //    Header = subPage.DisplayName,
+                    //    Tag = subPage.
+                    //};
+                    //BuildNavigationFromPlugin(pluginSubMenuItem, subPage.Pages, pluginType);
+                    //pluginMenuGroup.MenuItems.Add(pluginSubMenuItem);
+                }
+                else
+                {
+                    var navigationItem = new MenuItem()
+                    {
+                        Icon = pluginItem.Icon,
+                        Header = pluginItem.DisplayName,
+                        Tag = pluginItem.PageLocation,
+                        Command = pluginItem.Command,
+                        CommandParameter = pluginItem.PageLocation
+                    };
 
-        //    if (a.PageView != null)
-        //    {
-        //        var pageView = Activator.CreateInstance(a.PageView) as Page;
+                    baseMenuItem.Items.Add(navigationItem);
+                }
+            }
 
-        //        //NavigationContent.Navigate(pageView, "asdf");
+            return baseMenuItem;
+        }
 
-        //        /*
-        //        NavigationContent.Navigate(a.PageViewParameters != null
-        //            ? Activator.CreateInstance(a.PageView, a.PageViewParameters)
-        //            : Activator.CreateInstance(a.PageView)
-        //        );
-        //        */
-        //    }
-        //}
+        /// <summary>
+        /// Builds navigation for a plugin for use with menus within the main application
+        /// </summary>
+        /// <param name="plugin"></param>
+        /// <returns></returns>
+        private NavigationItemCollapsable BuildPluginNavigation(NulahPlugin plugin)
+        {
+            var pluginMenuGroup = new NavigationItemCollapsable(plugin.Name)
+            {
+                Icon = plugin.Icon
+            };
+
+            var pluginType = plugin.GetType();
+
+            foreach (PluginMenuItem pluginItem in plugin.Pages)
+            {
+                if (pluginItem is PluginMenuCategory subPage && subPage.Pages != null && subPage.Pages.Count != 0)
+                {
+                    var pluginSubMenuItem = new NavigationItemCollapsable(subPage.DisplayName)
+                    {
+                        Icon = subPage.Icon
+                    };
+                    BuildNavigationFromPlugin(pluginSubMenuItem, subPage.Pages, pluginType);
+                    pluginMenuGroup.MenuItems.Add(pluginSubMenuItem);
+                }
+                else
+                {
+                    var navigationItem = new NavigationItem(pluginItem.DisplayName, pluginItem.PageLocation)
+                    {
+                        Icon = pluginItem.Icon,
+                        NavigationSourceType = pluginType
+                    };
+                    pluginMenuGroup.MenuItems.Add(navigationItem);
+                }
+            }
+
+            return pluginMenuGroup;
+        }
+
+        /// <summary>
+        /// Builds any sub navigation items for a plugin.
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="pluginNavigationItems"></param>
+        /// <param name="pluginType"></param>
+        private void BuildNavigationFromPlugin(NavigationItemCollapsable parent, List<PluginMenuItem> pluginNavigationItems, Type pluginType)
+        {
+            foreach (PluginMenuItem pluginItem in pluginNavigationItems)
+            {
+                if (pluginItem is PluginMenuCategory subPage && subPage.Pages != null && subPage.Pages.Count != 0)
+                {
+                    var pluginSubMenuItem = new NavigationItemCollapsable(subPage.DisplayName)
+                    {
+                        Icon = subPage.Icon
+                    };
+                    BuildNavigationFromPlugin(pluginSubMenuItem, subPage.Pages, pluginType);
+                    parent.MenuItems.Add(pluginSubMenuItem);
+                }
+                else
+                {
+                    var navigationItem = new NavigationItem(pluginItem.DisplayName, pluginItem.PageLocation)
+                    {
+                        Icon = pluginItem.Icon,
+                        NavigationSourceType = pluginType
+                    };
+                    parent.MenuItems.Add(navigationItem);
+                }
+            }
+        }
+
+        private void SettingsTitleButton_MouseDown(object sender, RoutedEventArgs e)
+        {
+            MainWindowNavigation.NavigateToPage("Pages/Settings/Index");
+        }
     }
 }

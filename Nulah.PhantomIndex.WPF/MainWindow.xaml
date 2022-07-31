@@ -6,31 +6,20 @@
         xmlns:local="clr-namespace:Nulah.PhantomIndex.WPF"
         xmlns:control="clr-namespace:Nulah.PhantomIndex.Core.Controls;assembly=Nulah.PhantomIndex.Core"
         mc:Ignorable="d"
-        Title="TestWindow" Height="450" Width="800">
+        Title="TestWindow"
+        Style="{StaticResource DefaultWindowStyle}" Height="768" Width="1024">
     <control:NulahWindow.TitleBarControls>
-        <Button>Test Title Button</Button>
+        <Button x:Name="SettingsTitleButton" Style="{StaticResource TitleBarButtonStyle}" Width="46" Click="SettingsTitleButton_MouseDown">
+            <control:NulahIcon FontSize="16" Icon="Setting" HorizontalAlignment="Stretch"/>
+        </Button>
     </control:NulahWindow.TitleBarControls>
-    <control:NulahNavigation>
-        <control:NulahNavigation.MenuItems>
-            <control:NavigationItemCollapsable Icon="GuestUser" Content="Profiles" Expanded="True">
-                <control:NavigationItemCollapsable.MenuItems>
-                    <control:NavigationItem Icon="AddFriend" Tag="Pages/Profiles/NewProfile">New</control:NavigationItem>
-                    <control:NavigationSeparator/>
-                    <control:NavigationItem Icon="People" Tag="Pages/Profiles/Index">Profiles</control:NavigationItem>
-                    <control:NavigationItem Icon="Globe" Tag="Pages/Profiles/Index:Geographic">By Location</control:NavigationItem>
-                    <control:NavigationItem Icon="EMI" Tag="Pages/Profiles/Index:Company">By Company</control:NavigationItem>
-                </control:NavigationItemCollapsable.MenuItems>
-            </control:NavigationItemCollapsable>
-            <control:NavigationItemCollapsable Icon="Accident">
-                Collapsable Item Header
-                <control:NavigationItemCollapsable.MenuItems>
-                    <control:NavigationItem Tag="Pages/Profiles/Index:Company">collapsable list items</control:NavigationItem>
-                    <control:NavigationItem Tag="Pages/Profiles/Index:Company">Item 1</control:NavigationItem>
-                    <control:NavigationItem Tag="Pages/Profiles/Index:Company">Item 2</control:NavigationItem>
-                    <control:NavigationItem Tag="Pages/Profiles/Index:Company">Item 3</control:NavigationItem>
-                </control:NavigationItemCollapsable.MenuItems>
-            </control:NavigationItemCollapsable>
-            <control:NavigationHeader Icon="Accident">Header 2</control:NavigationHeader>
-        </control:NulahNavigation.MenuItems>
-    </control:NulahNavigation>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0" x:Name="MenuBar" Background="{DynamicResource PrimaryVariant}"></Menu>
+        <control:NulahNavigation MenuHidden="false" Grid.Row="1" x:Name="MainWindowNavigation" Style="{StaticResource DefaultNavigationStyle}">
+        </control:NulahNavigation>
+    </Grid>
 </control:NulahWindow>

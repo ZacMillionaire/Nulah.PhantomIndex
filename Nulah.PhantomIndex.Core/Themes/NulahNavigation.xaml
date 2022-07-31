@@ -14,18 +14,50 @@
 
 
     <Style TargetType="{x:Type local:NulahNavigation}" BasedOn="{StaticResource {x:Type UserControl}}">
+        <Setter Property="Background" Value="{StaticResource DefaultBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource DefaultBackgroundMainBrush}" />
+        <Setter Property="NavigationItemBackground" Value="Transparent" />
+        <Setter Property="NavigationItemBackgroundMouseOver" Value="{StaticResource DefaultBackgroundMainBrush}" />
+        <Setter Property="NavigationItemCollapsableBackground" Value="Transparent" />
+        <Setter Property="NavigationItemCollapsableBackgroundMouseOver" Value="{StaticResource DefaultBackgroundMainBrush}" />
+        <Setter Property="BorderThickness" Value="0,0,1,0" />
+        <Setter Property="MenuHidden" Value="False"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:NulahNavigation}">
                     <Grid>
+                        <Grid.Resources>
+                            <local:MenuVisibilityConverter x:Key="MenuVisibilityConverter"/>
+                        </Grid.Resources>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition MinWidth="{StaticResource NavigationMinWidth}" Width="auto"/>
+                            <ColumnDefinition Width="auto">
+                                <ColumnDefinition.Style>
+                                    <Style TargetType="ColumnDefinition">
+                                        <Setter Property="MinWidth" Value="{StaticResource NavigationMinWidth}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=MenuHidden}" Value="True">
+                                                <Setter Property="MinWidth" Value="0"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ColumnDefinition.Style>
+                            </ColumnDefinition>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Grid Grid.Column="0" x:Name="MenuItemGrid">
-                            <ItemsControl x:Name="MenuItems" ItemsSource="{TemplateBinding MenuItems}" />
-                        </Grid>
-                        <Frame Grid.Column="1" x:Name="NavigationContent" NavigationUIVisibility="Hidden"/>
+                        <Border Grid.Column="0" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                                Visibility="{TemplateBinding MenuHidden, Converter={StaticResource MenuVisibilityConverter}}">
+                            <Grid x:Name="MenuItemGrid" Background="{TemplateBinding Background}">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="auto"/>
+                                </Grid.RowDefinitions>
+                                <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+                                    <ItemsControl x:Name="MenuItems" ItemsSource="{TemplateBinding MenuItems}" />
+                                </ScrollViewer>
+                                <ItemsControl Grid.Row="1"  x:Name="FooterMenuItems" ItemsSource="{TemplateBinding FooterMenuItems}" />
+                            </Grid>
+                        </Border>
+                        <Border Grid.Column="1" x:Name="NavigationContent"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -70,10 +102,10 @@
                             <Style TargetType="local:NavigationLink">
                                 <Style.Resources>
                                     <Style TargetType="Border">
-                                        <Setter Property="Background" Value="BurlyWood"/>
+                                        <Setter Property="Background" Value="{Binding NavigationItemBackground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:NulahNavigation}}}"/>
                                         <Style.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background"  Value="AliceBlue"/>
+                                                <Setter Property="Background"  Value="{Binding NavigationItemBackgroundMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:NulahNavigation}}}"/>
                                             </Trigger>
                                         </Style.Triggers>
                                     </Style>
@@ -116,15 +148,17 @@
                             <RowDefinition/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
-                        <local:NavigationLink TextBlock.FontWeight="Bold" Grid.Column="0" x:Name="CollapseHeader" Grid.Row="0" Icon="{TemplateBinding Icon}" Content="{TemplateBinding Content}">
+                        <local:NavigationLink TextBlock.FontWeight="Bold" Grid.Column="0" x:Name="CollapseHeader" Grid.Row="0" Icon="{TemplateBinding Icon}" Content="{TemplateBinding Title}">
                             <local:NavigationLink.Style>
                                 <Style TargetType="local:NavigationLink">
                                     <Style.Resources>
                                         <Style TargetType="Border">
-                                            <Setter Property="Background" Value="MediumSlateBlue"/>
+                                            <Setter Property="Background" Value="{Binding NavigationItemCollapsableBackground,
+                                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:NulahNavigation}}}"/>
                                             <Style.Triggers>
                                                 <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter Property="Background"  Value="PaleVioletRed"/>
+                                                    <Setter Property="Background"  Value="{Binding NavigationItemCollapsableBackgroundMouseOver,
+                                                RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type local:NulahNavigation}}}"/>
                                                 </Trigger>
                                             </Style.Triggers>
                                         </Style>

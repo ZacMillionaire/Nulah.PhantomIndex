@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -8,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media;
 using System.Windows.Shapes;
 
 // Based from https://blog.magnusmontin.net/2013/03/16/how-to-create-a-custom-window-in-wpf/
@@ -16,6 +19,54 @@ namespace Nulah.PhantomIndex.Core.Controls
 {
     public class NulahWindow : Window
     {
+
+        /// <summary>
+        /// This controls the active window title colour
+        /// </summary>
+        [Category("Brush")]
+        [Description("Active window colour")]
+        public Brush WindowColour
+        {
+            get { return (Brush)GetValue(WindowColourProperty); }
+            set { SetValue(WindowColourProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for WindowColour.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty WindowColourProperty =
+            DependencyProperty.Register(nameof(WindowColour), typeof(Brush), typeof(NulahWindow), new PropertyMetadata(null));
+
+        /// <summary>
+        /// This controls the active window border colour
+        /// </summary>
+        [Category("Brush")]
+        [Description("Active window border colour")]
+        public Brush WindowBorder
+        {
+            get { return (Brush)GetValue(WindowBorderProperty); }
+            set { SetValue(WindowBorderProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for WindowColour.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty WindowBorderProperty =
+            DependencyProperty.Register(nameof(WindowBorder), typeof(Brush), typeof(NulahWindow), new PropertyMetadata(null));
+
+        /// <summary>
+        /// This controls the inactive window title and border colours
+        /// </summary>
+        [Category("Brush")]
+        [Description("Inactive window and border colour")]
+        public Brush WindowColourInactive
+        {
+            get { return (Brush)GetValue(WindowColourInactiveProperty); }
+            set { SetValue(WindowColourInactiveProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for WindowColour.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty WindowColourInactiveProperty =
+            DependencyProperty.Register(nameof(WindowColourInactive), typeof(Brush), typeof(NulahWindow), new PropertyMetadata(null));
+
+
+
         public NulahWindow() : base()
         {
             // Set preview mouse move so the resize grid doesn't persist its cursor
@@ -82,7 +133,9 @@ namespace Nulah.PhantomIndex.Core.Controls
                 closeButton.Click += OnCloseButtonClick;
             }
 
-            var windowTitleBar = GetTemplateChild("WindowTitleBar") as Border;
+            //var titleBarControls = GetTemplateChild("TitleBarControls") as ContentPresenter;
+
+            var windowTitleBar = GetTemplateChild("WindowTitleHitBar") as StackPanel;
             if (windowTitleBar != null)
             {
                 windowTitleBar.MouseLeftButtonDown += Border_MouseLeftButtonDown;
@@ -115,6 +168,12 @@ namespace Nulah.PhantomIndex.Core.Controls
 
         protected void ResizeRectangle_MouseMove(object sender, MouseEventArgs e)
         {
+            // Do nothing if the window is maximised
+            if (WindowState == WindowState.Maximized)
+            {
+                return;
+            }
+
             var rectangle = sender as Rectangle;
             switch (rectangle.Name)
             {
@@ -153,6 +212,12 @@ namespace Nulah.PhantomIndex.Core.Controls
 
         protected void ResizeRectangle_PreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
+            // Prevent resize on maximised window
+            if (WindowState == WindowState.Maximized)
+            {
+                return;
+            }
+
             Rectangle rectangle = sender as Rectangle;
             switch (rectangle.Name)
             {
@@ -248,6 +313,10 @@ namespace Nulah.PhantomIndex.Core.Controls
 
         private void Border_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            if (e.ClickCount == 2)
+            {
+                OnMaximizeRestoreButtonClick(sender, e);
+            }
             Cursor = Cursors.Arrow;
             DragMove();
         }
@@ -259,6 +328,7 @@ namespace Nulah.PhantomIndex.Core.Controls
             _hwndSource.AddHook(HookProc);
         }
 
+        [DebuggerStepThrough]
         public static IntPtr HookProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             if (msg == WM_GETMINMAXINFO)
