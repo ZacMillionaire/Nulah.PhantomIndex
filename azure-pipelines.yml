@@ -1,0 +1,63 @@
+trigger:
+  branches:
+    include:
+      - '*'
+
+variables:
+  - group: Nulah.PhantomIndex
+  - group: GlobalVariables
+  - ${{ if eq(variables['Build.SourceBranchName'], variables['MainBranch']) }}:
+    - name: branchName
+      value: $(major).$(minor).$(patch).$(Rev:r)
+  - ${{ if eq( variables['Build.SourceBranchName'], variables['DevBranch']) }}:
+    - name: branchName
+      value: $(major).$(minor).$(patch).$(Rev:r)-$(Build.SourceBranchName)
+  - ${{ if eq( variables['Build.SourceBranchName'], variables['ReleaseBranch']) }}:
+    - name: branchName
+      value: $(major).$(minor).$(patch).$(Rev:r)-$(Build.SourceBranchName)-Release
+  - ${{ else }}:
+    - name: branchName
+      value: $(major).$(minor).$(patch).$(Rev:r)-$(Build.SourceBranchName)-$(Build.SourceVersion)
+
+pool: DesktopPC
+
+name: ${{variables.branchName}}
+
+steps:
+  - checkout: self
+    persistCredentials: true
+  - script: |
+      echo "Build name: $(Build.BuildNumber)" 
+      echo "Main is: $(MainBranch)"
+      echo "Dev is: $(DevBranch)"
+      echo "Release is: $(ReleaseBranch)"
+      echo "This branch is: $(Build.SourceBranchName)"
+      echo "This branch is: $(BranchTagAccount)"
+      echo "This branch is: $(BranchTagName)"
+    displayName: 'Display build settings'
+  - script: |
+      echo "build is main branch"
+    displayName: "Main Build"
+    condition: eq(variables['Build.SourceBranchName'], variables['MainBranch'])
+  - script: |
+      echo "build is dev branch"
+    displayName: "Develop Build"
+    condition: eq(variables['Build.SourceBranchName'], variables['DevBranch'])
+  - script: |
+      echo "build is release"
+    displayName: "Release Build"
+    condition: eq(variables['Build.SourceBranchName'], variables['ReleaseBranch'])
+  - script: |
+      echo "build is a branch build"
+    displayName: "Branch Build"
+    condition: notIn(variables['Build.SourceBranchName'], variables['MainBranch'], variables['DevBranch'], variables['ReleaseBranch'])
+  - script: |
+      git config user.email "$(BranchTagAccount)"
+      git config user.name "$(BranchTagName)"
+    displayName: 'configure git credentials'
+  - script: | 
+      git tag "$(Build.BuildNumber)"
+      git push origin "$(Build.BuildNumber)"
+    displayName: 'git tag'
+    condition: In(variables['Build.SourceBranchName'], variables['MainBranch'], variables['DevBranch'], variables['ReleaseBranch'])
+  # https://stackoverflow.com/questions/56541458/azure-pipeline-doest-allow-to-git-push-throwing-genericcontribute-permission
