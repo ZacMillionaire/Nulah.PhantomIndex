@@ -23,6 +23,11 @@ namespace Nulah.PhantomIndex.Core.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(NulahNavigation), new FrameworkPropertyMetadata(typeof(NulahNavigation)));
         }
 
+        /// <summary>
+        /// If set, the assembly that contains this type will be used to locate pages
+        /// </summary>
+        public Type NavigationSourceType { get; set; }
+
         public NulahNavigation()
         {
             MenuItems = new();
@@ -99,8 +104,6 @@ namespace Nulah.PhantomIndex.Core.Controls
         public static readonly DependencyProperty NavigationItemCollapsableBackgroundMouseOverProperty =
             DependencyProperty.Register(nameof(NavigationItemCollapsableBackgroundMouseOver), typeof(Brush), typeof(NulahNavigation), new PropertyMetadata(Brushes.Transparent));
 
-
-
         public List<NavigationLink> FooterMenuItems
         {
             get { return (List<NavigationLink>)GetValue(FooterMenuItemsProperty); }
@@ -111,7 +114,15 @@ namespace Nulah.PhantomIndex.Core.Controls
         public static readonly DependencyProperty FooterMenuItemsProperty =
             DependencyProperty.Register(nameof(FooterMenuItems), typeof(List<NavigationLink>), typeof(NulahNavigation), new PropertyMetadata(null));
 
+        public bool MenuHidden
+        {
+            get => (bool)GetValue(MenuHiddenProperty);
+            set => SetValue(MenuHiddenProperty, value);
+        }
 
+        // Using a DependencyProperty as the backing store for FooterMenuItems.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MenuHiddenProperty =
+            DependencyProperty.Register(nameof(MenuHidden), typeof(bool), typeof(NulahNavigation), new PropertyMetadata(null));
 
         private Border _navigationFrame;
 
@@ -132,15 +143,30 @@ namespace Nulah.PhantomIndex.Core.Controls
         {
             if (e.OriginalSource is NavigationItem source)
             {
-                if (source.NavigationSourceType == null)
+                // If a navigation has a navigation source type set, attempt to locate the page within that assembly
+                if (source.NavigationSourceType != null)
                 {
-                    LoadPageFromNavigationItemFromCallingAssembly(source.Tag as string);
-                }
-                else
-                {
+                    // There is no guarantee the destination page exists within the assembly defined by NavigationSourceType
                     LoadPageFromNavigationItemInType(source.NavigationSourceType, source.Tag as string);
                 }
+                else if (source.NavigationSourceType == null)
+                {
+                    // If no NavigationSourceType was given on the menu item, and the parent NulahNavigation doesn't have a source type set either,
+                    // defer to locating the page within the executing/calling assembly - which will usually be the executing assembly
+                    if (NavigationSourceType == null)
+                    {
+                        LoadPageFromNavigationItemFromCallingAssembly(source.Tag as string);
+                    }
+                    else
+                    {
+                        // Otherwise, attempt to locate the page from the NavigationSourceType defined on the parent NulahNavigation
+                        LoadPageFromNavigationItemInType(NavigationSourceType, source.Tag as string);
+                    }
+                }
             }
+
+            // Don't bubble events up for NulahNavigation nested within navigation frames of other NulahNavigations
+            e.Handled = true;
         }
 
         private UserControl _currentUserControl = null;
@@ -176,6 +202,9 @@ namespace Nulah.PhantomIndex.Core.Controls
                     _currentUserControl = pageView;
 
                     _navigationFrame.Child = _currentUserControl;
+
+                    // Ensure all command bindings have their CanExecutes re-evaluated
+                    Dispatcher.Invoke(CommandManager.InvalidateRequerySuggested);
                 }
                 else
                 {
@@ -217,6 +246,9 @@ namespace Nulah.PhantomIndex.Core.Controls
                     _currentUserControl = pageView;
 
                     _navigationFrame.Child = _currentUserControl;
+
+                    // Ensure all command bindings have their CanExecutes re-evaluated
+                    Dispatcher.Invoke(CommandManager.InvalidateRequerySuggested);
                 }
                 else
                 {
@@ -252,6 +284,41 @@ namespace Nulah.PhantomIndex.Core.Controls
         public void NavigateToPage<T>(string pageNavigationUri)
         {
             LoadPageFromNavigationItemInType(typeof(T), pageNavigationUri);
+        }
+
+        /// <summary>
+        /// Used to navigate to a page within a different assembly, where <paramref name="containingType"/> resides
+        /// outside of the main application (eg. Plugins)
+        /// </summary>
+        /// <param name="pageNavigationUri"></param>
+        /// <param name="containingType"></param>
+        public void NavigateToPage(string pageNavigationUri, Type containingType)
+        {
+            LoadPageFromNavigationItemInType(containingType, pageNavigationUri);
+        }
+    }
+
+    public class MenuVisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            bool menuHidden;
+            if (value is bool b)
+            {
+                menuHidden = b;
+            }
+            else
+            {
+                bool? tmp = (bool?)value;
+                menuHidden = tmp ?? false;
+            }
+
+            return menuHidden == false ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return null;
         }
     }
 

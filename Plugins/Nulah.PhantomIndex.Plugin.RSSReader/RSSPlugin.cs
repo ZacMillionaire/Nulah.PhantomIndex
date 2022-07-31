@@ -11,38 +11,47 @@ using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using System.Xml;
 using System.Xml.Linq;
 
 namespace Nulah.PhantomIndex.Plugin.RSSReader
 {
-    [Export(typeof(IPlugin))]
-    internal class RSSPlugin : IPlugin
+    [Export(typeof(NulahPlugin))]
+    internal class RSSPlugin : NulahPlugin
     {
-        // In lieu of being able to define statics on interfaces
-        // https://docs.microsoft.com/en-us/dotnet/csharp/whats-new/tutorials/static-abstract-interface-methods
-        internal static RSSPlugin Instance;
-        internal static NulahNavigation WindowNavigation;
+        internal static RSSPlugin? Instance;
 
-        public string Name => "RSS";
+        public RSSFeeder? Feeder { get; private set; }
+        public NulahNavigation? Navigation { get; internal set; }
 
-        public FontIcon Icon => FontIcon.Wifi;
+        private readonly PluginMenuCommand _navigateFeedListCommand;
 
-        public List<PluginMenuItem> Pages => new()
+        public RSSPlugin()
         {
-            new PluginMenuItem("Feeds", "Pages/Feeds/FeedList")
-        };
+            Instance = this;
+            _navigateFeedListCommand = new PluginMenuCommand((x) => Navigation?.NavigateToPage<RSSPlugin>(x), () => Navigation != null);
+        }
 
-        public readonly string PluginDataLocation;
-        public readonly RSSFeeder Feeder;
-
-        [ImportingConstructor]
-        public RSSPlugin([Import(PluginConstants.UserPluginLocationContractName)] string pluginAppDataLocation)
+        public override Task OnPluginInitialise()
         {
-            PluginDataLocation = Path.Combine(pluginAppDataLocation, Name);
-            Directory.CreateDirectory(PluginDataLocation);
+            Name = "RSS";
+            Icon = FontIcon.Wifi;
+            EntryPage = "Main";
 
-            Feeder = new RSSFeeder(Path.Combine(PluginDataLocation, $"{Name}.db"));
+            Pages.Add(new PluginMenuItem("Feeds", "Pages/Feeds/FeedList")
+            {
+                Command = _navigateFeedListCommand
+            });
+
+            Feeder = new RSSFeeder(Path.Combine(Details.PluginDataLocation, $"{Name}.db"));
+
+            return Task.CompletedTask;
+        }
+
+        public override Task OnApplicationClose()
+        {
+            throw new NotImplementedException();
         }
     }
 }

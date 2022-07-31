@@ -61,7 +61,7 @@ namespace Nulah.PhantomIndex.WPF.Pages.Profiles
         {
             if (sender is Border profileShort && profileShort.DataContext is ProfileInfoShort profileInfo)
             {
-                MainWindow.Navigation.NavigateToPage($"Pages/Profiles/ViewProfile:{profileInfo.Id}");
+                //MainWindow.Navigation.NavigateToPage($"Pages/Profiles/ViewProfile:{profileInfo.Id}");
             }
         }
     }

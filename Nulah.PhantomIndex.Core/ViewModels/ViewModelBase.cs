@@ -74,7 +74,7 @@ namespace Nulah.PhantomIndex.Core.ViewModels
         /// <param name="property"></param>
         /// <param name="value"></param>
         /// <param name="____DO_NOT_SET___propertyName"></param>
-        protected void NotifyAndSetPropertyIfChanged<T>(ref T property, T value,
+        protected ViewModelBase NotifyAndSetPropertyIfChanged<T>(ref T property, T value,
             [CallerMemberName] string ____DO_NOT_SET___propertyName = null)
         {
 
@@ -89,6 +89,8 @@ namespace Nulah.PhantomIndex.Core.ViewModels
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(____DO_NOT_SET___propertyName));
                 }
             }
+
+            return this;
         }
 
         /// <summary>
@@ -187,6 +189,15 @@ namespace Nulah.PhantomIndex.Core.ViewModels
             ValidationErrors = null;
 
             return true;
+        }
+
+        /// <summary>
+        /// Executes the given action following <see cref="NotifyAndSetPropertyIfChanged{T}"/>
+        /// </summary>
+        /// <param name="thenDo"></param>
+        public void Then(Action thenDo)
+        {
+            thenDo?.Invoke();
         }
 
         private void SetDefaultValues()

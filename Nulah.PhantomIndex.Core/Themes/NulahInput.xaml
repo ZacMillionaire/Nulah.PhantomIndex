@@ -59,7 +59,17 @@
                                 </Border.Style>
                                 <TextBlock Padding="5,5" Margin="0" FontSize="{TemplateBinding InputSize}" d:Text="{TemplateBinding Hint}" Text="{TemplateBinding Hint}" Foreground="{TemplateBinding HintForeground}" />
                             </Border>
-                            <TextBox Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Text}" Padding="5,5" Margin="0" Panel.ZIndex="0" Grid.Column="0" FontSize="{TemplateBinding InputSize}" x:Name="InputBox" />
+                            <TextBox Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Text}" 
+                                     Padding="5,5" 
+                                     Margin="0" 
+                                     Panel.ZIndex="0" 
+                                     Grid.Column="0" 
+                                     FontSize="{TemplateBinding InputSize}"
+                                     x:Name="InputBox" 
+                                     TextWrapping="{TemplateBinding TextWrapping}"
+                                     VerticalScrollBarVisibility="{TemplateBinding VerticalScrollBarVisibility}"
+                                     MinLines="{TemplateBinding MinLines}"
+                                     MaxLines="{TemplateBinding MaxLines}"/>
                             <ItemsControl x:Name="InputButtonContainer" ItemsSource="{TemplateBinding Buttons}" Grid.Column="1">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>

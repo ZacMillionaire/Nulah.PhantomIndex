@@ -1,4 +1,5 @@
-﻿using Nulah.PhantomIndex.Core.Controls;
+﻿using System.Windows.Input;
+using Nulah.PhantomIndex.Core.Controls;
 
 namespace Nulah.PhantomIndex.Lib.Plugins
 {
@@ -10,6 +11,7 @@ namespace Nulah.PhantomIndex.Lib.Plugins
         public string DisplayName;
         public FontIcon? Icon;
         public string? PageLocation;
+        public ICommand? Command { get; set; }
 
         /// <summary>
         /// Creates a plugin menu item

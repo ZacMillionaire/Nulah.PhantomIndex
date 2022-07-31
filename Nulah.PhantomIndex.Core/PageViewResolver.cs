@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Windows.Controls;
 
@@ -74,7 +75,15 @@ namespace Nulah.PhantomIndex.Core
 
         private static string[] ResolvePageViewLocation(string pageViewLocation)
         {
-            var fragments = pageViewLocation.Split('/');
+            var pageLocation = pageViewLocation.Split(":");
+            var fragments = pageLocation[0].Split('/');
+
+            // If we have a parameter character, the colon, append it to the last fragment entry to preserve parameter checking lately.
+            // TODO: This is a hack to get something working instead of refactoring the callsite.
+            if (pageLocation.Length == 2)
+            {
+                fragments[^1] += $":{pageLocation[1]}";
+            }
 
 
             return fragments;

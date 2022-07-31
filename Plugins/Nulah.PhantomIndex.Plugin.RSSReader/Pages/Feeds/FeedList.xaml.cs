@@ -165,7 +165,7 @@ namespace Nulah.PhantomIndex.Plugin.RSSReader.Pages.Feeds
                 return;
             }
 
-            RSSPlugin.WindowNavigation.NavigateToPage<FeedDetails>($"Pages/Feeds/FeedDetails:{dc.Id}");
+            RSSPlugin.Instance.Navigation.NavigateToPage<FeedDetails>($"Pages/Feeds/FeedDetails:{dc.Id}");
         }
     }
 }

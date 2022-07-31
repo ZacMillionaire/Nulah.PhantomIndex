@@ -34,7 +34,7 @@ namespace Nulah.PhantomIndex.Plugin.RSSReader.Pages.Feeds
 
         async void InitializeAsync()
         {
-            var a = await Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateAsync(null,                                                    RSSPlugin.Instance.PluginDataLocation,null);
+            var a = await Microsoft.Web.WebView2.Core.CoreWebView2Environment.CreateAsync(null,RSSPlugin.Instance.Details.PluginDataLocation,null);
 
             await WebView.EnsureCoreWebView2Async(a);
 
@@ -54,7 +54,7 @@ namespace Nulah.PhantomIndex.Plugin.RSSReader.Pages.Feeds
 
         private void BackToFeedListButton_Click(object sender, RoutedEventArgs e)
         {
-            RSSPlugin.WindowNavigation.NavigateToPage<FeedList>($"Pages/Feeds/FeedList");
+            RSSPlugin.Instance.Navigation.NavigateToPage<FeedList>($"Pages/Feeds/FeedList");
         }
 
         private void FeedItemGrid_PreviewMouseDown(object sender, MouseButtonEventArgs e)
