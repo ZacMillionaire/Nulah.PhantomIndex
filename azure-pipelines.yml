@@ -1,5 +1,5 @@
 trigger:
-- test
+- test/*
 
 pool: DesktopPC
 
@@ -16,4 +16,4 @@ steps:
       git tag "$(Build.BuildNumber)"
       git push origin "$(Build.BuildNumber)"
     displayName: 'git tag'
-    condition: eq(variables['Build.SourceBranchName'], variables['defaultBranch'])
+    condition: eq(variables['Build.SourceBranchName'], $(defaultBranch)])
